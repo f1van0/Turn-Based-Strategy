@@ -7,30 +7,33 @@ public class InputController : MonoBehaviour
     private Camera mainCamera;
     private GameObject hero;
     private GameObject selectedCell;
-    private BattleFieldManager battlefield;
+    private BattleFieldManager battlefieldManager;
     private HeroBehaviour heroBehaviour;
     private HeroStats heroStats;
+
+    private int turn = 0;
 
     private void OnSelectedHero(GameObject hero)
     {
         heroBehaviour = hero.GetComponent<HeroBehaviour>();
         heroStats = heroBehaviour.GetHeroStats();
-        battlefield.ShowAccesibleCellsByWave(heroStats);
+        battlefieldManager.ShowAccesibleCellsByWave(heroStats);
+        battlefieldManager.ShowHero(heroBehaviour);
     }
 
     private void SelectCellForHero(GameObject hero, GameObject cell)
     {
         Cell _cell = cell.GetComponent<Cell>();
-        heroBehaviour.MoveHeroToCell(_cell);
-        battlefield.HideAccesibleCells();
-        battlefield.ShowAccesibleCellsByWave(heroStats);
+        heroBehaviour.MoveToCell(_cell);
+        battlefieldManager.HideAccesibleCells();
+        battlefieldManager.ShowAccesibleCellsByWave(heroStats);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        battlefield = FindObjectOfType<BattleFieldManager>();
-        battlefield.Initialization();
+        battlefieldManager = FindObjectOfType<BattleFieldManager>();
+        battlefieldManager.Initialization();
         mainCamera = FindObjectOfType<Camera>();
     }
 
@@ -53,14 +56,20 @@ public class InputController : MonoBehaviour
                     hero = hit.transform.gameObject;
                     OnSelectedHero(hero);
                 }
-                else if (isHeroSelected && hit.transform.tag == "Cell" && hit.transform.GetComponent<Cell>().GetCellState() == State.nearby)
+                else if (isHeroSelected && hit.transform.tag == "Cell" && hit.transform.GetComponent<Cell>().GetState() == State.nearby)
                 {
                     selectedCell = hit.transform.gameObject;
                     isCellSelected = true;
                     SelectCellForHero(hero, selectedCell);
                 }
-                else battlefield.HideAccesibleCells();
+                else battlefieldManager.HideAccesibleCells();
             }
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            Debug.Log("changed");
+            battlefieldManager.ChangeTurn(turn);
+            turn++;
         }
     }
 }

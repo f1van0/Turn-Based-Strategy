@@ -4,6 +4,24 @@ using UnityEngine;
 
 public class HeroStats
 {
+    internal int hp { get; set; }
+    internal int mana { get; set; }
+    internal int damage { get; set; }
+    internal int stepsCount { get; set; }
+
+    private int defaultHP = 100;
+    private int defaultMana = 120;
+    private int defaultDamage = 30;
+    private int defaultStepsCount = 2;
+
+
+    private string owner;
+    private int team;
+
+
+    //Клетка на поле в которой находится герой
+    private Cell _cell;
+
     public HeroStats()
     {
         hp = 100;
@@ -15,7 +33,7 @@ public class HeroStats
         this._cell = null;
     }
 
-    public void InitializeHero(Cell cell, int teamNumber)
+    public void Initialize(Cell cell, int teamNumber)
     {
         hp = 100;
         mana = 120;
@@ -26,53 +44,41 @@ public class HeroStats
         team = teamNumber;
     }
 
-    internal int hp { get; set; }
-    internal int mana { get; set; }
-    internal int damage { get; set; }
-    internal int stepsCount { get; set; }
-    private int defaultHP = 100;
-    private int defaultMana = 120;
-    private int defaultDamage = 30;
-    private int defaultStepsCount = 2;
-    private string owner;
-    private int team;
-    //Клетка на поле в которой находится герой
-    private Cell _cell;
 
-    public Cell GetHeroCell()
+    public Cell GetCell()
     {
         return _cell;
     }
 
     //Изменить положение игрока, переместив его в клетку
-    public void SetHeroCell(Cell cell)
+    public void SetCell(Cell cell)
     {
         this._cell = cell;
     }
 
     //Узнать количество доступных шагов
-    public int GetHeroSteps()
+    public int GetHeroStepsCount()
     {
         return stepsCount;
     }
 
     //Изменить количество доступных шагов
-    public void SetHeroStepsCount(int stepsCount)
+    public void SetStepsCount(int stepsCount)
     {
         this.stepsCount = stepsCount;
     }
 
-    public void RestoreHeroStepsCount()
+    public void RestoreStepsCount()
     {
         stepsCount = defaultStepsCount;
     }
 
-    public int GetHeroTeam()
+    public int GetTeam()
     {
         return team;
     }
 
-    public void SetHeroTeam(int teamNumber)
+    public void SetTeam(int teamNumber)
     {
         team = teamNumber;
     }
@@ -83,18 +89,19 @@ public class HeroBehaviour : MonoBehaviour
     private HeroStats _heroStats;
     private GameObject hero;
 
-    public void HeroAttacked(int damage)
+    public void TakeDamage(int damage)
     {
         _heroStats.hp -= damage;
     }
 
-    public void CreateHero(Cell cell, int teamNumber)
+    public void InitializeHero(Cell cell, int teamNumber)
     {
         _heroStats = new HeroStats();
         hero = this.gameObject;
-        _heroStats.InitializeHero(cell, teamNumber);
-        _heroStats.SetHeroCell(cell);
-        hero.transform.position = new Vector3(cell.GetCellPosition().x, cell.GetCellPosition().y, -1);
+        _heroStats.Initialize(cell, teamNumber);
+        cell.SetState(State.hero);
+        _heroStats.SetCell(cell);
+        hero.transform.position = new Vector3(cell.GetPosition().x, cell.GetPosition().y, -1);
     }
 
     public HeroStats GetHeroStats()
@@ -102,13 +109,13 @@ public class HeroBehaviour : MonoBehaviour
         return _heroStats;
     }
     
-    public void MoveHeroToCell(Cell cell)
+    public void MoveToCell(Cell cell)
     {
-        _heroStats.GetHeroCell().SetCellState(State.empty);
-        _heroStats.SetHeroStepsCount(_heroStats.GetHeroSteps() - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetHeroCell().GetCellIndex()[0]) - Mathf.Abs(cell.GetCellIndex()[0]))) - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetHeroCell().GetCellIndex()[1]) - Mathf.Abs(cell.GetCellIndex()[1]))));
-        _heroStats.SetHeroCell(cell);
-        hero.transform.position = new Vector3(cell.GetCellPosition().x, cell.GetCellPosition().y, -1);
-        _heroStats.GetHeroCell().SetCellState(State.hero);
+        _heroStats.GetCell().SetState(State.empty);
+        _heroStats.SetStepsCount(_heroStats.GetHeroStepsCount() - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetCell().GetIndex()[0]) - Mathf.Abs(cell.GetIndex()[0]))) - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetCell().GetIndex()[1]) - Mathf.Abs(cell.GetIndex()[1]))));
+        _heroStats.SetCell(cell);
+        hero.transform.position = new Vector3(cell.GetPosition().x, cell.GetPosition().y, -1);
+        _heroStats.GetCell().SetState(State.hero);
     }
 /*
     public void CreateHero(Cell cell)

@@ -8,7 +8,9 @@ public enum State:int
     nearby,
     wall,
     hero,
-    enemy
+    enemy,
+    friend,
+    attack
 }
 
 public class Cell : MonoBehaviour
@@ -19,7 +21,7 @@ public class Cell : MonoBehaviour
     private HeroStats _heroStats;
     private int[] index = new int[2];
 
-    public void CreateCell(Vector2 pos, int[] index, State state)
+    public void Initialize(Vector2 pos, int[] index, State state)
     {
         this.pos = pos;
         this.index = index;
@@ -28,37 +30,37 @@ public class Cell : MonoBehaviour
         cell.transform.position = pos;
     }
 
-    public HeroStats GetCellHeroStats()
+    public HeroStats GetHeroStats()
     {
         return _heroStats;
     }
 
-    public void SetCellHeroStats(HeroStats heroStats)
+    public void SetHeroStats(HeroStats heroStats)
     {
         _heroStats = heroStats;
     }
 
-    public void SetCellState(State state)
+    public void SetState(State state)
     {
         this.state = state;
     }
 
-    public State GetCellState()
+    public State GetState()
     {
         return state;
     }
 
-    public bool IsCellEmpty()
+    public bool IsEmpty()
     {
         return state == State.empty;
     }
 
-    public Vector2 GetCellPosition()
+    public Vector2 GetPosition()
     {
         return pos;
     }
 
-    public int[] GetCellIndex()
+    public int[] GetIndex()
     {
         return index;
     }

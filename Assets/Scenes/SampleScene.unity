@@ -155,10 +155,12 @@ MonoBehaviour:
   heroPrefab: {fileID: 772928700765654947, guid: d5883043bddbe3b41af15d41a44424d6,
     type: 3}
   emptyCellColor: {r: 1, g: 1, b: 1, a: 1}
-  nearbyCellColor: {r: 1, g: 0.88125616, b: 0.43867922, a: 1}
+  nearbyCellColor: {r: 1, g: 0.9198443, b: 0.6179246, a: 1}
   wallCellColor: {r: 0.764151, g: 0.764151, b: 0.764151, a: 1}
   heroCellColor: {r: 0.61877, g: 0.86694145, b: 0.9716981, a: 1}
   enemyCellColor: {r: 0.9716981, g: 0.36738002, b: 0.34376112, a: 1}
+  friendCellColor: {r: 0.5330188, g: 1, b: 0.5330188, a: 1}
+  attackCellColor: {r: 1, g: 0, b: 0.20245647, a: 1}
 --- !u!4 &249732087
 Transform:
   m_ObjectHideFlags: 0

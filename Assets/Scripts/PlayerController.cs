@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     {
         HeroBehaviour hb = hero.GetComponent<HeroBehaviour>();
         Cell _cell = cell.GetComponent<Cell>();
-        hb.MoveHeroToCell(_cell);
+        hb.MoveToCell(_cell);
     }
 
     // Start is called before the first frame update

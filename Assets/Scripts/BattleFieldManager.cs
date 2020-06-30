@@ -8,19 +8,23 @@ public class BattleFieldManager : MonoBehaviour
     public GameObject heroPrefab;
 
     public Color emptyCellColor = Color.white;
-    public Color nearbyCellColor = Color.cyan;
+    public Color nearbyCellColor = Color.yellow;
     public Color wallCellColor = Color.black;
-    public Color heroCellColor = Color.green;
+    public Color heroCellColor = Color.cyan;
     public Color enemyCellColor = Color.red;
+    public Color friendCellColor = Color.green;
+    public Color attackCellColor = Color.magenta;
 
     const int n = 4;
     const int m = 4;
+    private int distanceBetweenCells = 2;
+
+    //private int turn = 0;
 
     //private GameObject[,] cells = new GameObject[n, m];
     private GameObject hero;
     private HeroBehaviour[] heroBehaviours = new HeroBehaviour[n];
     private Cell[,] _cell = new Cell[n, m];
-    private int distanceBetweenCells = 2;
 
     public void Initialization()
     {
@@ -31,16 +35,15 @@ public class BattleFieldManager : MonoBehaviour
             {
                 Vector2 pos = new Vector2(i * distanceBetweenCells, j * distanceBetweenCells);
                 _cell[i, j] = Instantiate(cellPrefab, pos, new Quaternion(0, 0, 0, 0)).GetComponent<Cell>();
-                _cell[i, j].CreateCell(pos, new int[2] { i, j }, State.empty);
+                _cell[i, j].Initialize(pos, new int[2] { i, j }, State.empty);
             }
         }
 
         //Создаем игрока, к примеру в клетке (0, 0) левый нижний угол
-        _cell[0, 0].SetCellState(State.hero);
         for (int i = 0; i < n; i++)
         {
             heroBehaviours[i] = Instantiate(heroPrefab, new Vector3(0, 0, -1), new Quaternion(0, 0, 0, 0)).GetComponent<HeroBehaviour>();
-            heroBehaviours[i].CreateHero(_cell[i, i], n % 2);
+            heroBehaviours[i].InitializeHero(_cell[i, i], i % 2);
         }
         //hero = Instantiate(heroPrefab, new Vector3(0, 0, -1), new Quaternion(0, 0, 0, 0));
         //heroBehaviours = hero.GetComponent<HeroBehaviour>();
@@ -49,17 +52,20 @@ public class BattleFieldManager : MonoBehaviour
         RebootField();
     }
 
-    public void RebootCellBasedOnState(Cell cell)
+    public void RebootCell(Cell cell)
     {
         SpriteRenderer cellSprite = cell.gameObject.GetComponent<SpriteRenderer>();
         Color cellColor = cellSprite.color;
-        int cellState = (int) cell.GetCellState();
+        int cellState = (int) cell.GetState();
         switch (cellState)
         {
             case 0: { cellSprite.color = emptyCellColor; break; }
             case 1: { cellSprite.color = nearbyCellColor; break; }
             case 2: { cellSprite.color = wallCellColor; break; }
-            default: { cellSprite.color = heroCellColor; break; }
+            case 3: { cellSprite.color = heroCellColor; break; }
+            case 4: { cellSprite.color = enemyCellColor; break; }
+            case 5: { cellSprite.color = friendCellColor; break; }
+            default: { cellSprite.color = attackCellColor; break; }
         }
     }
 
@@ -67,7 +73,7 @@ public class BattleFieldManager : MonoBehaviour
     {
         for (int i = 0; i < n; i++)
             for (int j = 0; j < m; j++)
-                RebootCellBasedOnState(_cell[i, j]);
+                RebootCell(_cell[i, j]);
     }
 
     public void HideAccesibleCells()
@@ -76,9 +82,9 @@ public class BattleFieldManager : MonoBehaviour
         {
             for (int j = 0; j < m; j++)
             {
-                if (_cell[i, j].GetCellState() == State.nearby)
-                    _cell[i, j].SetCellState(State.empty);
-                RebootCellBasedOnState(_cell[i, j]);
+                if (_cell[i, j].GetState() == State.nearby)
+                    _cell[i, j].SetState(State.empty);
+                RebootCell(_cell[i, j]);
             }
         }
     }
@@ -96,9 +102,9 @@ public class BattleFieldManager : MonoBehaviour
         int CountOfAllNodes = 1;
         int newCount = 0;
         int start = CountOfAllNodes - CountOfCurrentNodes;
-        int io = _heroStats.GetHeroCell().GetCellIndex()[0];
-        int jo = _heroStats.GetHeroCell().GetCellIndex()[1];
-        int stepsCount = _heroStats.GetHeroSteps();
+        int io = _heroStats.GetCell().GetIndex()[0];
+        int jo = _heroStats.GetCell().GetIndex()[1];
+        int stepsCount = _heroStats.GetHeroStepsCount();
 
         Vector2[] currentNodes = new Vector2[1000];
         currentNodes[0] = new Vector2(io, jo);
@@ -112,35 +118,27 @@ public class BattleFieldManager : MonoBehaviour
                 int i = Mathf.RoundToInt(currentNodes[t].x);
                 int j = Mathf.RoundToInt(currentNodes[t].y);
                 //if (i < n - 1 && _cell[i + 1, j].IsCellEmpty() || (_cell[i + 1, j].GetCellState() == State.hero && _cell[i+1, j].GetCellHeroStats().GetHeroTeam() != _heroStats.GetHeroTeam())))
-                if (i < n - 1 && _cell[i + 1, j].IsCellEmpty())
+                if (i < n - 1 && _cell[i + 1, j].IsEmpty())
                 {
-                    _cell[i + 1, j].SetCellState(State.nearby);
-                    _cell[i + 1, j].gameObject.GetComponent<SpriteRenderer>().color = nearbyCellColor;
-                    currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i + 1, j);
+                    currentNodes[CountOfAllNodes + CountOfNewNodes] = SetNearbyCell(i + 1, j);
                     newCount++;
                     CountOfNewNodes++;
                 }
-                if (i > 0 && _cell[i - 1, j].IsCellEmpty())
+                if (i > 0 && _cell[i - 1, j].IsEmpty())
                 {
-                    _cell[i - 1, j].SetCellState(State.nearby);
-                    _cell[i - 1, j].gameObject.GetComponent<SpriteRenderer>().color = nearbyCellColor;
-                    currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i - 1, j);
+                    currentNodes[CountOfAllNodes + CountOfNewNodes] = SetNearbyCell(i - 1, j);
                     newCount++;
                     CountOfNewNodes++;
                 }
-                if (j < m - 1 && _cell[i, j + 1].IsCellEmpty())
+                if (j < m - 1 && _cell[i, j + 1].IsEmpty())
                 {
-                    _cell[i, j + 1].SetCellState(State.nearby);
-                    _cell[i, j + 1].gameObject.GetComponent<SpriteRenderer>().color = nearbyCellColor;
-                    currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i, j + 1);
+                    currentNodes[CountOfAllNodes + CountOfNewNodes] = SetNearbyCell(i, j + 1);
                     newCount++;
                     CountOfNewNodes++;
                 }
-                if (j > 0 && _cell[i, j - 1].IsCellEmpty())
+                if (j > 0 && _cell[i, j - 1].IsEmpty())
                 {
-                    _cell[i, j - 1].SetCellState(State.nearby);
-                    _cell[i, j - 1].gameObject.GetComponent<SpriteRenderer>().color = nearbyCellColor;
-                    currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i, j - 1);
+                    currentNodes[CountOfAllNodes + CountOfNewNodes] = SetNearbyCell(i, j - 1);
                     newCount++;
                     CountOfNewNodes++;
                 }
@@ -155,10 +153,44 @@ public class BattleFieldManager : MonoBehaviour
         }
     }
 
-    private void ShowEnemies()
+    public Vector2 SetNearbyCell(int i, int j)
     {
-
+        Vector2 node;
+        _cell[i, j].SetState(State.nearby);
+        RebootCell(_cell[i, j]);
+        node = new Vector2(i, j);
+        return node;
     }
+
+    public void ShowHero(HeroBehaviour heroBehaviour)
+    {
+        //Проходим по каждому из героев
+        for (int i = 0; i < n; i++)
+        {
+            if (heroBehaviours[i].GetHeroStats().GetTeam() != heroBehaviour.GetHeroStats().GetTeam())
+                heroBehaviours[i].GetHeroStats().GetCell().SetState(State.enemy);
+            else heroBehaviours[i].GetHeroStats().GetCell().SetState(State.friend);
+            //Перерисовываем нужную клетку
+            RebootCell(heroBehaviours[i].GetHeroStats().GetCell());
+        }
+    }
+
+    public void ChangeTurn(int turn)
+    {
+        //Проходимся по каждому герою
+        for (int i = 0; i < n; i++)
+        {
+            if (heroBehaviours[i].GetHeroStats().GetTeam() == turn % 2)
+            {
+                heroBehaviours[i].GetHeroStats().RestoreStepsCount();
+            }
+            else
+            {
+                heroBehaviours[i].GetHeroStats().SetStepsCount(0);
+            }
+        }
+    }
+
     /*
     public void ShowAccesibleCellsForHero(HeroStats _hero)
     {
