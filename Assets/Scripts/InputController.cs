@@ -17,16 +17,31 @@ public class InputController : MonoBehaviour
     {
         heroBehaviour = hero.GetComponent<HeroBehaviour>();
         heroStats = heroBehaviour.GetHeroStats();
-        battlefieldManager.ShowAccesibleCellsByWave(heroStats);
+        battlefieldManager.ShowAccesibleCellsByWave(heroBehaviour);
         battlefieldManager.ShowHero(heroBehaviour);
     }
 
-    private void SelectCellForHero(GameObject hero, GameObject cell)
+    private void SelectCellForHero(GameObject hero, GameObject cell, State state)
     {
+        Debug.Log(state);
         Cell _cell = cell.GetComponent<Cell>();
-        heroBehaviour.MoveToCell(_cell);
-        battlefieldManager.HideAccesibleCells();
-        battlefieldManager.ShowAccesibleCellsByWave(heroStats);
+        if (state == State.nearby)
+        {
+            isCellSelected = true;
+            heroBehaviour.MoveToCell(_cell);
+            battlefieldManager.HideAccesibleCells();
+            battlefieldManager.ShowAccesibleCellsByWave(heroBehaviour);
+        }
+        else if (state == State.attack)
+        {
+            isCellSelected = true;
+            heroBehaviour.SetTargetID(_cell.GetHeroStats().ID);
+            heroBehaviour.GetHeroStats().SetStepsCount(0);
+            battlefieldManager.HideAccesibleCells();
+            battlefieldManager.ShowAccesibleCellsByWave(heroBehaviour);
+        }
+        //else
+        //    battlefieldManager.HideAccesibleCells();
     }
 
     // Start is called before the first frame update
@@ -56,13 +71,18 @@ public class InputController : MonoBehaviour
                     hero = hit.transform.gameObject;
                     OnSelectedHero(hero);
                 }
-                else if (isHeroSelected && hit.transform.tag == "Cell" && hit.transform.GetComponent<Cell>().GetState() == State.nearby)
+                else if (isHeroSelected && hit.transform.tag == "Cell")
                 {
                     selectedCell = hit.transform.gameObject;
-                    isCellSelected = true;
-                    SelectCellForHero(hero, selectedCell);
+                    State selectedCellState = hit.transform.GetComponent<Cell>().GetState();
+                    SelectCellForHero(hero, selectedCell, selectedCellState);
+                    //else if (hit.transform.GetComponent<Cell>().GetState() == State.attack)
+                    //{
+                    //    hit.transform.GetComponent<Cell>().GetHeroStats.
+                    //}
                 }
-                else battlefieldManager.HideAccesibleCells();
+                else
+                    battlefieldManager.HideAccesibleCells();
             }
         }
         if (Input.GetKeyDown(KeyCode.A))

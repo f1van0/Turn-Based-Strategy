@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnSelectedHero(GameObject hero)
     {
-        battlefield.ShowAccesibleCellsByWave(hero.GetComponent<HeroStats>());
+        battlefield.ShowAccesibleCellsByWave(hero.GetComponent<HeroBehaviour>());
     }
 
     private void SelectCellForHero(GameObject hero, GameObject cell)

@@ -160,7 +160,7 @@ MonoBehaviour:
   heroCellColor: {r: 0.61877, g: 0.86694145, b: 0.9716981, a: 1}
   enemyCellColor: {r: 0.9716981, g: 0.36738002, b: 0.34376112, a: 1}
   friendCellColor: {r: 0.5330188, g: 1, b: 0.5330188, a: 1}
-  attackCellColor: {r: 1, g: 0, b: 0.20245647, a: 1}
+  attackCellColor: {r: 0.754717, g: 0.45923817, b: 0.51949257, a: 1}
 --- !u!4 &249732087
 Transform:
   m_ObjectHideFlags: 0

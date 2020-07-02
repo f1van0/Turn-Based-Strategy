@@ -14,6 +14,8 @@ public class HeroStats
     private int defaultDamage = 30;
     private int defaultStepsCount = 2;
 
+    internal int targetID { get; set; }
+    internal int ID { get; set; }
 
     private string owner;
     private int team;
@@ -29,11 +31,12 @@ public class HeroStats
         damage = 30;
         stepsCount = 2;
         defaultStepsCount = 2;
-        team = 1;
+        team = 0;
+        ID = 0;
         this._cell = null;
     }
 
-    public void Initialize(Cell cell, int teamNumber)
+    public void Initialize(Cell cell, int teamNumber, int id)
     {
         hp = 100;
         mana = 120;
@@ -42,6 +45,7 @@ public class HeroStats
         defaultStepsCount = 2;
         this._cell = cell;
         team = teamNumber;
+        ID = id;
     }
 
 
@@ -94,11 +98,11 @@ public class HeroBehaviour : MonoBehaviour
         _heroStats.hp -= damage;
     }
 
-    public void InitializeHero(Cell cell, int teamNumber)
+    public void InitializeHero(Cell cell, int teamNumber, int id)
     {
         _heroStats = new HeroStats();
         hero = this.gameObject;
-        _heroStats.Initialize(cell, teamNumber);
+        _heroStats.Initialize(cell, teamNumber, id);
         cell.SetState(State.hero);
         _heroStats.SetCell(cell);
         hero.transform.position = new Vector3(cell.GetPosition().x, cell.GetPosition().y, -1);
@@ -115,7 +119,23 @@ public class HeroBehaviour : MonoBehaviour
         _heroStats.SetStepsCount(_heroStats.GetHeroStepsCount() - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetCell().GetIndex()[0]) - Mathf.Abs(cell.GetIndex()[0]))) - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetCell().GetIndex()[1]) - Mathf.Abs(cell.GetIndex()[1]))));
         _heroStats.SetCell(cell);
         hero.transform.position = new Vector3(cell.GetPosition().x, cell.GetPosition().y, -1);
+        _heroStats.targetID = -1;
         _heroStats.GetCell().SetState(State.hero);
+    }
+
+    public void SetTargetID(int targetID)
+    {
+        _heroStats.targetID = targetID;
+    }
+
+    public int GetTargetID()
+    {
+        return _heroStats.targetID;
+    }
+
+    public int GetID()
+    {
+        return _heroStats.ID;
     }
 /*
     public void CreateHero(Cell cell)

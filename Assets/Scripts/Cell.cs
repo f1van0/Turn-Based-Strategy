@@ -15,6 +15,14 @@ public enum State:int
 
 public class Cell : MonoBehaviour
 {
+    private Color emptyCellColor = Color.white;
+    private Color nearbyCellColor = Color.yellow;
+    private Color wallCellColor = Color.black;
+    private Color heroCellColor = Color.cyan;
+    private Color enemyCellColor = Color.red;
+    private Color friendCellColor = Color.green;
+    private Color attackCellColor = Color.magenta;
+
     private GameObject cell;
     private Vector2 pos = new Vector2(0, 0);
     private State state = State.empty;
@@ -55,6 +63,11 @@ public class Cell : MonoBehaviour
         return state == State.empty;
     }
 
+    public bool IsEnemy()
+    {
+        return state == State.enemy;
+    }
+
     public Vector2 GetPosition()
     {
         return pos;
@@ -65,6 +78,36 @@ public class Cell : MonoBehaviour
         return index;
     }
 
+    public void ShowCell()
+    {
+        SpriteRenderer cellSprite = cell.GetComponent<SpriteRenderer>();
+        switch ((int) state)
+        {
+            case 0: { cellSprite.color = emptyCellColor; break; }
+            case 1: { cellSprite.color = nearbyCellColor; break; }
+            case 2: { cellSprite.color = wallCellColor; break; }
+            case 3: { cellSprite.color = heroCellColor; break; }
+            case 4: { cellSprite.color = enemyCellColor; break; }
+            case 5: { cellSprite.color = friendCellColor; break; }
+            default: { cellSprite.color = attackCellColor; break; }
+        }
+    }
+
+    public void ShowCell(State _state)
+    {
+        SpriteRenderer cellSprite = cell.GetComponent<SpriteRenderer>();
+        state = _state;
+        switch ((int) state)
+        {
+            case 0: { cellSprite.color = emptyCellColor; break; }
+            case 1: { cellSprite.color = nearbyCellColor; break; }
+            case 2: { cellSprite.color = wallCellColor; break; }
+            case 3: { cellSprite.color = heroCellColor; break; }
+            case 4: { cellSprite.color = enemyCellColor; break; }
+            case 5: { cellSprite.color = friendCellColor; break; }
+            default: { cellSprite.color = attackCellColor; break; }
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
