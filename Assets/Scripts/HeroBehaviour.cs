@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HeroStats
 {
@@ -33,6 +34,7 @@ public class HeroStats
         defaultStepsCount = 2;
         team = 0;
         ID = 0;
+        targetID = -1;
         this._cell = null;
     }
 
@@ -43,9 +45,10 @@ public class HeroStats
         damage = 30;
         stepsCount = 2;
         defaultStepsCount = 2;
-        this._cell = cell;
+        this._cell = cell; 
         team = teamNumber;
         ID = id;
+        targetID = -1;
     }
 
 
@@ -90,52 +93,66 @@ public class HeroStats
 
 public class HeroBehaviour : MonoBehaviour
 {
-    private HeroStats _heroStats;
+    private HeroStats heroStats;
     private GameObject hero;
+    private Canvas hero_canvas;
+    private Text hp_text;
 
     public void TakeDamage(int damage)
     {
-        _heroStats.hp -= damage;
+        heroStats.hp -= damage;
+        hp_text.text = heroStats.hp+"HP";
     }
 
     public void InitializeHero(Cell cell, int teamNumber, int id)
     {
-        _heroStats = new HeroStats();
+        heroStats = new HeroStats();
         hero = this.gameObject;
-        _heroStats.Initialize(cell, teamNumber, id);
-        cell.SetState(State.hero);
-        _heroStats.SetCell(cell);
+        hero_canvas = hero.GetComponentInChildren<Canvas>();
+        hp_text = hero_canvas.GetComponentInChildren<Text>();
+        hp_text.text = heroStats.hp + "HP";
+        heroStats.Initialize(cell, teamNumber, id);
+        cell.SetState(CellState.hero);
+        cell.SetHeroStats(heroStats);
+        heroStats.SetCell(cell);
         hero.transform.position = new Vector3(cell.GetPosition().x, cell.GetPosition().y, -1);
     }
 
     public HeroStats GetHeroStats()
     {
-        return _heroStats;
+        return heroStats;
     }
     
-    public void MoveToCell(Cell cell)
+    public void MoveToCell(Cell _cell)
     {
-        _heroStats.GetCell().SetState(State.empty);
-        _heroStats.SetStepsCount(_heroStats.GetHeroStepsCount() - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetCell().GetIndex()[0]) - Mathf.Abs(cell.GetIndex()[0]))) - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(_heroStats.GetCell().GetIndex()[1]) - Mathf.Abs(cell.GetIndex()[1]))));
-        _heroStats.SetCell(cell);
-        hero.transform.position = new Vector3(cell.GetPosition().x, cell.GetPosition().y, -1);
-        _heroStats.targetID = -1;
-        _heroStats.GetCell().SetState(State.hero);
+        heroStats.GetCell().Show(CellState.empty);
+        heroStats.GetCell().SetHeroStats(null);
+        heroStats.SetStepsCount(heroStats.GetHeroStepsCount() - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(heroStats.GetCell().GetIndex()[0]) - Mathf.Abs(_cell.GetIndex()[0]))) - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(heroStats.GetCell().GetIndex()[1]) - Mathf.Abs(_cell.GetIndex()[1]))));
+        heroStats.SetCell(_cell);
+        hero.transform.position = new Vector3(_cell.GetPosition().x, _cell.GetPosition().y, -1);
+        heroStats.targetID = -1;
+        heroStats.GetCell().Show(CellState.hero);
+        _cell.SetHeroStats(heroStats);
     }
 
     public void SetTargetID(int targetID)
     {
-        _heroStats.targetID = targetID;
+        heroStats.targetID = targetID;
     }
 
     public int GetTargetID()
     {
-        return _heroStats.targetID;
+        return heroStats.targetID;
     }
 
     public int GetID()
     {
-        return _heroStats.ID;
+        return heroStats.ID;
+    }
+
+    public bool isAlive()
+    {
+        return heroStats.hp > 0;
     }
 /*
     public void CreateHero(Cell cell)

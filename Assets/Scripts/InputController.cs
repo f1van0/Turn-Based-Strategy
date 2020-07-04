@@ -1,95 +1,119 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
     private Camera mainCamera;
-    private GameObject hero;
-    private GameObject selectedCell;
+    private Cell selectedNeededCell;
     private BattleFieldManager battlefieldManager;
     private HeroBehaviour heroBehaviour;
-    private HeroStats heroStats;
 
     private int turn = 0;
+    private bool isHeroSelected = false;
+    private bool isNeededCellSelected = false;
 
-    private void OnSelectedHero(GameObject hero)
-    {
-        heroBehaviour = hero.GetComponent<HeroBehaviour>();
-        heroStats = heroBehaviour.GetHeroStats();
-        battlefieldManager.ShowAccesibleCellsByWave(heroBehaviour);
-        battlefieldManager.ShowHero(heroBehaviour);
-    }
+    public event Action<HeroBehaviour> SelectHero;
 
-    private void SelectCellForHero(GameObject hero, GameObject cell, State state)
+    private void SelectCellForHero(Cell _cell)
     {
-        Debug.Log(state);
-        Cell _cell = cell.GetComponent<Cell>();
-        if (state == State.nearby)
+        CellState state = _cell.GetState();
+        if (state == CellState.nearby)
         {
-            isCellSelected = true;
+            isNeededCellSelected = true;
             heroBehaviour.MoveToCell(_cell);
+            //Повторяющийся код
             battlefieldManager.HideAccesibleCells();
+            battlefieldManager.ShowHeroes(heroBehaviour);
+            battlefieldManager.HighlightCellWithSelectedHero(heroBehaviour);
             battlefieldManager.ShowAccesibleCellsByWave(heroBehaviour);
+            //battlefieldManager.RewriteField();
         }
-        else if (state == State.attack)
+        else if (state == CellState.attack)
         {
-            isCellSelected = true;
+            isNeededCellSelected = true;
             heroBehaviour.SetTargetID(_cell.GetHeroStats().ID);
             heroBehaviour.GetHeroStats().SetStepsCount(0);
+            //Повторяющийся код
             battlefieldManager.HideAccesibleCells();
+            battlefieldManager.ShowHeroes(heroBehaviour);
+            battlefieldManager.HighlightCellWithSelectedHero(heroBehaviour);
             battlefieldManager.ShowAccesibleCellsByWave(heroBehaviour);
+            //battlefieldManager.RewriteField();
         }
         //else
         //    battlefieldManager.HideAccesibleCells();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        battlefieldManager = FindObjectOfType<BattleFieldManager>();
-        battlefieldManager.Initialization();
         mainCamera = FindObjectOfType<Camera>();
     }
 
-    bool isHeroSelected = false;
-    bool isCellSelected = false;
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        //Левая кнопка мыши для того, чтобы выбрать героя
         if (Input.GetMouseButtonDown(0))
         {
-
             Vector2 rayPos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
             RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
+            //Если луч задел что-либо
             if (hit)
             {
+                //Если луч задел героя, то выбираем его
                 if (hit.transform.tag == "Hero")
                 {
                     isHeroSelected = true;
-                    hero = hit.transform.gameObject;
-                    OnSelectedHero(hero);
+                    heroBehaviour = hit.transform.GetComponent<HeroBehaviour>();
+                    //Выбран герой heroBehaviour
+                    SelectHero(heroBehaviour);
                 }
-                else if (isHeroSelected && hit.transform.tag == "Cell")
-                {
-                    selectedCell = hit.transform.gameObject;
-                    State selectedCellState = hit.transform.GetComponent<Cell>().GetState();
-                    SelectCellForHero(hero, selectedCell, selectedCellState);
-                    //else if (hit.transform.GetComponent<Cell>().GetState() == State.attack)
-                    //{
-                    //    hit.transform.GetComponent<Cell>().GetHeroStats.
-                    //}
-                }
+                //Иначе "рассредотачиваем" внимание / поле
                 else
+                {
                     battlefieldManager.HideAccesibleCells();
+                    isHeroSelected = false;
+                }
             }
         }
-        if (Input.GetKeyDown(KeyCode.A))
+        //Правая кнопка мыши для того, чтобы сделать какое-то действие героем
+        else if (Input.GetMouseButtonDown(1) && isHeroSelected)
         {
-            Debug.Log("changed");
-            battlefieldManager.ChangeTurn(turn);
+            Vector2 rayPos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
+            RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
+            //Если луч задел что-либо
+            if (hit)
+            {
+                //Если луч задел героя, то выбираем его
+                if (hit.transform.tag == "Hero")
+                {
+                    //Проблема, я отсылаю в функцию SelectCellForHero клетку, хотя там тоже есть разветвление на клетку с врагом и пустой, стоящей рядом
+                    selectedNeededCell = hit.transform.gameObject.GetComponent<HeroBehaviour>().GetHeroStats().GetCell();
+                    isNeededCellSelected = true;
+                    SelectCellForHero(selectedNeededCell);
+                }
+                //Если лучь задел клетку, то 
+                else if (hit.transform.tag == "Cell")
+                {
+                    selectedNeededCell = hit.transform.gameObject.GetComponent<Cell>();
+                    isNeededCellSelected = true;
+                    SelectCellForHero(selectedNeededCell);
+                }
+                //Иначе "рассредотачиваем" внимание / поле
+                else
+                {
+                    battlefieldManager.HideAccesibleCells();
+                    isNeededCellSelected = false;
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
             turn++;
+            battlefieldManager.ChangeTurn(turn);
         }
     }
 }

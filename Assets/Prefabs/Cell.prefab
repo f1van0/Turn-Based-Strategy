@@ -97,6 +97,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cee9a28c3da8fb429100be12c8dff75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  emptyCellColor: {r: 1, g: 1, b: 1, a: 1}
+  nearbyCellColor: {r: 1, g: 0.9032804, b: 0.514151, a: 1}
+  wallCellColor: {r: 0.5, g: 0.43194062, b: 0.31367925, a: 1}
+  heroCellColor: {r: 0.6556604, g: 0.9255348, b: 1, a: 1}
+  enemyCellColor: {r: 1, g: 0.5616359, b: 0.504717, a: 1}
+  friendCellColor: {r: 0.79204816, g: 1, b: 0.6179246, a: 1}
+  attackCellColor: {r: 1, g: 0.3066038, b: 0.3066038, a: 1}
 --- !u!208 &-293052737289156340
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -104,7 +111,7 @@ NavMeshObstacle:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2532002109761740485}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Shape: 1
   m_Extents: {x: 0.080000006, y: 0.080000006, z: 0.1}

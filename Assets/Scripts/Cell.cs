@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum State:int
+public enum CellState:int
 {
     empty = 0,
     nearby,
@@ -15,21 +15,21 @@ public enum State:int
 
 public class Cell : MonoBehaviour
 {
-    private Color emptyCellColor = Color.white;
-    private Color nearbyCellColor = Color.yellow;
-    private Color wallCellColor = Color.black;
-    private Color heroCellColor = Color.cyan;
-    private Color enemyCellColor = Color.red;
-    private Color friendCellColor = Color.green;
-    private Color attackCellColor = Color.magenta;
+    public Color emptyCellColor = Color.white;
+    public Color nearbyCellColor = Color.yellow;
+    public Color wallCellColor = Color.black;
+    public Color heroCellColor = Color.cyan;
+    public Color enemyCellColor = Color.red;
+    public Color friendCellColor = Color.green;
+    public Color attackCellColor = Color.magenta;
 
     private GameObject cell;
     private Vector2 pos = new Vector2(0, 0);
-    private State state = State.empty;
+    private CellState state = CellState.empty;
     private HeroStats _heroStats;
     private int[] index = new int[2];
 
-    public void Initialize(Vector2 pos, int[] index, State state)
+    public void Initialize(Vector2 pos, int[] index, CellState state)
     {
         this.pos = pos;
         this.index = index;
@@ -48,24 +48,24 @@ public class Cell : MonoBehaviour
         _heroStats = heroStats;
     }
 
-    public void SetState(State state)
+    public void SetState(CellState state)
     {
         this.state = state;
     }
 
-    public State GetState()
+    public CellState GetState()
     {
         return state;
     }
 
     public bool IsEmpty()
     {
-        return state == State.empty;
+        return state == CellState.empty;
     }
 
     public bool IsEnemy()
     {
-        return state == State.enemy;
+        return state == CellState.enemy;
     }
 
     public Vector2 GetPosition()
@@ -78,7 +78,7 @@ public class Cell : MonoBehaviour
         return index;
     }
 
-    public void ShowCell()
+    public void Show()
     {
         SpriteRenderer cellSprite = cell.GetComponent<SpriteRenderer>();
         switch ((int) state)
@@ -93,7 +93,7 @@ public class Cell : MonoBehaviour
         }
     }
 
-    public void ShowCell(State _state)
+    public void Show(CellState _state)
     {
         SpriteRenderer cellSprite = cell.GetComponent<SpriteRenderer>();
         state = _state;
@@ -112,7 +112,7 @@ public class Cell : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cell = this.GetComponent<GameObject>();
+        cell = this.gameObject;
         //cell.transform.position = pos;
     }
 

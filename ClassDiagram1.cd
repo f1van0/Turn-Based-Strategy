@@ -3,7 +3,7 @@
   <Class Name="Cell">
     <Position X="6.5" Y="0.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAEACAAAEAABAAAAIAAAABAAAAEAABAAAABAAA=</HashCode>
+      <HashCode>BARAJEAABCAAAUAQAAAABIAAAEAEKAgEAAACAEBBAAA=</HashCode>
       <FileName>Assets\Scripts\Cell.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -17,14 +17,14 @@
   <Class Name="HeroStats">
     <Position X="1.5" Y="2.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAgEIAAAAAgAQAAAAAAAAAAABAACAAQCA=</HashCode>
+      <HashCode>QAAUgQACAQAAgQABAAEQQAAAAAgQAAAACABAAAAAACA=</HashCode>
       <FileName>Assets\Scripts\HeroBehaviour.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="HeroBehaviour">
     <Position X="2" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAGAAAAAAAAAAAAAAAAQAAAAAAAAAAABAAAA=</HashCode>
+      <HashCode>AAQQAQAAgGAAAAAAAAAAgAAQACQAAAAAAAAAgAFAAAA=</HashCode>
       <FileName>Assets\Scripts\HeroBehaviour.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -38,9 +38,10 @@
   <Class Name="BattleFieldManager">
     <Position X="3.75" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAGAAAAABEAAAAAAgAAAgAAAAEgAAAACBAAA=</HashCode>
+      <HashCode>AAQEACAAEGAAAEBAEABAAAAwBACkEAgAAABCAACBABA=</HashCode>
       <FileName>Assets\Scripts\BattleFieldManager.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="TurnCycle">
     <Position X="10" Y="3.5" Width="1.5" />
@@ -49,10 +50,10 @@
       <FileName>Assets\Scripts\TurnCycle.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Enum Name="State">
-    <Position X="8.75" Y="0.5" Width="1.5" />
+  <Enum Name="CellState">
+    <Position X="10.5" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAEAIAAAAAAAAAAACAAAAAAAAAAAEAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAEAIAAAAAAAAAAACAAAAAACAAAAEAAgAAAI=</HashCode>
       <FileName>Assets\Scripts\Cell.cs</FileName>
     </TypeIdentifier>
   </Enum>
