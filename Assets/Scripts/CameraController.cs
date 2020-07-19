@@ -5,7 +5,7 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     private float speed = 27.5f;
-    private float zoomSpeed = 50.5f;
+    private float zoomSpeed = 100.5f;
     private Camera mainCamera;
 
     // Start is called before the first frame update

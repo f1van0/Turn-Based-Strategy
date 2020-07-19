@@ -15,13 +15,19 @@ public enum CellState:int
 
 public class Cell : MonoBehaviour
 {
-    public Color emptyCellColor = Color.white;
-    public Color nearbyCellColor = Color.yellow;
-    public Color wallCellColor = Color.black;
-    public Color heroCellColor = Color.cyan;
-    public Color enemyCellColor = Color.red;
-    public Color friendCellColor = Color.green;
-    public Color attackCellColor = Color.magenta;
+    public Color emptyColor = Color.white;
+    public Color nearbyColor = Color.yellow;
+    public Color wallColor = Color.black;
+    public Color heroColor = Color.cyan;
+    public Color enemyColor = Color.red;
+    public Color friendColor = Color.green;
+    public Color attackColor = Color.magenta;
+
+    //Характеристики клетки
+    public string location = "Hill";
+    public int damagePerTurn = 1;
+    public int healthPerTurn = 1;
+    public int energyPerTurn = 0;
 
     private GameObject cell;
     private Vector2 pos = new Vector2(0, 0);
@@ -83,13 +89,13 @@ public class Cell : MonoBehaviour
         SpriteRenderer cellSprite = cell.GetComponent<SpriteRenderer>();
         switch ((int) state)
         {
-            case 0: { cellSprite.color = emptyCellColor; break; }
-            case 1: { cellSprite.color = nearbyCellColor; break; }
-            case 2: { cellSprite.color = wallCellColor; break; }
-            case 3: { cellSprite.color = heroCellColor; break; }
-            case 4: { cellSprite.color = enemyCellColor; break; }
-            case 5: { cellSprite.color = friendCellColor; break; }
-            default: { cellSprite.color = attackCellColor; break; }
+            case 0: { cellSprite.color = emptyColor; break; }
+            case 1: { cellSprite.color = nearbyColor; break; }
+            case 2: { cellSprite.color = wallColor; break; }
+            case 3: { cellSprite.color = heroColor; break; }
+            case 4: { cellSprite.color = enemyColor; break; }
+            case 5: { cellSprite.color = friendColor; break; }
+            default: { cellSprite.color = attackColor; break; }
         }
     }
 
@@ -99,13 +105,13 @@ public class Cell : MonoBehaviour
         state = _state;
         switch ((int) state)
         {
-            case 0: { cellSprite.color = emptyCellColor; break; }
-            case 1: { cellSprite.color = nearbyCellColor; break; }
-            case 2: { cellSprite.color = wallCellColor; break; }
-            case 3: { cellSprite.color = heroCellColor; break; }
-            case 4: { cellSprite.color = enemyCellColor; break; }
-            case 5: { cellSprite.color = friendCellColor; break; }
-            default: { cellSprite.color = attackCellColor; break; }
+            case 0: { cellSprite.color = emptyColor; break; }
+            case 1: { cellSprite.color = nearbyColor; break; }
+            case 2: { cellSprite.color = wallColor; break; }
+            case 3: { cellSprite.color = heroColor; break; }
+            case 4: { cellSprite.color = enemyColor; break; }
+            case 5: { cellSprite.color = friendColor; break; }
+            default: { cellSprite.color = attackColor; break; }
         }
     }
 

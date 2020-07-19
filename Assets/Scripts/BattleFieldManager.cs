@@ -31,6 +31,9 @@ public class BattleFieldManager : MonoBehaviour, IDisposable
         Initialization();
         inputController = FindObjectOfType<InputController>();
         inputController.SelectHero += OnSelectedHero;
+        inputController.SelectCell += OnSelectCell;
+        inputController.DefocusHero += HideAccesibleCells;
+        inputController.ChangeTurn += ChangeTurn;
     }
 
     // Update is called once per frame
@@ -79,6 +82,49 @@ public class BattleFieldManager : MonoBehaviour, IDisposable
         ShowAccesibleCellsByWave(_heroBehaviour);
     }
 
+    private void OnSelectCell(GameObject hit, HeroBehaviour selectedHero)
+    {
+        HeroBehaviour _heroBehaviour;
+        Cell _cell;
+
+        if (hit.TryGetComponent<HeroBehaviour>(out _heroBehaviour) && hit.GetComponent<HeroBehaviour>().GetHeroStats().GetCell().GetState() == CellState.attack)
+        {
+            selectedHero.SetTargetID(_heroBehaviour.GetHeroStats().ID);
+            selectedHero.GetHeroStats().SetEnergyCount(0);
+            //Повторяющийся код
+            HideAccesibleCells();
+            ShowHeroes(selectedHero);
+            HighlightCellWithSelectedHero(selectedHero);
+            ShowAccesibleCellsByWave(selectedHero);
+        }
+        else if (hit.TryGetComponent<Cell>(out _cell))
+        {
+            if (_cell.GetState() == CellState.nearby)
+            {
+                selectedHero.MoveToCell(_cell);
+                //Повторяющийся код
+                HideAccesibleCells();
+                ShowHeroes(selectedHero);
+                HighlightCellWithSelectedHero(selectedHero);
+                ShowAccesibleCellsByWave(selectedHero);
+            }
+            else if (_cell.GetState() == CellState.attack)
+            {
+                selectedHero.SetTargetID(_cell.GetHeroStats().ID);
+                selectedHero.GetHeroStats().SetEnergyCount(0);
+                //Повторяющийся код
+                HideAccesibleCells();
+                ShowHeroes(selectedHero);
+                HighlightCellWithSelectedHero(selectedHero);
+                ShowAccesibleCellsByWave(selectedHero);
+            }
+            else
+            {
+                HideAccesibleCells();
+            }
+        }
+    }
+
     public void RewriteField()
     {
         for (int i = 0; i < cols; i++)
@@ -111,7 +157,7 @@ public class BattleFieldManager : MonoBehaviour, IDisposable
         int start = CountOfAllNodes - CountOfCurrentNodes;
         int io = _heroStats.GetCell().GetIndex()[0];
         int jo = _heroStats.GetCell().GetIndex()[1];
-        int stepsCount = _heroStats.GetHeroStepsCount();
+        int stepsCount = _heroStats.GetHeroEnergy();
 
         Vector2[] currentNodes = new Vector2[1000];
         currentNodes[0] = new Vector2(io, jo);
@@ -238,24 +284,24 @@ public class BattleFieldManager : MonoBehaviour, IDisposable
             //Возвращаем игрокам их число доступных шагов, если они находятся в команде, которая производит ход
             if (heroBehaviours[i].isAlive())
             {
-                //Если герой жив, восстанавливаем ему шаги
-                heroBehaviours[i].GetHeroStats().RestoreStepsCount();
+                //Если герой жив, меняем его heroStats в соответствии с клеткой восстанавливаем ему шаги
+                heroBehaviours[i].SetHeroStatsAfterTurn();
+                heroBehaviours[i].GetHeroStats().RestoreEnergy();
             }
             else
             {
-                //Если герой мертв, следовательно, он не может ходить
-                heroBehaviours[i].GetHeroStats().SetStepsCount(0);
+                //Если герой мертв, то он не может ходить
+                heroBehaviours[i].GetHeroStats().SetEnergyCount(0);
             }
-            /*Код для переключения хода между командами
+            //Код для переключения хода между командами
             if (heroBehaviours[i].GetHeroStats().GetTeam() == _turn % teamCount)
             {
-                heroBehaviours[i].GetHeroStats().RestoreStepsCount();
+                heroBehaviours[i].GetHeroStats().RestoreEnergy();
             }
             else
             {
-                heroBehaviours[i].GetHeroStats().SetStepsCount(0);
+                heroBehaviours[i].GetHeroStats().SetEnergyCount(0);
             }
-            */
         }
         HideAccesibleCells();
         RewriteField();
@@ -264,6 +310,9 @@ public class BattleFieldManager : MonoBehaviour, IDisposable
     public void Dispose()
     {
         inputController.SelectHero -= OnSelectedHero;
+        inputController.SelectCell -= OnSelectCell;
+        inputController.DefocusHero -= HideAccesibleCells;
+        inputController.ChangeTurn -= ChangeTurn;
     }
 
     /*

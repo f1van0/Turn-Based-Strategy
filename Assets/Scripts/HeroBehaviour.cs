@@ -5,15 +5,15 @@ using UnityEngine.UI;
 
 public class HeroStats
 {
-    internal int hp { get; set; }
+    internal int health { get; set; }
     internal int mana { get; set; }
     internal int damage { get; set; }
-    internal int stepsCount { get; set; }
+    internal int energy { get; set; }
 
-    private int defaultHP = 100;
-    private int defaultMana = 120;
-    private int defaultDamage = 30;
-    private int defaultStepsCount = 2;
+    internal int defaultHealth = 100;
+    internal int defaultMana = 120;
+    internal int defaultDamage = 30;
+    internal int defaultEnergy = 2;
 
     internal int targetID { get; set; }
     internal int ID { get; set; }
@@ -27,11 +27,11 @@ public class HeroStats
 
     public HeroStats()
     {
-        hp = 100;
+        health = 100;
         mana = 120;
         damage = 30;
-        stepsCount = 2;
-        defaultStepsCount = 2;
+        energy = 2;
+        defaultEnergy = 2;
         team = 0;
         ID = 0;
         targetID = -1;
@@ -40,11 +40,11 @@ public class HeroStats
 
     public void Initialize(Cell cell, int teamNumber, int id)
     {
-        hp = 100;
+        health = 100;
         mana = 120;
         damage = 30;
-        stepsCount = 2;
-        defaultStepsCount = 2;
+        energy = 2;
+        defaultEnergy = 2;
         this._cell = cell; 
         team = teamNumber;
         ID = id;
@@ -64,20 +64,20 @@ public class HeroStats
     }
 
     //Узнать количество доступных шагов
-    public int GetHeroStepsCount()
+    public int GetHeroEnergy()
     {
-        return stepsCount;
+        return energy;
     }
 
     //Изменить количество доступных шагов
-    public void SetStepsCount(int stepsCount)
+    public void SetEnergyCount(int _energy)
     {
-        this.stepsCount = stepsCount;
+        this.energy = _energy;
     }
 
-    public void RestoreStepsCount()
+    public void RestoreEnergy()
     {
-        stepsCount = defaultStepsCount;
+        energy = defaultEnergy;
     }
 
     public int GetTeam()
@@ -100,8 +100,8 @@ public class HeroBehaviour : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        heroStats.hp -= damage;
-        hp_text.text = heroStats.hp+"HP";
+        heroStats.health -= damage;
+        hp_text.text = heroStats.health+"HP";
     }
 
     public void InitializeHero(Cell cell, int teamNumber, int id)
@@ -110,7 +110,7 @@ public class HeroBehaviour : MonoBehaviour
         hero = this.gameObject;
         hero_canvas = hero.GetComponentInChildren<Canvas>();
         hp_text = hero_canvas.GetComponentInChildren<Text>();
-        hp_text.text = heroStats.hp + "HP";
+        hp_text.text = heroStats.health + "HP";
         heroStats.Initialize(cell, teamNumber, id);
         cell.SetState(CellState.hero);
         cell.SetHeroStats(heroStats);
@@ -122,12 +122,23 @@ public class HeroBehaviour : MonoBehaviour
     {
         return heroStats;
     }
+
+    public void SetHeroStatsAfterTurn()
+    {
+        heroStats.defaultDamage += heroStats.GetCell().damagePerTurn;
+        heroStats.defaultHealth += heroStats.GetCell().healthPerTurn;
+        heroStats.defaultEnergy += heroStats.GetCell().energyPerTurn;
+
+        heroStats.damage += heroStats.GetCell().damagePerTurn;
+        heroStats.health += heroStats.GetCell().healthPerTurn;
+        heroStats.energy += heroStats.GetCell().energyPerTurn;
+    }
     
     public void MoveToCell(Cell _cell)
     {
         heroStats.GetCell().Show(CellState.empty);
         heroStats.GetCell().SetHeroStats(null);
-        heroStats.SetStepsCount(heroStats.GetHeroStepsCount() - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(heroStats.GetCell().GetIndex()[0]) - Mathf.Abs(_cell.GetIndex()[0]))) - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(heroStats.GetCell().GetIndex()[1]) - Mathf.Abs(_cell.GetIndex()[1]))));
+        heroStats.SetEnergyCount(heroStats.GetHeroEnergy() - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(heroStats.GetCell().GetIndex()[0]) - Mathf.Abs(_cell.GetIndex()[0]))) - Mathf.Abs(Mathf.RoundToInt(Mathf.Abs(heroStats.GetCell().GetIndex()[1]) - Mathf.Abs(_cell.GetIndex()[1]))));
         heroStats.SetCell(_cell);
         hero.transform.position = new Vector3(_cell.GetPosition().x, _cell.GetPosition().y, -1);
         heroStats.targetID = -1;
@@ -152,7 +163,7 @@ public class HeroBehaviour : MonoBehaviour
 
     public bool isAlive()
     {
-        return heroStats.hp > 0;
+        return heroStats.health > 0;
     }
 /*
     public void CreateHero(Cell cell)
