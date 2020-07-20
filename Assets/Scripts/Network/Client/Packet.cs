@@ -8,7 +8,9 @@ using UnityEngine;
 public enum ServerPackets
 {
     welcome = 1,
-    udpTest
+    udpTest,
+    playerPosition,
+    playerReadiness
 }
 
 /// <summary>Sent from client to server.</summary>
