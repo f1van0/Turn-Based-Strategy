@@ -8,14 +8,20 @@ namespace Turn_Base_Strategy_Server
     public enum ServerPackets
     {
         welcome = 1,
-        udpTest
+        udpTest,
+        playerPosition,
+        playerReadiness,
+        UPM
     }
 
     /// <summary>Sent from client to server.</summary>
     public enum ClientPackets
     {
         welcomeReceived = 1,
-        udpTestReceived
+        udpTestReceived,
+//        playerPositionReceived,
+//        playerReadinessReceived,
+        UPM_Reseived
     }
 
     //Universal Packet Manager Element, используется для того, чтобы различать одну информацию от другой. Может использоваться сервером и клиентом
@@ -187,6 +193,16 @@ namespace Turn_Base_Strategy_Server
         {
             buffer.AddRange(BitConverter.GetBytes(_value));
         }
+        /// <summary>Adds a bool array to the packet.</summary>
+        /// <param name="_values">The bool array to add.</param>
+        public void Write(bool[] _values)
+        {
+            Write(_values.Length);
+            for (int i = 0; i < _values.Length; i++)
+            {
+                Write(_values[i]);
+            }
+        }
         /// <summary>Adds a string to the packet.</summary>
         /// <param name="_value">The string to add.</param>
         public void Write(string _value)
@@ -343,6 +359,19 @@ namespace Turn_Base_Strategy_Server
             {
                 throw new Exception("Could not read value of type 'bool'!");
             }
+        }
+
+        /// <summary>Reads a bool from the packet.</summary>
+        /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
+        public bool[] ReadBoolArray(bool _moveReadPos = true)
+        {
+            int _length = ReadInt();
+            bool[] _values = new bool[_length];
+            for (int i = 0; i < _length; i++)
+            {
+                _values[i] = ReadBool();
+            }
+            return _values;
         }
 
         /// <summary>Reads a string from the packet.</summary>
