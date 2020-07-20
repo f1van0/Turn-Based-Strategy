@@ -126,7 +126,6 @@ namespace Turn_Base_Strategy_Server
                 //Значению сопоставляется 
                 { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
                 { (int)ClientPackets.udpTestReceived, ServerHandle.UDPTestReceived }
-                //{ (int)ClientPackets.UPM_Reseived, ServerHandle.UPM_ReceivedReconizer }
             };
             Debug.Log("[Server] Initialized packets.");
         }

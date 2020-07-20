@@ -73,16 +73,6 @@ namespace Turn_Base_Strategy_Server
                 SendTCPData(_toClient, _packet);
             }
         }
-
-        public static void Readiness(bool[] playersReadiness)
-        {
-            using (Packet _packet = new Packet((int)ServerPackets.playerReadiness))
-            {
-                _packet.Write(playersReadiness);
-
-                SendTCPDataToAll(_packet);
-            }
-        }
         //Send BattleFieldInfo, StageInfo, TurnInfo, HeroesInfo
 
         //отправляем с свервера тестовый пакет по UDP. Причем отправление происходит при соединении в методе Connect в client.cs. То есть как только соединение с клиентом установлено, отправляется этот пакет.
