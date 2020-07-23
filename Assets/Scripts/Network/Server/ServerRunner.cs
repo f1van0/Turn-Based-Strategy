@@ -7,9 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
+using Assets.Scripts.Network.Server;
 using UnityEngine;
-
-using Turn_Base_Strategy_Server;
 
 public class ServerRunner : MonoBehaviour
 {

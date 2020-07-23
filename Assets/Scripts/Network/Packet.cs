@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
-namespace Turn_Base_Strategy_Server
+namespace Assets.Scripts.Network.Server
 {
     /// <summary>Sent from server to client.</summary>
     public enum ServerPackets
     {
         welcome = 1,
         udpTest,
+        playerInfo,
+        playerNickname,
+        playerReady,
         playerPosition,
-        playerReadiness,
-        UPM
+        gameStage
+//        playerPosition,
+//        playerReadiness,
+//        UPM
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -19,11 +25,17 @@ namespace Turn_Base_Strategy_Server
     {
         welcomeReceived = 1,
         udpTestReceived,
-//        playerPositionReceived,
-//        playerReadinessReceived,
-        UPM_Reseived
+        playerInfoReceived,
+        playerNicknameReceived,
+        playerReadyReceived,
+        playerPositionReceived,
+        gameStageReceived
+        //        playerPositionReceived,
+        //        playerReadinessReceived,
+        //        UPM_Reseived
     }
 
+    /*
     //Universal Packet Manager Element, используется для того, чтобы различать одну информацию от другой. Может использоваться сервером и клиентом
     public enum UPM_Element
     {
@@ -58,7 +70,7 @@ namespace Turn_Base_Strategy_Server
         playerNickName // string Хотя для того, чтобы получить playerNickname у игрока сначала необходимо знать, какой это игрок по счету (Как в пакете Welcome)
     }
     //Нужно сделать пакет который бы занимался спавном battlefield, чтобы он просто по порядку все клетки расшарил игроку, а тот просто переписао их на свой лад
-
+    */
     public class Packet : IDisposable
     {
         private List<byte> buffer;
@@ -175,6 +187,12 @@ namespace Turn_Base_Strategy_Server
         {
             buffer.AddRange(BitConverter.GetBytes(_value));
         }
+
+        public void Write(Vector2 _value)
+        {
+            Write(_value.x);
+            Write(_value.y);
+        }
         /// <summary>Adds a long to the packet.</summary>
         /// <param name="_value">The long to add.</param>
         public void Write(long _value)
@@ -193,6 +211,7 @@ namespace Turn_Base_Strategy_Server
         {
             buffer.AddRange(BitConverter.GetBytes(_value));
         }
+        /* **New**
         /// <summary>Adds a bool array to the packet.</summary>
         /// <param name="_values">The bool array to add.</param>
         public void Write(bool[] _values)
@@ -205,6 +224,7 @@ namespace Turn_Base_Strategy_Server
         }
         /// <summary>Adds a string to the packet.</summary>
         /// <param name="_value">The string to add.</param>
+        */
         public void Write(string _value)
         {
             Write(_value.Length); // Add the length of the string to the packet
@@ -298,6 +318,11 @@ namespace Turn_Base_Strategy_Server
             }
         }
 
+        public Vector2 ReadVector2(bool _moveReadPos = true)
+        {
+            return new Vector2(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+        }
+
         /// <summary>Reads a long from the packet.</summary>
         /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
         public long ReadLong(bool _moveReadPos = true)
@@ -360,7 +385,7 @@ namespace Turn_Base_Strategy_Server
                 throw new Exception("Could not read value of type 'bool'!");
             }
         }
-
+        /* **New**
         /// <summary>Reads a bool from the packet.</summary>
         /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
         public bool[] ReadBoolArray(bool _moveReadPos = true)
@@ -373,7 +398,7 @@ namespace Turn_Base_Strategy_Server
             }
             return _values;
         }
-
+        */
         /// <summary>Reads a string from the packet.</summary>
         /// <param name="_moveReadPos">Whether or not to move the buffer's read position.</param>
         public string ReadString(bool _moveReadPos = true)

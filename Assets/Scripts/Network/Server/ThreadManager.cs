@@ -7,7 +7,7 @@ using UnityEngine;
 
 //Убрали Update, так как он юнитеский, там был вызов метода UpdateMain()
 
-namespace Turn_Base_Strategy_Server
+namespace Assets.Scripts.Network.Server
 {
     class ThreadManager
     {

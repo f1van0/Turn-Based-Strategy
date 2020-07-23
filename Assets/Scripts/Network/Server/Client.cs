@@ -5,13 +5,14 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-namespace Turn_Base_Strategy_Server
+namespace Assets.Scripts.Network.Server
 {
     class Client
     {
         public static int dataBufferSize = 4096;
 
         public int id;
+        public Player player;
         public TCP tcp;
         public UDP udp;
 
@@ -175,5 +176,27 @@ namespace Turn_Base_Strategy_Server
                 });
             }
         }
+
+        public void InitializePlayerInGameFromServer(string _playerNickName, Vector2 _position, bool _isReady)
+        {
+            //Отправляем клиенту информацию о подключенных игроках
+            foreach (Client _client in Server.clients.Values)
+            {
+                if (_client.player != null)
+                {
+                    if (_client.id != id)
+                    {
+                        ServerSend.SendPlayerInfo(id, _client.player);
+                    }
+                }
+            }
+
+            //Создаем нового игрока
+            player = new Player(id, _playerNickName, _position, _isReady);
+
+            //Отправляем информацию о нем всем, включая его самого
+            ServerSend.SendPlayerInfoToAllExistingPlayers(player);
+        }
+
     }
 }

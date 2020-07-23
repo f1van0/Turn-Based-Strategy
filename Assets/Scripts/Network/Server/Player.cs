@@ -7,10 +7,19 @@ using UnityEngine;
 
 namespace Assets.Scripts.Network.Server
 {
-    class Player
+    public class Player
     {
-        public string _username;
+        public Player(int _id, string _username, Vector2 _position, bool _isReady)
+        {
+            id = _id;
+            nickname = _username;
+            position = _position;
+            isReady = _isReady;
+        }
+
+        public int id;
+        public string nickname;
         public Vector2 position;
-        public bool readiness;
+        public bool isReady;
     }
 }

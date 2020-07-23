@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Turn_Base_Strategy_Server
+namespace Assets.Scripts.Network.Server
 {
     class Constants
     {

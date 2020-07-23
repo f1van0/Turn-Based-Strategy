@@ -3,8 +3,18 @@ using System.Collections.Generic;
 using System.Net;
 using UnityEngine;
 
+//Все пакеты и методы для них
+using Assets.Scripts.Network.Server;
+
 public class ClientHandle : MonoBehaviour
 {
+    private LobbyManager lobbyManager;
+
+    private void Start()
+    {
+        lobbyManager = FindObjectOfType<LobbyManager>();
+    }
+
     public static void Welcome(Packet _packet)
     {
         string _message = _packet.ReadString();
@@ -12,6 +22,8 @@ public class ClientHandle : MonoBehaviour
 
         Debug.Log($"Message from server: {_message}");
         Client.instance.myId = _myId;
+        LobbyManager.instance.myId = _myId;
+        //Ответ серверу
         ClientSend.WelcomeReceived();
 
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
@@ -23,5 +35,46 @@ public class ClientHandle : MonoBehaviour
 
         Debug.Log($"Received packet via UDP. Containsmessage: {_msg}");
         ClientSend.UDPTestReceived();
+    }
+
+    public static void GetPlayerInfo(Packet _packet)
+    {
+        int _id = _packet.ReadInt();
+        string _username = _packet.ReadString();
+        Vector2 _position = _packet.ReadVector2();
+        bool _isReady = _packet.ReadBool();
+
+        if (_id > LobbyManager.instance.i)
+        {
+            LobbyManager.instance.AddNewPlayer(_id, _username, _position, _isReady);
+        }
+        else
+        {
+            LobbyManager.instance.SetPlayerInfo(_id, _username, _position, _isReady);
+        }
+    }
+
+    public static void GetPlayerNickname(Packet _packet)
+    {
+        int Id = _packet.ReadInt();
+        string _nickname = _packet.ReadString();
+
+        LobbyManager.instance.playersInfo[Id - 1].ChangeNickName(_nickname);
+    }
+
+    public static void GetPlayerReadiness(Packet _packet)
+    {
+        int Id = _packet.ReadInt();
+        bool _isReady = _packet.ReadBool();
+
+        LobbyManager.instance.playersInfo[Id - 1].ChangeReadiness(_isReady);
+    }
+
+    public static void GetPlayerPosition(Packet _packet)
+    {
+        int Id = _packet.ReadInt();
+        Vector2 _position = _packet.ReadVector2();
+
+        LobbyManager.instance.playersInfo[Id - 1].ChangePosition(_position);
     }
 }

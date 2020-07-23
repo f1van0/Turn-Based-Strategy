@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
-namespace Turn_Base_Strategy_Server
+namespace Assets.Scripts.Network.Server
 {
     class ServerSend
     {
@@ -24,16 +25,15 @@ namespace Turn_Base_Strategy_Server
         private static void SendTCPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 0; i < Server.MaxPlayers; i++)
+            for (int i = 1; i <= Server.MaxPlayers; i++)
             {
                 Server.clients[i].tcp.SendData(_packet);
             }
         }
-
         private static void SendTCPDataToAll(int _exceptClient, Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 0; i < Server.MaxPlayers; i++)
+            for (int i = 1; i <= Server.MaxPlayers; i++)
             {
                 if (i != _exceptClient)
                 {
@@ -45,21 +45,30 @@ namespace Turn_Base_Strategy_Server
         private static void SendUDPDataToAll(Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 0; i < Server.MaxPlayers; i++)
+            for (int i = 1; i <= Server.MaxPlayers; i++)
             {
                 Server.clients[i].udp.SendData(_packet);
             }
         }
-
         private static void SendUDPDataToAll(int _exceptClient, Packet _packet)
         {
             _packet.WriteLength();
-            for (int i = 0; i < Server.MaxPlayers; i++)
+            for (int i = 1; i <= Server.MaxPlayers; i++)
             {
                 if (i != _exceptClient)
                 {
                     Server.clients[i].udp.SendData(_packet);
                 }
+            }
+        }
+
+        private static void SendTCPDataToAllExistingPlayers(Packet _packet)
+        {
+            _packet.WriteLength();
+            for (int i = 1; i <= Server.MaxPlayers; i++)
+            {
+                if (Server.clients[i].player != null)
+                    Server.clients[i].tcp.SendData(_packet);
             }
         }
 
@@ -74,18 +83,65 @@ namespace Turn_Base_Strategy_Server
             }
         }
 
-        public static void Readiness(bool[] playersReadiness)
+        public static void SendPlayerInfoToAllExistingPlayers(Player _player)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.playerReadiness))
+            using (Packet _packet = new Packet((int)ServerPackets.playerInfo))
             {
-                _packet.Write(playersReadiness);
+                _packet.Write(_player.id);
+                _packet.Write(_player.nickname);
+                _packet.Write(_player.position);
+                _packet.Write(_player.isReady);
 
-                SendTCPDataToAll(_packet);
+                SendTCPDataToAllExistingPlayers(_packet);
             }
         }
-        //Send BattleFieldInfo, StageInfo, TurnInfo, HeroesInfo
 
-        //отправляем с свервера тестовый пакет по UDP. Причем отправление происходит при соединении в методе Connect в client.cs. То есть как только соединение с клиентом установлено, отправляется этот пакет.
+        public static void SendPlayerInfo(int _toClient, Player _player)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.playerInfo))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_player.nickname);
+                _packet.Write(_player.position);
+                _packet.Write(_player.isReady);
+
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
+        public static void SendPlayerNicknameToAllExistingPlayers(Player _player)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.playerNickname))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_player.nickname);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendPlayerReadinessToAllExistingPlayers(Player _player)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.playerReady))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_player.isReady);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendPlayerPositionToAllExistingPlayers(Player _player)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_player.position);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
         public static void UDPTest(int _toClient)
         {
             //Формируем и отправляем пакет, создавая новый с ServerPackets, который соответствует типу пакета, в нашем случае udpTest

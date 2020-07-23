@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Turn_Base_Strategy_Server
+namespace Assets.Scripts.Network.Server
 {
     class ServerHandle
     {
-        
+
 
         public static void WelcomeReceived(int _fromClient, Packet _packet)
         {
@@ -18,11 +18,14 @@ namespace Turn_Base_Strategy_Server
             string _username = _packet.ReadString();
 
             Debug.Log($"[Server] {Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}, his nickname is {_username}.");
+
             if (_fromClient != _clientIdCheck)
             {
-                Debug.Log($"[Server] Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck}) (Из ServerHandle.cs)");
+                Debug.Log($"[Server] Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck}) (from ServerHandle.cs, WelcomeRecevied)");
             }
-            //TODO: Send player into game
+
+            //Сообщаем всем игрокам о его появлении.
+            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, new Vector2(-1f, -1f), false);
         }
 
         public static void UDPTestReceived(int _fromClient, Packet _packet)
@@ -32,25 +35,44 @@ namespace Turn_Base_Strategy_Server
             Debug.Log($"[Server] Received packet via UDP. Contains message: {_msg}");
         }
 
-        public static void UPM_ReceivedReconizer(int _fromClient, Packet _packet)
+        //Принимаем информацию
+        public static void GetPlayerInfo(int _fromClient, Packet _packet)
         {
-            int id = _packet.ReadInt();
-            //Идем в свиче по существующим стейтам подбираем, читаем выполняем опред логику с этим
-            switch (id)
-            {
-                case (int)UPM.cellState:
-                    {
-                        int cellState = _packet.ReadInt();
-                        //Какая-нибудь функция
-                        break;
-                    }
-                //...
-                default:
-                    {
-                        //Что-нибудь, например функция
-                        break;
-                    }
-            }
+            int _clientIdCheck = _packet.ReadInt();
+            string _username = _packet.ReadString();
+            Vector2 _position = _packet.ReadVector2();
+            bool _isReady = _packet.ReadBool();
+
+            Server.clients[_fromClient].player = new Player(_fromClient, _username, _position, _isReady);
+            //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
+            ServerSend.SendPlayerInfoToAllExistingPlayers(Server.clients[_fromClient].player);
+        }
+
+        public static void GetPlayerReadiness(int _fromClient, Packet _packet)
+        {
+            bool _isReady = _packet.ReadBool();
+
+            Server.clients[_fromClient].player.isReady = _isReady;
+            //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
+            ServerSend.SendPlayerReadinessToAllExistingPlayers(Server.clients[_fromClient].player);
+        }
+
+        public static void GetPlayerNickname(int _fromClient, Packet _packet)
+        {
+            string _nickname = _packet.ReadString();
+
+            Server.clients[_fromClient].player.nickname = _nickname;
+            //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
+            ServerSend.SendPlayerNicknameToAllExistingPlayers(Server.clients[_fromClient].player);
+        }
+
+        public static void GetPlayerPosition(int _fromClient, Packet _packet)
+        {
+            Vector2 _position = _packet.ReadVector2();
+
+            Server.clients[_fromClient].player.position = _position;
+            //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
+            ServerSend.SendPlayerPositionToAllExistingPlayers(Server.clients[_fromClient].player);
         }
     }
 }

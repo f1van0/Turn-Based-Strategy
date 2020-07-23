@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 
-namespace Turn_Base_Strategy_Server
+namespace Assets.Scripts.Network.Server
 {
     class Server
     {
@@ -125,8 +125,15 @@ namespace Turn_Base_Strategy_Server
                 //[(int)ClientPackets.welcomeReceived]=ServerHandle.WelcomeReceived
                 //Значению сопоставляется 
                 { (int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived },
-                { (int)ClientPackets.udpTestReceived, ServerHandle.UDPTestReceived }
-                //{ (int)ClientPackets.UPM_Reseived, ServerHandle.UPM_ReceivedReconizer }
+                { (int)ClientPackets.udpTestReceived, ServerHandle.UDPTestReceived },
+                { (int)ClientPackets.playerInfoReceived, ServerHandle.GetPlayerInfo },
+                { (int)ClientPackets.playerNicknameReceived, ServerHandle.GetPlayerNickname },
+                { (int)ClientPackets.playerReadyReceived, ServerHandle.GetPlayerReadiness },
+                { (int)ClientPackets.playerPositionReceived, ServerHandle.GetPlayerPosition }
+                //{ (int)ClientPackets.gameStageReceived, ServerHandle },
+                /* NEW UPM
+                { (int)ClientPackets.UPM_Reseived, ServerHandle.UPM_ReceivedReconizer }
+                */
             };
             Debug.Log("[Server] Initialized packets.");
         }

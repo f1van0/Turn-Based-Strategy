@@ -5,6 +5,9 @@ using System.Net;
 using System.Net.Sockets;
 using System;
 
+//Все пакеты и методы для них
+using Assets.Scripts.Network.Server;
+
 public class Client : MonoBehaviour
 {
     public static Client instance;
@@ -253,7 +256,11 @@ public class Client : MonoBehaviour
         packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 { (int)ServerPackets.welcome, ClientHandle.Welcome },
-                { (int)ServerPackets.udpTest, ClientHandle.UDPTest }
+                { (int)ServerPackets.udpTest, ClientHandle.UDPTest },
+                { (int)ServerPackets.playerInfo, ClientHandle.GetPlayerInfo },
+                { (int)ServerPackets.playerNickname, ClientHandle.GetPlayerNickname },
+                { (int)ServerPackets.playerReady, ClientHandle.GetPlayerReadiness },
+                { (int)ServerPackets.playerPosition, ClientHandle.GetPlayerPosition },
             };
         Debug.Log("Initialized packets.");
     }
