@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour
 {
-    public Text NickName;
+    public Text NickNameText;
+    public string Nickname;
     public Image Readible;
     public static PlayerInfo instance;
     public Vector2 position;
@@ -15,7 +16,8 @@ public class PlayerInfo : MonoBehaviour
         if (instance == null)
         {
             instance = this;
-            NickName.text = "UserName";
+            //NickNameText = GetComponentInChildren<Text>();
+            //NickNameText.text = "UserName";
         }
         else if (instance != this)
         {
@@ -26,7 +28,8 @@ public class PlayerInfo : MonoBehaviour
 
     public void ChangeNickName(string _username)
     {
-        GetComponentInChildren<Text>().text = _username;
+        Nickname = _username;
+        GetComponentInChildren<Text>().text = Nickname;
     }
 
     public void ChangeReadiness(bool _isReady)

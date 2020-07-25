@@ -25,7 +25,7 @@ namespace Assets.Scripts.Network.Server
             }
 
             //Сообщаем всем игрокам о его появлении.
-            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, new Vector2(-1f, -1f), false);
+            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, (int)Team.Spectators, new Vector2(0f, 0f), false);
         }
 
         public static void UDPTestReceived(int _fromClient, Packet _packet)
@@ -40,19 +40,18 @@ namespace Assets.Scripts.Network.Server
         {
             int _clientIdCheck = _packet.ReadInt();
             string _username = _packet.ReadString();
+            int _team = _packet.ReadInt();
             Vector2 _position = _packet.ReadVector2();
             bool _isReady = _packet.ReadBool();
 
-            Server.clients[_fromClient].player = new Player(_fromClient, _username, _position, _isReady);
+            Server.clients[_fromClient].player = new Player(_fromClient, _username, _team, _position, _isReady);
             //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
             ServerSend.SendPlayerInfoToAllExistingPlayers(Server.clients[_fromClient].player);
         }
 
-        public static void GetPlayerReadiness(int _fromClient, Packet _packet)
+        public static void GetPlayerReady(int _fromClient, Packet _packet)
         {
-            bool _isReady = _packet.ReadBool();
-
-            Server.clients[_fromClient].player.isReady = _isReady;
+            Server.clients[_fromClient].player.isReady = !Server.clients[_fromClient].player.isReady;
             //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
             ServerSend.SendPlayerReadinessToAllExistingPlayers(Server.clients[_fromClient].player);
         }
@@ -66,6 +65,15 @@ namespace Assets.Scripts.Network.Server
             ServerSend.SendPlayerNicknameToAllExistingPlayers(Server.clients[_fromClient].player);
         }
 
+        public static void GetPlayerTeam(int _fromClient, Packet _packet)
+        {
+            int _team = _packet.ReadInt();
+
+            Server.clients[_fromClient].player.team = _team;
+            //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
+            ServerSend.SendPlayerTeamToAllExistingPlayers(Server.clients[_fromClient].player);
+        }
+
         public static void GetPlayerPosition(int _fromClient, Packet _packet)
         {
             Vector2 _position = _packet.ReadVector2();
@@ -73,6 +81,13 @@ namespace Assets.Scripts.Network.Server
             Server.clients[_fromClient].player.position = _position;
             //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
             ServerSend.SendPlayerPositionToAllExistingPlayers(Server.clients[_fromClient].player);
+        }
+
+        public static void GetChatMessage(int _fromClient, Packet _packet)
+        {
+            string _message = _packet.ReadString();
+
+            ServerSend.SendChatMessageToAllExistingPlayers(Server.clients[_fromClient].player, _message);
         }
     }
 }

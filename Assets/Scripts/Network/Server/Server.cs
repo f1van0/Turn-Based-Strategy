@@ -128,8 +128,9 @@ namespace Assets.Scripts.Network.Server
                 { (int)ClientPackets.udpTestReceived, ServerHandle.UDPTestReceived },
                 { (int)ClientPackets.playerInfoReceived, ServerHandle.GetPlayerInfo },
                 { (int)ClientPackets.playerNicknameReceived, ServerHandle.GetPlayerNickname },
-                { (int)ClientPackets.playerReadyReceived, ServerHandle.GetPlayerReadiness },
-                { (int)ClientPackets.playerPositionReceived, ServerHandle.GetPlayerPosition }
+                { (int)ClientPackets.playerReadinessReceived, ServerHandle.GetPlayerReady },
+                { (int)ClientPackets.playerTeamReceived, ServerHandle.GetPlayerTeam },
+                { (int)ClientPackets.chatMessageReceived, ServerHandle.GetChatMessage }
                 //{ (int)ClientPackets.gameStageReceived, ServerHandle },
                 /* NEW UPM
                 { (int)ClientPackets.UPM_Reseived, ServerHandle.UPM_ReceivedReconizer }

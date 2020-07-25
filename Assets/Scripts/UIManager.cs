@@ -10,6 +10,10 @@ public class UIManager : MonoBehaviour
 
     public GameObject serverPrefab;
 
+    public GameObject ConnectionMenu;
+    public GameObject LobbyMenu;
+    public GameObject GameUI;
+
     private void Awake()
     {
         if (instance == null)
@@ -23,9 +27,48 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void OpenConnectionMenu()
+    {
+        ConnectionMenu.SetActive(true);
+        LobbyMenu.SetActive(false);
+        GameUI.SetActive(false);
+    }
+
+    public void OpenLobbyMenu()
+    {
+        ConnectionMenu.SetActive(false);
+        LobbyMenu.SetActive(true);
+        GameUI.SetActive(false);
+    }
+
+    public void OpenGameUI()
+    {
+        ConnectionMenu.SetActive(false);
+        LobbyMenu.SetActive(false);
+        GameUI.SetActive(true);
+    }
+
+    public void ConnectToServer()
+    {
+        if (PlayerNickNameField.text != "")
+        {
+            OpenLobbyMenu();
+            Client.instance.ConnectToServer();
+        }
+        else
+            PlayerNickNameField.GetComponent<Image>().color = Color.red;
+    }
+
     public void RunServer()
     {
-        Instantiate(serverPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
+        if (PlayerNickNameField.text != "")
+        {
+            OpenLobbyMenu();
+            ConnectToServer();
+            Instantiate(serverPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
+        }
+        else
+            PlayerNickNameField.GetComponent<Image>().color = Color.red;
     }
 
     public string GetUserName()
@@ -36,7 +79,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        OpenConnectionMenu();
     }
 
     // Update is called once per frame

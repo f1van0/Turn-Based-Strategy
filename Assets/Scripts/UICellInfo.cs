@@ -14,12 +14,6 @@ public class UICellInfo : MonoBehaviour
     public Text health_text;
     public Text state_text;
 
-
-    public void ConnectToServerButton()
-    {
-        Client.instance.ConnectToServer();
-    }
-
     public void CloseInfoWindow()
     {
         this.gameObject.SetActive(false);

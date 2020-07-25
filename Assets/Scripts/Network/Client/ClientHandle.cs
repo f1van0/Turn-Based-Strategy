@@ -22,7 +22,7 @@ public class ClientHandle : MonoBehaviour
 
         Debug.Log($"Message from server: {_message}");
         Client.instance.myId = _myId;
-        LobbyManager.instance.myId = _myId;
+        GameManager.instance.GetClientId(_myId);
         //Ответ серверу
         ClientSend.WelcomeReceived();
 
@@ -42,39 +42,61 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
         Vector2 _position = _packet.ReadVector2();
+        int _team = _packet.ReadInt();
         bool _isReady = _packet.ReadBool();
 
-        if (_id > LobbyManager.instance.i)
+        if (_id > GameManager.instance.playersCount)
         {
-            LobbyManager.instance.AddNewPlayer(_id, _username, _position, _isReady);
+            GameManager.instance.AddNewPlayerInLobby(_id, _username, _team, _isReady);
         }
         else
         {
-            LobbyManager.instance.SetPlayerInfo(_id, _username, _position, _isReady);
+            GameManager.instance.UpdateExsistingPlayerInLobby(_id, _username, _team, _isReady);
         }
     }
 
     public static void GetPlayerNickname(Packet _packet)
     {
-        int Id = _packet.ReadInt();
+        int _id = _packet.ReadInt();
         string _nickname = _packet.ReadString();
 
-        LobbyManager.instance.playersInfo[Id - 1].ChangeNickName(_nickname);
+        GameManager.instance.GetPlayerUsername(_id, _nickname);
     }
 
     public static void GetPlayerReadiness(Packet _packet)
     {
-        int Id = _packet.ReadInt();
+        int _id = _packet.ReadInt();
         bool _isReady = _packet.ReadBool();
 
-        LobbyManager.instance.playersInfo[Id - 1].ChangeReadiness(_isReady);
+        GameManager.instance.GetPlayerReady(_id, _isReady);
+        if (_id == Client.instance.myId)
+        {
+            GameManager.instance.SetlocalPlayerReady();
+        }
+    }
+
+    public static void GetPlayerTeam(Packet _packet)
+    {
+        int _id = _packet.ReadInt();
+        int _team = _packet.ReadInt();
+
+        GameManager.instance.GetPlayerTeam(_id, _team);
     }
 
     public static void GetPlayerPosition(Packet _packet)
     {
-        int Id = _packet.ReadInt();
+        int _id = _packet.ReadInt();
         Vector2 _position = _packet.ReadVector2();
 
-        LobbyManager.instance.playersInfo[Id - 1].ChangePosition(_position);
+        GameManager.instance.SetPlayerPosition(_id, _position);
+    }
+
+    public static void GetChatMessage(Packet _packet)
+    {
+        int _id = _packet.ReadInt();
+        string _nickname = _packet.ReadString();
+        string _message = _packet.ReadString();
+
+        Chat.instance.AddNewMessage(_id, _nickname, _message);
     }
 }

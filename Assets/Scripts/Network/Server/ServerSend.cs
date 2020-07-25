@@ -72,6 +72,16 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
+        private static void SendUDPDataToAllExistingPlayers(Packet _packet)
+        {
+            _packet.WriteLength();
+            for (int i = 1; i <= Server.MaxPlayers; i++)
+            {
+                if (Server.clients[i].player != null)
+                    Server.clients[i].udp.SendData(_packet);
+            }
+        }
+
         public static void Welcome(int _toClient, string _message)
         {
             using (Packet _packet = new Packet((int)ServerPackets.welcome))
@@ -102,6 +112,7 @@ namespace Assets.Scripts.Network.Server
             {
                 _packet.Write(_player.id);
                 _packet.Write(_player.nickname);
+                _packet.Write(_player.team);
                 _packet.Write(_player.position);
                 _packet.Write(_player.isReady);
 
@@ -131,14 +142,36 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
+        public static void SendPlayerTeamToAllExistingPlayers(Player _player)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.playerTeam))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_player.team);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
         public static void SendPlayerPositionToAllExistingPlayers(Player _player)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
+            using (Packet _packet = new Packet((int)ServerPackets.playerTeam))
             {
                 _packet.Write(_player.id);
                 _packet.Write(_player.position);
 
                 SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendChatMessageToAllExistingPlayers(Player _player, string _message)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.chatMessage))
+            {
+                _packet.Write(_player.id);
+                _packet.Write(_message);
+
+                SendUDPDataToAllExistingPlayers(_packet);
             }
         }
 

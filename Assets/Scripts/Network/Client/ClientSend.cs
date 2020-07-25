@@ -40,46 +40,66 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void SendPlayerInfo()
+    public static void SendPlayerInfo(string _username, int _team, Vector2 _position, bool _isReady)
     {
         using (Packet _packet = new Packet((int)ClientPackets.playerInfoReceived))
         {
             _packet.Write(Client.instance.myId);
-            _packet.Write(UIManager.instance.GetUserName());
-            _packet.Write(LobbyManager.instance.position);
-            _packet.Write(LobbyManager.instance.isLocalPlayerReady);
+            _packet.Write(_username);
+            _packet.Write(_team);
+            _packet.Write(_position);
+            _packet.Write(_isReady);
 
             SendTCPData(_packet);
         }
     }
 
-    public static void SendPlayerNickname()
+    public static void SendPlayerUsername(string _username)
     {
         using (Packet _packet = new Packet((int)ClientPackets.playerNicknameReceived))
         {
-            _packet.Write(UIManager.instance.GetUserName());
+            _packet.Write(_username);
 
             SendTCPData(_packet);
         }
     }
 
-    public static void SendPlayerReadiness()
+    public static void SendPlayerReady()
     {
-        using (Packet _packet = new Packet((int)ClientPackets.playerReadyReceived))
+        using (Packet _packet = new Packet((int)ClientPackets.playerReadinessReceived))
         {
-            _packet.Write(LobbyManager.instance.isLocalPlayerReady);
+            SendTCPData(_packet);
+        }
+    }
+
+    public static void SendPlayerTeam(int _team)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.playerTeamReceived))
+        {
+            _packet.Write(_team);
 
             SendTCPData(_packet);
         }
     }
 
-    public static void SendPlayerPosition()
+    public static void SendPlayerPosition(Vector2 _position)
     {
         using (Packet _packet = new Packet((int)ClientPackets.playerPositionReceived))
         {
-            _packet.Write(LobbyManager.instance.position);
+            _packet.Write(_position);
 
             SendTCPData(_packet);
         }
     }
+
+    public static void SendChatMessage(string _message)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.chatMessageReceived))
+        {
+            _packet.Write(_message);
+
+            SendUDPData(_packet);
+        }
+    }
+
 }

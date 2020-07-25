@@ -14,6 +14,9 @@ namespace Assets.Scripts.Network.Server
         playerNickname,
         playerReady,
         playerPosition,
+        playerTeam,
+        chatMessage,
+        turnsCount,
         gameStage
 //        playerPosition,
 //        playerReadiness,
@@ -27,8 +30,11 @@ namespace Assets.Scripts.Network.Server
         udpTestReceived,
         playerInfoReceived,
         playerNicknameReceived,
-        playerReadyReceived,
+        playerReadinessReceived,
         playerPositionReceived,
+        playerTeamReceived,
+        chatMessageReceived,
+        turnsCountReceived,
         gameStageReceived
         //        playerPositionReceived,
         //        playerReadinessReceived,

@@ -8,7 +8,7 @@ namespace Assets.Scripts.Network.Server
 {
     class Constants
     {
-        public const int ticks_per_sec = 30;
+        public const int ticks_per_sec = 12;
         public const int ms_per_tick = 1000 / ticks_per_sec;
     }
 }

@@ -55,18 +55,19 @@ public class ServerRunner : MonoBehaviour
         Debug.Log($"[Server] Main thread started. Running at {Constants.ms_per_tick} ticks per second.");
 
         Server.Start(4, 26950);
+        //StartCoroutine(ServerLoop(1000 / 12));
     }
-
     // Update is called once per frame
     void Update()
     {
         DateTime _nextLoop = DateTime.Now;
-
         if (isServerRunning)
         {
+            GameLogic.Update();
+
             while (_nextLoop < DateTime.Now)
             {
-                GameLogic.Update();
+                //GameLogic.Update();
 
                 _nextLoop = _nextLoop.AddMilliseconds(Constants.ms_per_tick);
 

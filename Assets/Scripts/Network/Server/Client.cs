@@ -75,7 +75,7 @@ namespace Assets.Scripts.Network.Server
                     int _byteLength = stream.EndRead(_result);
                     if (_byteLength <= 0)
                     {
-                        // TODO: disconnect
+                        Server.clients[id].Disconnect();
                         return;
                     }
 
@@ -88,7 +88,7 @@ namespace Assets.Scripts.Network.Server
                 catch (Exception _ex)
                 {
                     Debug.Log($"[Server] Error receiving TCP data: {_ex}");
-                    // TODO: disconnect
+                    Server.clients[id].Disconnect();
                 }
             }
 
@@ -137,6 +137,15 @@ namespace Assets.Scripts.Network.Server
 
                 return false;
             }
+
+            public void Disconnect()
+            {
+                socket.Close();
+                stream = null;
+                receivedData = null;
+                receiveBuffer = null;
+                socket = null;
+            }
         }
 
         public class UDP
@@ -175,9 +184,14 @@ namespace Assets.Scripts.Network.Server
                     }
                 });
             }
+
+            public void Disconnect()
+            {
+                endPoint = null;
+            }
         }
 
-        public void InitializePlayerInGameFromServer(string _playerNickName, Vector2 _position, bool _isReady)
+        public void InitializePlayerInGameFromServer(string _playerNickName, int _team, Vector2 _position, bool _isReady)
         {
             //Отправляем клиенту информацию о подключенных игроках
             foreach (Client _client in Server.clients.Values)
@@ -192,11 +206,20 @@ namespace Assets.Scripts.Network.Server
             }
 
             //Создаем нового игрока
-            player = new Player(id, _playerNickName, _position, _isReady);
+            player = new Player(id, _playerNickName, _team, _position, _isReady);
 
             //Отправляем информацию о нем всем, включая его самого
             ServerSend.SendPlayerInfoToAllExistingPlayers(player);
         }
 
+        private void Disconnect()
+        {
+            Debug.Log($"<color=green>{tcp.socket.Client.RemoteEndPoint} has disconnected.</color>");
+            //TODO: дисконнект по нажатию кнопки и убирание игрока из игры
+            player = null;
+
+            tcp.Disconnect();
+            udp.Disconnect();
+        }
     }
 }
