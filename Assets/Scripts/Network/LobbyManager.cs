@@ -76,7 +76,7 @@ public class LobbyManager : MonoBehaviour
         buttonJoinSpectators.enabled = false;
         buttonJoinTeam1.enabled = true;
         buttonJoinTeam2.enabled = true;
-        GameManager.instance.SetLocalPlayerTeam(0);
+        GameManager.SetLocalPlayerTeam(0);
     }
 
     public void JoinTeam1()
@@ -84,7 +84,7 @@ public class LobbyManager : MonoBehaviour
         buttonJoinSpectators.enabled = true;
         buttonJoinTeam1.enabled = false;
         buttonJoinTeam2.enabled = true;
-        GameManager.instance.SetLocalPlayerTeam(1);
+        GameManager.SetLocalPlayerTeam(1);
     }
 
     public void JoinTeam2()
@@ -92,12 +92,12 @@ public class LobbyManager : MonoBehaviour
         buttonJoinSpectators.enabled = true;
         buttonJoinTeam1.enabled = true;
         buttonJoinTeam2.enabled = false;
-        GameManager.instance.SetLocalPlayerTeam(2);
+        GameManager.SetLocalPlayerTeam(2);
     }
 
     public void SetReadiness_ForLocalPlayer()
     {
-        GameManager.instance.SetlocalPlayerReady();
+        GameManager.SetlocalPlayerReady();
     }
 
     public void SetReadiness_ButtonState_ForLocalPlayer(bool _isReady)
