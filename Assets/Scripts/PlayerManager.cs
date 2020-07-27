@@ -13,26 +13,21 @@ public class PlayerManager : MonoBehaviour
     public Vector2 position;
     public bool isReady;
 
+
+    public PlayerManager(string _username, int _team, bool _isReady)
+    {
+        username = _username;
+        team = _team;
+        isReady = _isReady;
+    }
+
     //Game presentation
 
-
+    /*
     //Lobby presentation
     public Text usernameText;
     public Image ReadyIndicator;
 
-    public void SetReadyInLobby(bool _isReady)
-    {
-        if (_isReady)
-        {
-            ReadyIndicator.color = Color.green;
-            isReady = true;
-        }
-        else
-        {
-            ReadyIndicator.color = Color.red;
-            isReady = false;
-        }
-    }
 
     public void SetUsernameInLobby(string _username)
     {
@@ -40,7 +35,7 @@ public class PlayerManager : MonoBehaviour
         usernameText = GetComponentInChildren<Text>();
         usernameText.text = username;
     }
-
+    */
     //
 
     private void Awake()

@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 7290021596499075218}
   - component: {fileID: 388748275711693574}
   m_Layer: 5
-  m_Name: ReadibleSign
+  m_Name: ReadyIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

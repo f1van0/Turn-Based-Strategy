@@ -22,7 +22,7 @@ public class ClientHandle : MonoBehaviour
 
         Debug.Log($"Message from server: {_message}");
         Client.instance.myId = _myId;
-        GameManager.GetClientId(_myId);
+        GameManager.SetLocalClientId(_myId);
         //Ответ серверу
         ClientSend.WelcomeReceived();
 
@@ -47,11 +47,11 @@ public class ClientHandle : MonoBehaviour
 
         if (_id > GameManager.playersCount)
         {
-            GameManager.AddNewPlayerInLobby(_id, _username, _team, _isReady);
+            GameManager.AddNewPlayer(_id, _username, _team, _isReady);
         }
         else
         {
-            GameManager.UpdateExsistingPlayerInLobby(_id, _username, _team, _isReady);
+            GameManager.UpdateExsistingPlayer(_id, _username, _team, _isReady);
         }
     }
 
@@ -60,7 +60,7 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         string _nickname = _packet.ReadString();
 
-        GameManager.GetPlayerUsername(_id, _nickname);
+        GameManager.SetPlayerUsername(_id, _nickname);
     }
 
     public static void GetPlayerReadiness(Packet _packet)
@@ -68,10 +68,10 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         bool _isReady = _packet.ReadBool();
 
-        GameManager.GetPlayerReady(_id, _isReady);
+        GameManager.SetPlayerReady(_id, _isReady);
         if (_id == Client.instance.myId)
         {
-            GameManager.SetlocalPlayerReady();
+            GameManager.SetLocalPlayerReady(_isReady);
         }
     }
 
@@ -80,7 +80,7 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         int _team = _packet.ReadInt();
 
-        GameManager.GetPlayerTeam(_id, _team);
+        GameManager.SetPlayerTeam(_id, _team);
     }
 
     public static void GetPlayerPosition(Packet _packet)
@@ -94,9 +94,8 @@ public class ClientHandle : MonoBehaviour
     public static void GetChatMessage(Packet _packet)
     {
         int _id = _packet.ReadInt();
-        string _nickname = _packet.ReadString();
         string _message = _packet.ReadString();
 
-        Chat.instance.AddNewMessage(_id, _nickname, _message);
+        Chat.instance.AddNewMessage(_id, _message);
     }
 }

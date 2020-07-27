@@ -25,7 +25,7 @@ namespace Assets.Scripts.Network.Server
             }
 
             //Сообщаем всем игрокам о его появлении.
-            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, (int)Team.Spectators, new Vector2(0f, 0f), false);
+            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, 0, new Vector2(-1f, -1f), false);
         }
 
         public static void UDPTestReceived(int _fromClient, Packet _packet)
@@ -44,7 +44,7 @@ namespace Assets.Scripts.Network.Server
             Vector2 _position = _packet.ReadVector2();
             bool _isReady = _packet.ReadBool();
 
-            Server.clients[_fromClient].player = new Player(_fromClient, _username, _team, _position, _isReady);
+            Server.clients[_fromClient].player = new Player(_fromClient, _username, _team, _isReady);
             //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
             ServerSend.SendPlayerInfoToAllExistingPlayers(Server.clients[_fromClient].player);
         }

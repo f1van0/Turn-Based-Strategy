@@ -17,7 +17,8 @@ namespace Assets.Scripts.Network.Server
         playerTeam,
         chatMessage,
         turnsCount,
-        gameStage
+        gameStage,
+        cell,
 //        playerPosition,
 //        playerReadiness,
 //        UPM
@@ -34,8 +35,8 @@ namespace Assets.Scripts.Network.Server
         playerPositionReceived,
         playerTeamReceived,
         chatMessageReceived,
-        turnsCountReceived,
-        gameStageReceived
+        //turnsCountReceived,
+        //gameStageReceived
         //        playerPositionReceived,
         //        playerReadinessReceived,
         //        UPM_Reseived

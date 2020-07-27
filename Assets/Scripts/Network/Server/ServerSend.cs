@@ -99,6 +99,7 @@ namespace Assets.Scripts.Network.Server
             {
                 _packet.Write(_player.id);
                 _packet.Write(_player.nickname);
+                _packet.Write(_player.team);
                 _packet.Write(_player.position);
                 _packet.Write(_player.isReady);
 

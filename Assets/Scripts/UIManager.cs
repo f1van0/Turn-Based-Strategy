@@ -66,6 +66,8 @@ public class UIManager : MonoBehaviour
             OpenLobbyMenu();
             ConnectToServer();
             Instantiate(serverPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
+
+            LobbyManager.instance.ShowStartGameButton();
         }
         else
             PlayerNickNameField.GetComponent<Image>().color = Color.red;

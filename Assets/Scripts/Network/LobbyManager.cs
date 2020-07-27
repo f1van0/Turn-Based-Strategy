@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,13 +16,14 @@ public class LobbyManager : MonoBehaviour
     public Transform team1List;
     public Transform team2List;
 
-    public Text playersCountInLobby;
+    public Text playersCountInLobbyText;
     public Button buttonReady;
     public Button buttonJoinSpectators;
     public Button buttonJoinTeam1;
     public Button buttonJoinTeam2;
+    public Button StartGameButton;
 
-    public static List<GameObject> players;
+    public static Dictionary<int, GameObject> players = new Dictionary<int, GameObject>();
 
     private void Awake()
     {
@@ -38,37 +38,47 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
+    public void ShowPlayersCount(int _playersCount)
+    {
+        playersCountInLobbyText.text = "Players in lobby: " + _playersCount;
+    }
+
     public void SetPlayerTeam(int _id, int _team)
     {
-        if (_team == 0)
+        if (_team == 1)
         {
-            players[_id - 1].gameObject.transform.SetParent(spectatorsList, false);
+            players[_id].gameObject.transform.SetParent(team1List, false);
         }
-        else if (_team == 1)
+        else if (_team == 2)
         {
-            players[_id - 1].gameObject.transform.SetParent(team1List, false);
+            players[_id].gameObject.transform.SetParent(team2List, false);
         }
         else
         {
-            players[_id - 1].gameObject.transform.SetParent(team2List, false);
+            players[_id].gameObject.transform.SetParent(spectatorsList, false);
         }
     }
 
     public void SetPlayerUsername(int _id, string _username)
     {
-        players[_id - 1].GetComponentInChildren<Text>().text = _username;
+        players[_id].GetComponentInChildren<Text>().text = _username;
     }
 
     public void SetPlayerReady(int _id, bool _isReady)
     {
         if (_isReady)
         {
-            players[_id - 1].GetComponentInChildren<Image>().color = Color.green;
+            players[_id].GetComponentInChildren<Image>().color = Color.green;
         }
         else
         {
-            players[_id - 1].GetComponentInChildren<Image>().color = Color.red;
+            players[_id].GetComponentInChildren<Image>().color = Color.red;
         }
+    }
+
+    public void StartGame()
+    {
+        GameManager.StartGame();
     }
 
     public void JoinSpectators()
@@ -76,7 +86,7 @@ public class LobbyManager : MonoBehaviour
         buttonJoinSpectators.enabled = false;
         buttonJoinTeam1.enabled = true;
         buttonJoinTeam2.enabled = true;
-        GameManager.SetLocalPlayerTeam(0);
+        GameManager.SendLocalPlayerTeam(0);
     }
 
     public void JoinTeam1()
@@ -84,7 +94,7 @@ public class LobbyManager : MonoBehaviour
         buttonJoinSpectators.enabled = true;
         buttonJoinTeam1.enabled = false;
         buttonJoinTeam2.enabled = true;
-        GameManager.SetLocalPlayerTeam(1);
+        GameManager.SendLocalPlayerTeam(1);
     }
 
     public void JoinTeam2()
@@ -92,12 +102,12 @@ public class LobbyManager : MonoBehaviour
         buttonJoinSpectators.enabled = true;
         buttonJoinTeam1.enabled = true;
         buttonJoinTeam2.enabled = false;
-        GameManager.SetLocalPlayerTeam(2);
+        GameManager.SendLocalPlayerTeam(2);
     }
 
-    public void SetReadiness_ForLocalPlayer()
+    public void SendReadiness_ForLocalPlayer()
     {
-        GameManager.SetlocalPlayerReady();
+        GameManager.SendlocalPlayerReady();
     }
 
     public void SetReadiness_ButtonState_ForLocalPlayer(bool _isReady)
@@ -114,7 +124,7 @@ public class LobbyManager : MonoBehaviour
 
     public void AddNewPlayer(int _id, string _username, int _team, bool _isReady)
     {
-        players.Add(Instantiate(playerLobbyPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0)));
+        players[_id] = Instantiate(playerLobbyPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
         UpdateExsistingPlayer(_id, _username, _team, _isReady);
     }
 
@@ -125,17 +135,25 @@ public class LobbyManager : MonoBehaviour
         SetPlayerTeam(_id, _team);
     }
 
-    /*
-    public void DeleteExistingPlayer(int _id)
+    public void ShowStartGameButton()
     {
-        players[_id - 1].SetActive(false);
+        StartGameButton.gameObject.SetActive(true);
     }
-    */
 
     // Start is called before the first frame update
     void Start()
     {
         buttonJoinSpectators.enabled = false;
+
+        StartGameButton.gameObject.SetActive(false);
+        /*
+        //Только хост может запустить игру
+        ServerRunner _serverRunner;
+        if (TryGetComponent<ServerRunner>(out _serverRunner))
+            StartGameButton.gameObject.SetActive(true);
+        else
+            StartGameButton.gameObject.SetActive(false);
+        */
     }
 
     // Update is called once per frame
