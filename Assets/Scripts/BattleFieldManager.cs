@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BattleFieldManager : MonoBehaviour, IDisposable
+public class BattleFieldManager : MonoBehaviour//, IDisposable
 {
+    public static BattleFieldManager instance;
+
     public GameObject cellPrefab;
     public GameObject heroPrefab;
     public Camera mainCamera;
@@ -12,6 +14,8 @@ public class BattleFieldManager : MonoBehaviour, IDisposable
     private GameObject hero;
     private HeroBehaviour[] heroBehaviours = new HeroBehaviour[cols];
     private Cell[,] cell = new Cell[cols, rows];
+    public Cell[,] battlefield;
+    public Dictionary<int, GameObject> heroes = new Dictionary<int, GameObject>();
 
     private const int cols = 8;
     private const int rows = 6;
@@ -25,6 +29,57 @@ public class BattleFieldManager : MonoBehaviour, IDisposable
 
     //private GameObject[,] cells = new GameObject[n, m];
 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Debug.Log("Instance already exists, destroying object!");
+            Destroy(this);
+        }
+    }
+
+    public void SpawnBattlefield(Assets.Scripts.Network.CellValues[,] _battlefield)
+    {
+        battlefield = new Cell[_battlefield.GetLength(0), _battlefield.GetLength(1)];
+        for (int j = 0; j < _battlefield.GetLength(1); j++)
+        {
+            for (int i = 0; i < _battlefield.GetLength(0); i++)
+            {
+                battlefield[i, j] = Instantiate(cellPrefab, new Vector3((i - _battlefield.GetLength(0) / 2) * 1.5f, (j - _battlefield.GetLength(1) / 2) * 1.5f, 0), new Quaternion(0, 0, 0, 0)).GetComponent<Cell>();
+                battlefield[i, j].SetBasicCellInfo(_battlefield[i, j].locationName, _battlefield[i, j].damagePerTurn, _battlefield[i, j].healthPerTurn, _battlefield[i, j].energyPerTurn, _battlefield[i, j].state);
+            }
+        }
+    }
+
+    public void GetHero(int _id, Vector2 _position)
+    {
+        if (heroes.ContainsKey(_id))
+        {
+            MoveHero(_id, _position);
+        }
+        else
+        {
+            SpawnHero(_id, _position);
+        }
+    }
+
+    public void SpawnHero(int _id, Vector2 _position)
+    {
+        heroes.Add(_id, Instantiate(heroPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0)));
+        heroes[_id].transform.SetParent(battlefield[(int)_position.x, (int)_position.y].gameObject.transform, false);
+    }
+
+    public void MoveHero(int _id, Vector2 _position)
+    {
+        heroes[_id].gameObject.transform.position = _position;
+        heroes[_id].transform.SetParent(battlefield[(int)_position.x, (int)_position.y].gameObject.transform, false);
+    }
+
+    /*
     // Start is called before the first frame update
     void Start()
     {

@@ -73,6 +73,11 @@ public class UIManager : MonoBehaviour
             PlayerNickNameField.GetComponent<Image>().color = Color.red;
     }
 
+    public void StartGame()
+    {
+        Assets.Scripts.Network.Server.ServerSideComputing.StartGame();
+    }
+
     public string GetUserName()
     {
         return PlayerNickNameField.text;

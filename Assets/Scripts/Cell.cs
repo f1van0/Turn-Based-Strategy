@@ -35,6 +35,16 @@ public class Cell : MonoBehaviour
     private HeroStats _heroStats;
     private int[] index = new int[2];
 
+    public void SetBasicCellInfo(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, CellState _state)
+    {
+        location = _locationName;
+        damagePerTurn = _damagePerTurn;
+        healthPerTurn = _healthPerTurn;
+        energyPerTurn = _energyPerTurn;
+
+        state = _state;
+    }
+
     public void Initialize(Vector2 pos, int[] index, CellState state)
     {
         this.pos = pos;

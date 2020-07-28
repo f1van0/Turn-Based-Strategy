@@ -78,7 +78,7 @@ public class LobbyManager : MonoBehaviour
 
     public void StartGame()
     {
-        GameManager.StartGame();
+        //TODO: start game
     }
 
     public void JoinSpectators()

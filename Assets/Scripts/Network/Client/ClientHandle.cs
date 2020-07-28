@@ -5,6 +5,7 @@ using UnityEngine;
 
 //Все пакеты и методы для них
 using Assets.Scripts.Network.Server;
+using Assets.Scripts.Network;
 
 public class ClientHandle : MonoBehaviour
 {
@@ -19,10 +20,13 @@ public class ClientHandle : MonoBehaviour
     {
         string _message = _packet.ReadString();
         int _myId = _packet.ReadInt();
+        int _gameStage = _packet.ReadInt();
 
         Debug.Log($"Message from server: {_message}");
         Client.instance.myId = _myId;
+
         GameManager.SetLocalClientId(_myId);
+        GameManager.SetGameStage(_gameStage);
         //Ответ серверу
         ClientSend.WelcomeReceived();
 
@@ -97,5 +101,19 @@ public class ClientHandle : MonoBehaviour
         string _message = _packet.ReadString();
 
         Chat.instance.AddNewMessage(_id, _message);
+    }
+
+    public static void GetGameStage(Packet _packet)
+    {
+        int gameStage = _packet.ReadInt();
+
+        GameManager.SetGameStage(gameStage);
+    }
+
+    public static void GetBattleGround(Packet _packet)
+    {
+        CellValues[,] battleground = _packet.ReadCellValuesArray();
+
+        GameManager.InitializeBattlefield(battleground);
     }
 }

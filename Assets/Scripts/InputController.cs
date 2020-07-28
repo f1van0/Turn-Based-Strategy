@@ -26,7 +26,7 @@ public class InputController : MonoBehaviour
 
     private Vector2 rayPos;
     private RaycastHit2D hit;
-
+    /*
     private void SelectCellForHero(Cell _cell)
     {
         CellState state = _cell.GetState();
@@ -80,6 +80,7 @@ public class InputController : MonoBehaviour
                 //focusedCell.ShowInfo();
             }
             */
+            /*
             if (Input.GetMouseButtonDown(0))
             {
                 //Vector2 rayPos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
@@ -157,4 +158,5 @@ public class InputController : MonoBehaviour
             ChangeTurn(turn);
         }
     }
+        */
 }

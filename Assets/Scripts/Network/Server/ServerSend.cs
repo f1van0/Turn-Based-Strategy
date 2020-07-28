@@ -82,12 +82,13 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public static void Welcome(int _toClient, string _message)
+        public static void Welcome(int _toClient, string _message, int _gameStage)
         {
             using (Packet _packet = new Packet((int)ServerPackets.welcome))
             {
                 _packet.Write(_message);
                 _packet.Write(_toClient);
+                _packet.Write(_gameStage);
 
                 SendTCPData(_toClient, _packet);
             }
@@ -156,7 +157,7 @@ namespace Assets.Scripts.Network.Server
 
         public static void SendPlayerPositionToAllExistingPlayers(Player _player)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.playerTeam))
+            using (Packet _packet = new Packet((int)ServerPackets.playerPosition))
             {
                 _packet.Write(_player.id);
                 _packet.Write(_player.position);
@@ -173,6 +174,26 @@ namespace Assets.Scripts.Network.Server
                 _packet.Write(_message);
 
                 SendUDPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendGameStageToAllExistingPlayers(int gameStage)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.gameStage))
+            {
+                _packet.Write(gameStage);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendBattleGroundToAllExistingPlayers(CellValues[,] battleground)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.battleground))
+            {
+                _packet.Write(battleground);
+
+                SendTCPDataToAllExistingPlayers(_packet);
             }
         }
 

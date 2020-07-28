@@ -18,6 +18,7 @@ namespace Assets.Scripts.Network.Server
         chatMessage,
         turnsCount,
         gameStage,
+        battleground,
         cell,
 //        playerPosition,
 //        playerReadiness,
@@ -195,6 +196,28 @@ namespace Assets.Scripts.Network.Server
             buffer.AddRange(BitConverter.GetBytes(_value));
         }
 
+        public void Write(CellValues[,] _value)
+        {
+            Write(_value.GetLength(0));
+            Write(_value.GetLength(1));
+            for (int j = 0; j < _value.GetLength(1); j++)
+            {
+                for (int i = 0; i < _value.GetLength(0); i++)
+                {
+                    Write(_value[i, j]);
+                }
+            }
+        }
+
+        public void Write(CellValues _value)
+        {
+            Write(_value.locationName);
+            Write(_value.damagePerTurn);
+            Write(_value.healthPerTurn);
+            Write(_value.energyPerTurn);
+            Write((int)_value.state);
+        }
+
         public void Write(Vector2 _value)
         {
             Write(_value.x);
@@ -323,6 +346,26 @@ namespace Assets.Scripts.Network.Server
             {
                 throw new Exception("Could not read value of type 'int'!");
             }
+        }
+
+        public CellValues[,] ReadCellValuesArray(bool _moveReadPos = true)
+        {
+            int _rows = ReadInt();
+            int _cols = ReadInt();
+            CellValues[,] _battleground = new CellValues[_rows, _cols];
+            for (int j = 0; j < _cols; j++)
+            {
+                for (int i = 0; i < _rows; i++)
+                {
+                    _battleground[i, j] = ReadCellValues();
+                }
+            }
+            return _battleground;
+        }
+
+        public CellValues ReadCellValues(bool _moveReadPos = true)
+        {
+            return new CellValues(ReadString(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos));
         }
 
         public Vector2 ReadVector2(bool _moveReadPos = true)

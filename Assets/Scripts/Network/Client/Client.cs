@@ -23,6 +23,7 @@ public class Client : MonoBehaviour
 
     private delegate void PacketHandler(Packet _packet);
     private static Dictionary<int, PacketHandler> packetHandlers;
+
     private void Awake()
     {
         if (instance == null)
@@ -285,7 +286,10 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.playerNickname, ClientHandle.GetPlayerNickname },
                 { (int)ServerPackets.playerReady, ClientHandle.GetPlayerReadiness },
                 { (int)ServerPackets.playerTeam, ClientHandle.GetPlayerTeam },
-                { (int)ServerPackets.chatMessage, ClientHandle.GetChatMessage }
+                { (int)ServerPackets.playerPosition, ClientHandle.GetPlayerPosition },
+                { (int)ServerPackets.chatMessage, ClientHandle.GetChatMessage },
+                { (int)ServerPackets.gameStage, ClientHandle.GetGameStage },
+                { (int)ServerPackets.battleground, ClientHandle.GetBattleGround }
             };
         Debug.Log("Initialized packets.");
     }

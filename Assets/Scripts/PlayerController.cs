@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnSelectedHero(GameObject hero)
     {
-        battlefield.ShowAccesibleCellsByWave(hero.GetComponent<HeroBehaviour>());
+        //battlefield.ShowAccesibleCellsByWave(hero.GetComponent<HeroBehaviour>());
     }
 
     private void SelectCellForHero(GameObject hero, GameObject cell)
@@ -24,8 +24,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        battlefield = FindObjectOfType<BattleFieldManager>();
-        battlefield.Initialization();
+        //battlefield = FindObjectOfType<BattleFieldManager>();
+        //battlefield.Initialization();
         mainCamera = FindObjectOfType<Camera>();
     }
 

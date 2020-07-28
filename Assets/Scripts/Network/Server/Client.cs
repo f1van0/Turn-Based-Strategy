@@ -50,7 +50,7 @@ namespace Assets.Scripts.Network.Server
 
                 stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
 
-                ServerSend.Welcome(id, "Welcome to the server!");
+                ServerSend.Welcome(id, "Welcome to the server!", ServerSideComputing.gameStage);
             }
 
             public void SendData(Packet _packet)

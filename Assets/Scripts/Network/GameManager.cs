@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Network;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,9 +24,34 @@ public static class GameManager
         LobbyManager.instance.ShowPlayersCount(playersCount);
     }
 
+    public static void SetGameStage(int _gameStage)
+    {
+        if (_gameStage == 0)
+        {
+            StartLobby();
+        }
+        else
+        {
+            StartGame();
+        }
+    }
+
+    public static void StartLobby()
+    {
+        //TODO: start lobby
+        UIManager.instance.OpenLobbyMenu();
+    }
+
     public static void StartGame()
     {
         //TODO: start game
+        UIManager.instance.OpenGameUI();
+    }
+
+    public static void InitializeBattlefield(CellValues[,] _battleground)
+    {
+        //TODO: initialize battleground
+        BattleFieldManager.instance.SpawnBattlefield(_battleground);
     }
 
     public static void UpdateExsistingPlayer(int _id, string _username, int _team, bool _isReady)
@@ -58,7 +84,7 @@ public static class GameManager
 
     public static void SetPlayerPosition(int _playerId, Vector2 _position)
     {
-        //TODO: pos
+        BattleFieldManager.instance.GetHero(_playerId, _position);
     }
 
     public static void SendlocalPlayerReady()

@@ -130,6 +130,7 @@ namespace Assets.Scripts.Network.Server
                 { (int)ClientPackets.playerNicknameReceived, ServerHandle.GetPlayerNickname },
                 { (int)ClientPackets.playerReadinessReceived, ServerHandle.GetPlayerReady },
                 { (int)ClientPackets.playerTeamReceived, ServerHandle.GetPlayerTeam },
+                { (int)ClientPackets.playerPositionReceived, ServerHandle.GetPlayerPosition },
                 { (int)ClientPackets.chatMessageReceived, ServerHandle.GetChatMessage }
                 //{ (int)ClientPackets.gameStageReceived, ServerHandle },
                 /* NEW UPM
