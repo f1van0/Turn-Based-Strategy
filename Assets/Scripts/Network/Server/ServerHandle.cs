@@ -60,7 +60,7 @@ namespace Assets.Scripts.Network.Server
         {
             string _nickname = _packet.ReadString();
 
-            Server.clients[_fromClient].player.nickname = _nickname;
+            Server.clients[_fromClient].player.username = _nickname;
             //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
             ServerSend.SendPlayerNicknameToAllExistingPlayers(Server.clients[_fromClient].player);
         }
@@ -78,9 +78,9 @@ namespace Assets.Scripts.Network.Server
         {
             Vector2 _position = _packet.ReadVector2();
 
-            Server.clients[_fromClient].player.position = _position;
-            //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
-            ServerSend.SendPlayerPositionToAllExistingPlayers(Server.clients[_fromClient].player);
+            ServerSideComputing.SetPlayerPosition(_fromClient, _position);
+            
+            //ServerSend.SendPlayerPositionToAllExistingPlayers(Server.clients[_fromClient].player);
         }
 
         public static void GetChatMessage(int _fromClient, Packet _packet)
@@ -88,6 +88,22 @@ namespace Assets.Scripts.Network.Server
             string _message = _packet.ReadString();
 
             ServerSend.SendChatMessageToAllExistingPlayers(Server.clients[_fromClient].player, _message);
+        }
+
+        public static void GetMoveHero(int _fromClient, Packet _packet)
+        {
+            int _heroId = _packet.ReadInt();
+            Vector2 _moveFromPosition = _packet.ReadVector2();
+            Vector2 _moveToPosition = _packet.ReadVector2();
+
+            ServerSideComputing.MoveHero(_heroId, _moveFromPosition, _moveToPosition);
+        }
+
+        public static void GetRequestToShowAvailableCells(int _fromClient, Packet _packet)
+        {
+            Vector2 _heroPosition = _packet.ReadVector2();
+
+            ServerSideComputing.ShowAccesibleCellsByWave(_fromClient, _heroPosition);
         }
     }
 }

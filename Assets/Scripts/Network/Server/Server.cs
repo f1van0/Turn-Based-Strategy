@@ -131,7 +131,10 @@ namespace Assets.Scripts.Network.Server
                 { (int)ClientPackets.playerReadinessReceived, ServerHandle.GetPlayerReady },
                 { (int)ClientPackets.playerTeamReceived, ServerHandle.GetPlayerTeam },
                 { (int)ClientPackets.playerPositionReceived, ServerHandle.GetPlayerPosition },
-                { (int)ClientPackets.chatMessageReceived, ServerHandle.GetChatMessage }
+                { (int)ClientPackets.chatMessageReceived, ServerHandle.GetChatMessage },
+                { (int)ClientPackets.moveHeroReceived, ServerHandle.GetMoveHero },
+                { (int)ClientPackets.availableCellsReceived, ServerHandle.GetRequestToShowAvailableCells }
+                //{ (int)ClientPackets.moveHeroReceived, ServerHandle.GetHero }
                 //{ (int)ClientPackets.gameStageReceived, ServerHandle },
                 /* NEW UPM
                 { (int)ClientPackets.UPM_Reseived, ServerHandle.UPM_ReceivedReconizer }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.Scripts;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public enum CellState:int
     nearby,
     wall,
     hero,
+    controlledHero,
     enemy,
     friend,
     attack
@@ -24,27 +26,102 @@ public class Cell : MonoBehaviour
     public Color attackColor = Color.magenta;
 
     //Характеристики клетки
-    public string location = "Hill";
-    public int damagePerTurn = 1;
-    public int healthPerTurn = 1;
-    public int energyPerTurn = 0;
+    public CellValues cellValues = new CellValues();
 
-    private GameObject cell;
-    private Vector2 pos = new Vector2(0, 0);
+    public GameObject objectCell;
+    //private Vector2 pos = new Vector2(0, 0);
     private CellState state = CellState.empty;
-    private HeroStats _heroStats;
-    private int[] index = new int[2];
+    //private int[] index = new int[2];
 
-    public void SetBasicCellInfo(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, CellState _state)
+    public Cell()
     {
-        location = _locationName;
-        damagePerTurn = _damagePerTurn;
-        healthPerTurn = _healthPerTurn;
-        energyPerTurn = _energyPerTurn;
-
-        state = _state;
+        cellValues = new CellValues();
+        state = CellState.empty;
+        //default heroVelue = null and location is "Hills" that empty
+        //ShowCell
     }
 
+    public Cell(HeroValues _heroValues)
+    {
+        cellValues.SetHeroValues(_heroValues);
+        //if hero in cell setstate ...
+        //ShowCell
+    }
+
+    public void SetHeroValues(HeroValues _heroValues)
+    {
+        cellValues.SetHeroValues(_heroValues);
+        //if hero in cell setstate ...
+        //ShowCell
+    }
+
+    public Cell(CellValues _cellValues)
+    {
+        cellValues.locationName = _cellValues.locationName;
+        cellValues.damagePerTurn = _cellValues.damagePerTurn;
+        cellValues.healthPerTurn = _cellValues.healthPerTurn;
+        cellValues.energyPerTurn = _cellValues.energyPerTurn;
+        cellValues.SetHeroValues(_cellValues.GetHeroValues());
+        //state = _state;
+        cellValues.position = _cellValues.position;
+        //ShowCell
+    }
+
+    public void SetBasicCellValues(CellValues _cellValues)
+    {
+        cellValues.locationName = _cellValues.locationName;
+        cellValues.damagePerTurn = _cellValues.damagePerTurn;
+        cellValues.healthPerTurn = _cellValues.healthPerTurn;
+        cellValues.energyPerTurn = _cellValues.energyPerTurn;
+        cellValues.SetHeroValues(_cellValues.GetHeroValues());
+        //state = _state;
+        cellValues.position = _cellValues.position;
+        //ShowCell
+    }
+
+    public Cell(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, HeroValues _heroStats, Vector2 _position)
+    {
+        cellValues.locationName = _locationName;
+        cellValues.damagePerTurn = _damagePerTurn;
+        cellValues.healthPerTurn = _healthPerTurn;
+        cellValues.energyPerTurn = _energyPerTurn;
+        cellValues.SetHeroValues(_heroStats);
+        //state = _state;
+        cellValues.position = _position;
+    }
+
+    public void Show()
+    {
+        SpriteRenderer cellSprite = objectCell.GetComponent<SpriteRenderer>();
+        switch ((int)state)
+        {
+            case 0: { cellSprite.color = emptyColor; break; }
+            case 1: { cellSprite.color = nearbyColor; break; }
+            case 2: { cellSprite.color = wallColor; break; }
+            case 3: { cellSprite.color = heroColor; break; }
+            case 4: { cellSprite.color = enemyColor; break; }
+            case 5: { cellSprite.color = friendColor; break; }
+            default: { cellSprite.color = attackColor; break; }
+        }
+    }
+
+    public void Show(CellState _state)
+    {
+        SpriteRenderer cellSprite = objectCell.GetComponent<SpriteRenderer>();
+        state = _state;
+        switch ((int)state)
+        {
+            case 0: { cellSprite.color = emptyColor; break; }
+            case 1: { cellSprite.color = nearbyColor; break; }
+            case 2: { cellSprite.color = wallColor; break; }
+            case 3: { cellSprite.color = heroColor; break; }
+            case 4: { cellSprite.color = enemyColor; break; }
+            case 5: { cellSprite.color = friendColor; break; }
+            default: { cellSprite.color = attackColor; break; }
+        }
+    }
+
+    /*
     public void Initialize(Vector2 pos, int[] index, CellState state)
     {
         this.pos = pos;
@@ -94,36 +171,6 @@ public class Cell : MonoBehaviour
         return index;
     }
 
-    public void Show()
-    {
-        SpriteRenderer cellSprite = cell.GetComponent<SpriteRenderer>();
-        switch ((int) state)
-        {
-            case 0: { cellSprite.color = emptyColor; break; }
-            case 1: { cellSprite.color = nearbyColor; break; }
-            case 2: { cellSprite.color = wallColor; break; }
-            case 3: { cellSprite.color = heroColor; break; }
-            case 4: { cellSprite.color = enemyColor; break; }
-            case 5: { cellSprite.color = friendColor; break; }
-            default: { cellSprite.color = attackColor; break; }
-        }
-    }
-
-    public void Show(CellState _state)
-    {
-        SpriteRenderer cellSprite = cell.GetComponent<SpriteRenderer>();
-        state = _state;
-        switch ((int) state)
-        {
-            case 0: { cellSprite.color = emptyColor; break; }
-            case 1: { cellSprite.color = nearbyColor; break; }
-            case 2: { cellSprite.color = wallColor; break; }
-            case 3: { cellSprite.color = heroColor; break; }
-            case 4: { cellSprite.color = enemyColor; break; }
-            case 5: { cellSprite.color = friendColor; break; }
-            default: { cellSprite.color = attackColor; break; }
-        }
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -137,4 +184,5 @@ public class Cell : MonoBehaviour
     {
         
     }
+    */
 }

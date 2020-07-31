@@ -18,7 +18,7 @@ public class UICellInfo : MonoBehaviour
     {
         this.gameObject.SetActive(false);
     }
-
+    /*
     public void SetInfo(Cell _cell, HeroStats _heroStats)
     {
         location_text.text = "Location:" + _cell.location;
@@ -42,7 +42,7 @@ public class UICellInfo : MonoBehaviour
             SetInfo(_cell, _cell.GetHeroStats());
         }
     }
-
+    */
     // Update is called once per frame
     void Update()
     {

@@ -5,17 +5,10 @@ using UnityEngine;
 
 //Все пакеты и методы для них
 using Assets.Scripts.Network.Server;
-using Assets.Scripts.Network;
+using Assets.Scripts;
 
 public class ClientHandle : MonoBehaviour
 {
-    private LobbyManager lobbyManager;
-
-    private void Start()
-    {
-        lobbyManager = FindObjectOfType<LobbyManager>();
-    }
-
     public static void Welcome(Packet _packet)
     {
         string _message = _packet.ReadString();
@@ -105,15 +98,45 @@ public class ClientHandle : MonoBehaviour
 
     public static void GetGameStage(Packet _packet)
     {
-        int gameStage = _packet.ReadInt();
+        int _gameStage = _packet.ReadInt();
 
-        GameManager.SetGameStage(gameStage);
+        GameManager.SetGameStage(_gameStage);
     }
 
     public static void GetBattleGround(Packet _packet)
     {
-        CellValues[,] battleground = _packet.ReadCellValuesArray();
+        CellValues[,] _battleground = _packet.ReadCellValuesArray();
 
-        GameManager.InitializeBattlefield(battleground);
+        GameManager.InitializeBattlefield(_battleground);
+    }
+
+    public static void GetCell(Packet _packet)
+    {
+        CellValues _cellValues = _packet.ReadCellValues();
+        bool _isCellAvailable = _packet.ReadBool();
+
+        GameManager.SetCellInfo(_cellValues, _isCellAvailable);
+    }
+
+    public static void GetSpawnHero(Packet _packet)
+    {
+        HeroValues _heroValues = _packet.ReadHeroValues();
+
+        GameManager.SpawnHero(_heroValues);
+    }
+
+    public static void GetMoveHero(Packet _packet)
+    {
+        CellValues from_cellValues = _packet.ReadCellValues();
+        CellValues to_cellValues = _packet.ReadCellValues();
+
+        GameManager.MoveHero(from_cellValues, to_cellValues);
+    }
+
+    public static void GetAvailableCells(Packet _packet)
+    {
+        Vector2[] _availableCells = _packet.ReadVector2Array();
+
+        GameManager.ShowAvailableCells(_availableCells);
     }
 }

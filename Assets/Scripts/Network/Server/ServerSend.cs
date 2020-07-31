@@ -99,7 +99,7 @@ namespace Assets.Scripts.Network.Server
             using (Packet _packet = new Packet((int)ServerPackets.playerInfo))
             {
                 _packet.Write(_player.id);
-                _packet.Write(_player.nickname);
+                _packet.Write(_player.username);
                 _packet.Write(_player.team);
                 _packet.Write(_player.position);
                 _packet.Write(_player.isReady);
@@ -113,7 +113,7 @@ namespace Assets.Scripts.Network.Server
             using (Packet _packet = new Packet((int)ServerPackets.playerInfo))
             {
                 _packet.Write(_player.id);
-                _packet.Write(_player.nickname);
+                _packet.Write(_player.username);
                 _packet.Write(_player.team);
                 _packet.Write(_player.position);
                 _packet.Write(_player.isReady);
@@ -127,7 +127,7 @@ namespace Assets.Scripts.Network.Server
             using (Packet _packet = new Packet((int)ServerPackets.playerNickname))
             {
                 _packet.Write(_player.id);
-                _packet.Write(_player.nickname);
+                _packet.Write(_player.username);
 
                 SendTCPDataToAllExistingPlayers(_packet);
             }
@@ -187,13 +187,55 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public static void SendBattleGroundToAllExistingPlayers(CellValues[,] battleground)
+        public static void SendCellToAllExistingPlayers(CellValues _cell, bool isCellAvailable)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.cell))
+            {
+                _packet.Write(_cell);
+                _packet.Write(isCellAvailable);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendBattleFieldToAllExistingPlayers(CellValues[,] battleground)
         {
             using (Packet _packet = new Packet((int)ServerPackets.battleground))
             {
                 _packet.Write(battleground);
 
                 SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendSpawnHero(HeroValues _heroValues)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.spawnHero))
+            {
+                _packet.Write(_heroValues);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendMoveHero(CellValues from_cellValues, CellValues to_cellValues)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.moveHero))
+            {
+                _packet.Write(from_cellValues);
+                _packet.Write(to_cellValues);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendAvailableCells(int _toClient, Vector2[] _availableCells)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.availableCells))
+            {
+                _packet.Write(_availableCells);
+
+                SendTCPData(_toClient, _packet);
             }
         }
 

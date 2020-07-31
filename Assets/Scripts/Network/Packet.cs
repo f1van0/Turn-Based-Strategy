@@ -20,6 +20,9 @@ namespace Assets.Scripts.Network.Server
         gameStage,
         battleground,
         cell,
+        spawnHero,
+        moveHero,
+        availableCells
 //        playerPosition,
 //        playerReadiness,
 //        UPM
@@ -36,6 +39,8 @@ namespace Assets.Scripts.Network.Server
         playerPositionReceived,
         playerTeamReceived,
         chatMessageReceived,
+        moveHeroReceived,
+        availableCellsReceived
         //turnsCountReceived,
         //gameStageReceived
         //        playerPositionReceived,
@@ -215,7 +220,16 @@ namespace Assets.Scripts.Network.Server
             Write(_value.damagePerTurn);
             Write(_value.healthPerTurn);
             Write(_value.energyPerTurn);
-            Write((int)_value.state);
+            Write(_value.position);
+            Write(_value.GetHeroValues());
+        }
+
+        public void Write(HeroValues _value)
+        {
+            Write(_value.ID);
+            Write(_value.position);
+            Write(_value.owner);
+            Write(_value.team);
         }
 
         public void Write(Vector2 _value)
@@ -223,6 +237,17 @@ namespace Assets.Scripts.Network.Server
             Write(_value.x);
             Write(_value.y);
         }
+
+        public void Write(Vector2[] _value)
+        {
+            int _arrayLength = _value.Length;
+            Write(_arrayLength);
+            for (int i = 0; i < _arrayLength; i++)
+            {
+                Write(_value[i]);
+            }
+        }
+
         /// <summary>Adds a long to the packet.</summary>
         /// <param name="_value">The long to add.</param>
         public void Write(long _value)
@@ -365,7 +390,23 @@ namespace Assets.Scripts.Network.Server
 
         public CellValues ReadCellValues(bool _moveReadPos = true)
         {
-            return new CellValues(ReadString(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos));
+            return new CellValues(ReadString(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadVector2(_moveReadPos), ReadHeroValues(_moveReadPos));
+        }
+
+        public HeroValues ReadHeroValues(bool _moveReadPos = true)
+        {
+            return new HeroValues(ReadInt(), ReadVector2(), ReadString(), ReadInt());
+        }
+
+        public Vector2[] ReadVector2Array(bool _moveReadPos = true)
+        {
+            int _length = ReadInt();
+            Vector2[] _vector2Array = new Vector2[_length];
+            for (int i = 0; i < _length; i++)
+            {
+                _vector2Array[i] = ReadVector2();
+            }
+            return _vector2Array;
         }
 
         public Vector2 ReadVector2(bool _moveReadPos = true)

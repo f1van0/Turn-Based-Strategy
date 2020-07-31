@@ -102,4 +102,25 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    public static void SendMoveHero(int _heroId, Vector2 _moveFromPostion, Vector2 _moveToPostion)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.moveHeroReceived))
+        {
+            _packet.Write(_heroId);
+            _packet.Write(_moveFromPostion);
+            _packet.Write(_moveToPostion);
+
+            SendTCPData(_packet);
+        }
+    }
+
+    public static void SendAvailableCells(Vector2 _heroPosition)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.availableCellsReceived))
+        {
+            _packet.Write(_heroPosition);
+
+            SendTCPData(_packet);
+        }
+    }
 }

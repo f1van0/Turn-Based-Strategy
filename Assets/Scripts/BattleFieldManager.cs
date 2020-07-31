@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts;
 
 public class BattleFieldManager : MonoBehaviour//, IDisposable
 {
@@ -16,6 +17,8 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
     private Cell[,] cell = new Cell[cols, rows];
     public Cell[,] battlefield;
     public Dictionary<int, GameObject> heroes = new Dictionary<int, GameObject>();
+
+    public Vector2[] availableCells;
 
     private const int cols = 8;
     private const int rows = 6;
@@ -42,41 +45,109 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         }
     }
 
-    public void SpawnBattlefield(Assets.Scripts.Network.CellValues[,] _battlefield)
+    public void SpawnBattlefield(CellValues[,] _battlefield)
     {
         battlefield = new Cell[_battlefield.GetLength(0), _battlefield.GetLength(1)];
         for (int j = 0; j < _battlefield.GetLength(1); j++)
         {
             for (int i = 0; i < _battlefield.GetLength(0); i++)
             {
-                battlefield[i, j] = Instantiate(cellPrefab, new Vector3((i - _battlefield.GetLength(0) / 2) * 1.5f, (j - _battlefield.GetLength(1) / 2) * 1.5f, 0), new Quaternion(0, 0, 0, 0)).GetComponent<Cell>();
-                battlefield[i, j].SetBasicCellInfo(_battlefield[i, j].locationName, _battlefield[i, j].damagePerTurn, _battlefield[i, j].healthPerTurn, _battlefield[i, j].energyPerTurn, _battlefield[i, j].state);
+                GameObject _cellGameObject = Instantiate(cellPrefab, new Vector3((i - _battlefield.GetLength(0) / 2) * 1.5f, (j - _battlefield.GetLength(1) / 2) * 1.5f, 0), new Quaternion(0, 0, 0, 0));
+                battlefield[i, j] = _cellGameObject.GetComponent<Cell>();
+                battlefield[i, j].SetBasicCellValues(_battlefield[i, j]);
+                battlefield[i, j].objectCell = _cellGameObject;
             }
         }
     }
 
-    public void GetHero(int _id, Vector2 _position)
+    public void SetCellInfo(CellValues _cell, bool _isCellAvailable)
     {
-        if (heroes.ContainsKey(_id))
-        {
-            MoveHero(_id, _position);
-        }
+        /*
+        if (_isCellAvailable)
+            battlefield[(int)_cell.position.x, (int)_cell.position.y] = new Cell(_cell.locationName, _cell.damagePerTurn, _cell.healthPerTurn, _cell.energyPerTurn, CellState.nearby, new Vector2(_cell.position.x, _cell.position.y));
         else
-        {
-            SpawnHero(_id, _position);
-        }
+            battlefield[(int)_cell.position.x, (int)_cell.position.y] = new Cell(_cell.locationName, _cell.damagePerTurn, _cell.healthPerTurn, _cell.energyPerTurn, CellState.wall, new Vector2(_cell.position.x, _cell.position.y));
+
+        battlefield[(int)_cell.position.x, (int)_cell.position.y].Show();
+        */
     }
 
+    /*
     public void SpawnHero(int _id, Vector2 _position)
     {
         heroes.Add(_id, Instantiate(heroPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0)));
         heroes[_id].transform.SetParent(battlefield[(int)_position.x, (int)_position.y].gameObject.transform, false);
     }
+    */
 
+    public void SpawnHero(HeroValues _heroValues)
+    {
+        int _heroId = _heroValues.ID;
+        Vector2 _heroPosition = _heroValues.position;
+
+        battlefield[(int)_heroPosition.x, (int)_heroPosition.y].SetHeroValues(_heroValues);
+        battlefield[(int)_heroPosition.x, (int)_heroPosition.y].Show(CellState.hero);
+        heroes.Add(_heroId, Instantiate(heroPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0)));
+        Transform cellParent = battlefield[(int)_heroPosition.x, (int)_heroPosition.y].objectCell.transform;
+        heroes[_heroId].transform.SetParent(cellParent, false);
+    }
+
+    /*
     public void MoveHero(int _id, Vector2 _position)
     {
         heroes[_id].gameObject.transform.position = _position;
         heroes[_id].transform.SetParent(battlefield[(int)_position.x, (int)_position.y].gameObject.transform, false);
+    }
+    */
+
+    public void MoveHero(CellValues from_cellValues, CellValues to_cellValues)
+    {
+        int _heroId = to_cellValues.GetHeroValues().ID;
+        Vector2 _previousHeroPosition = from_cellValues.position;
+        Vector2 _nextHeroPosition = to_cellValues.position;
+        //Удаляем героя из прошлой клетки
+        battlefield[(int)_previousHeroPosition.x, (int)_previousHeroPosition.y].SetHeroValues(new HeroValues(null));
+        battlefield[(int)_previousHeroPosition.x, (int)_previousHeroPosition.y].Show(CellState.empty);
+        //Добавляем героя, меняя информацию в клетке, в новую клетку
+        battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].SetHeroValues(to_cellValues.GetHeroValues());
+        battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].Show(CellState.hero);
+        heroes[_heroId].transform.SetParent(battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].gameObject.transform, false);
+    }
+
+    public void ShowAvailableCells(Vector2[] _availableCells)
+    {
+        for (int i = 0; i < _availableCells.Length; i++)
+        {
+            battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].Show(CellState.nearby);
+        }
+        battlefield[(int)_availableCells[0].x, (int)_availableCells[0].y].Show(CellState.hero);
+
+        availableCells = _availableCells;
+    }
+
+    public void HideAvailableCells()
+    {
+        for (int i = 0; i < availableCells.Length; i++)
+        {
+            battlefield[(int)availableCells[i].x, (int)availableCells[i].y].Show(CellState.empty);
+        }
+        battlefield[(int)availableCells[0].x, (int)availableCells[0].y].Show(CellState.hero);
+    }
+
+    public bool isAvailableCellSelected(Vector2 _position)
+    {
+        bool isMatchFound = false;
+
+        for (int i = 0; i < availableCells.Length; i++)
+        {
+            if (availableCells[i] == _position)
+            {
+                isMatchFound = true;
+                break;
+            }
+        }
+
+        return isMatchFound;
     }
 
     /*
@@ -94,7 +165,7 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void Initialization()

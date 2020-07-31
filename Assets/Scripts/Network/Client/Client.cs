@@ -289,7 +289,11 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.playerPosition, ClientHandle.GetPlayerPosition },
                 { (int)ServerPackets.chatMessage, ClientHandle.GetChatMessage },
                 { (int)ServerPackets.gameStage, ClientHandle.GetGameStage },
-                { (int)ServerPackets.battleground, ClientHandle.GetBattleGround }
+                { (int)ServerPackets.battleground, ClientHandle.GetBattleGround },
+                { (int)ServerPackets.cell, ClientHandle.GetCell },
+                { (int)ServerPackets.spawnHero, ClientHandle.GetSpawnHero },
+                { (int)ServerPackets.moveHero, ClientHandle.GetMoveHero },
+                { (int)ServerPackets.availableCells, ClientHandle.GetAvailableCells },
             };
         Debug.Log("Initialized packets.");
     }

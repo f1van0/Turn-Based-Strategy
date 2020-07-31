@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -834,7 +834,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 312533879}
-  - component: {fileID: 312533878}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -842,18 +841,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &312533878
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 312533877}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af50f3f245e161445b45e78280fd1765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &312533879
 Transform:
   m_ObjectHideFlags: 0
@@ -1251,7 +1238,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71f9fd21110393947a0a6f6c648e336b, type: 3}
   m_Name: 
@@ -2224,6 +2211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1125402424}
+  - component: {fileID: 1125402425}
   m_Layer: 5
   m_Name: GameUI
   m_TagString: Untagged
@@ -2251,6 +2239,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1125402425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1125402423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8572447745744246af0a5907f60f7db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  infoPanel: {fileID: 0}
+  locationName: {fileID: 0}
+  damage: {fileID: 0}
+  health: {fileID: 0}
+  energy: {fileID: 0}
 --- !u!1 &1129573405
 GameObject:
   m_ObjectHideFlags: 0

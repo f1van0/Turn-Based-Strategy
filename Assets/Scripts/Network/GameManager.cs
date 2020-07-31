@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.Network;
+﻿using Assets.Scripts;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,6 +54,11 @@ public static class GameManager
         BattleFieldManager.instance.SpawnBattlefield(_battleground);
     }
 
+    public static void SetCellInfo(CellValues _cell, bool _isCellAvailable)
+    {
+        BattleFieldManager.instance.SetCellInfo(_cell, _isCellAvailable);
+    }
+
     public static void UpdateExsistingPlayer(int _id, string _username, int _team, bool _isReady)
     {
         players[_id] = new PlayerManager(_username, _team, _isReady);
@@ -84,7 +89,7 @@ public static class GameManager
 
     public static void SetPlayerPosition(int _playerId, Vector2 _position)
     {
-        BattleFieldManager.instance.GetHero(_playerId, _position);
+        //BattleFieldManager.instance.GetHero(_playerId, _position);
     }
 
     public static void SendlocalPlayerReady()
@@ -101,5 +106,25 @@ public static class GameManager
     {
         players[_id].isReady = _isReady;
         LobbyManager.instance.SetPlayerReady(_id, _isReady);
+    }
+
+    public static void SpawnHero(HeroValues _heroValues)
+    {
+        BattleFieldManager.instance.SpawnHero(_heroValues);
+    }
+
+    public static void MoveHero(CellValues from_cellValues, CellValues to_cellValues)
+    {
+        BattleFieldManager.instance.MoveHero(from_cellValues, to_cellValues);
+    }
+
+    public static void SendMoveHero(int _heroId, Vector2 _moveFromPosition, Vector2 _moveToPosition)
+    {
+        ClientSend.SendMoveHero(_heroId, _moveFromPosition, _moveToPosition);
+    }
+
+    public static void ShowAvailableCells( Vector2[] _availableCells)
+    {
+        BattleFieldManager.instance.ShowAvailableCells(_availableCells);
     }
 }
