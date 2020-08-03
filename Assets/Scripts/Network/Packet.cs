@@ -16,7 +16,7 @@ namespace Assets.Scripts.Network.Server
         playerPosition,
         playerTeam,
         chatMessage,
-        turnsCount,
+        turnNumber,
         gameStage,
         battleground,
         cell,

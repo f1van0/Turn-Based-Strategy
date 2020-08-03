@@ -19,7 +19,7 @@ namespace Assets.Scripts.Network.Server
         public static int cols = 10;
         public static int rows = 10;
         public static int gameStage = 0;
-
+        public static int turnNumber = 0;
         //Game
         public static CellValues[,] battlefield = new CellValues[cols, rows];
         public static CellValues[] presets = new CellValues[1];
@@ -36,9 +36,30 @@ namespace Assets.Scripts.Network.Server
             ServerSend.SendGameStageToAllExistingPlayers(gameStage);
             GenerateBattleField();
             SpawnHeroes();
+            SetAllPlayersReady(false);
         }
 
+        public static void SetAllPlayersReady(bool _isReady)
+        {
+            foreach (Client _client in Server.clients.Values)
+            {
+                if (_client.player != null)
+                {
+                    _client.player.isReady = _isReady;
+                    ServerSend.SendPlayerReadinessToAllExistingPlayers(_client.player);
+                }
+            }
+        }
 
+        public static void ToNextTurn()
+        {
+            turnNumber++;
+            if (turnNumber % 2 == 0)
+            {
+                //TODO: герои игроков одной команды не могут ходить, а герои игроков другой команды могут.
+            }
+            ServerSend.SendTurnNumber(turnNumber);
+        }
 
         public static void GenerateBattleField()
         {

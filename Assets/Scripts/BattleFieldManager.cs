@@ -86,10 +86,14 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         Vector2 _heroPosition = _heroValues.position;
 
         battlefield[(int)_heroPosition.x, (int)_heroPosition.y].SetHeroValues(_heroValues);
-        battlefield[(int)_heroPosition.x, (int)_heroPosition.y].Show(CellState.hero);
+
         heroes.Add(_heroId, Instantiate(heroPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0)));
         Transform cellParent = battlefield[(int)_heroPosition.x, (int)_heroPosition.y].objectCell.transform;
+
         heroes[_heroId].transform.SetParent(cellParent, false);
+
+        //Display cell in Unity scene (by changing cell color).
+        battlefield[(int)_heroPosition.x, (int)_heroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
     }
 
     /*
@@ -110,15 +114,40 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         battlefield[(int)_previousHeroPosition.x, (int)_previousHeroPosition.y].Show(CellState.empty);
         //Добавляем героя, меняя информацию в клетке, в новую клетку
         battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].SetHeroValues(to_cellValues.GetHeroValues());
-        battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].Show(CellState.hero);
         heroes[_heroId].transform.SetParent(battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].gameObject.transform, false);
+
+        battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
+    }
+
+    public void SelectHero(Vector2 _heroPosition)
+    {
+        Cell _cellWithHero = battlefield[(int)_heroPosition.x, (int)_heroPosition.y].GetComponent<Cell>();
+        HeroValues _heroValues = _cellWithHero.cellValues.GetHeroValues();
+        if (_heroValues.ID != -1)
+        {
+            if (_heroValues.owner == GameManager.players[GameManager.clientId].username)
+            {
+                ClientSend.SendAvailableCells(_heroPosition);
+            }
+            else
+            {
+                HideAvailableCells();
+            }
+        }
     }
 
     public void ShowAvailableCells(Vector2[] _availableCells)
     {
         for (int i = 0; i < _availableCells.Length; i++)
         {
-            battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].Show(CellState.nearby);
+            if (battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].cellValues.GetHeroValues().ID != -1)
+            {
+                battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, true);
+            }
+            else
+            {
+                battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].Show(CellState.nearby);
+            }
         }
         battlefield[(int)_availableCells[0].x, (int)_availableCells[0].y].Show(CellState.hero);
 
@@ -127,23 +156,30 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
 
     public void HideAvailableCells()
     {
-        for (int i = 0; i < availableCells.Length; i++)
+        if (availableCells != null)
         {
-            battlefield[(int)availableCells[i].x, (int)availableCells[i].y].Show(CellState.empty);
+            for (int i = 0; i < availableCells.Length; i++)
+            {
+                battlefield[(int)availableCells[i].x, (int)availableCells[i].y].Show(CellState.empty);
+            }
+            battlefield[(int)availableCells[0].x, (int)availableCells[0].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
         }
-        battlefield[(int)availableCells[0].x, (int)availableCells[0].y].Show(CellState.hero);
+
+        availableCells = null;
     }
 
     public bool isAvailableCellSelected(Vector2 _position)
     {
         bool isMatchFound = false;
-
-        for (int i = 0; i < availableCells.Length; i++)
+        if (availableCells != null)
         {
-            if (availableCells[i] == _position)
+            for (int i = 0; i < availableCells.Length; i++)
             {
-                isMatchFound = true;
-                break;
+                if (availableCells[i] == _position)
+                {
+                    isMatchFound = true;
+                    break;
+                }
             }
         }
 

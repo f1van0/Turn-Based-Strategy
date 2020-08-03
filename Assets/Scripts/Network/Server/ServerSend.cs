@@ -239,6 +239,16 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
+        public static void SendTurnNumber(int _turnNumber)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.turnNumber))
+            {
+                _packet.Write(_turnNumber);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
         public static void UDPTest(int _toClient)
         {
             //Формируем и отправляем пакет, создавая новый с ServerPackets, который соответствует типу пакета, в нашем случае udpTest

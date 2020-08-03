@@ -16,9 +16,7 @@ public class InputController : MonoBehaviour
     public Canvas canvasCellInfo;
     private UICellInfo infoPanel;
 
-    private int turn = 0;
     private bool isHeroSelected = false;
-    private bool isNeededCellSelected = false;
 
     public event Action<HeroBehaviour> SelectHero;
     public event Action DefocusHero;
@@ -33,7 +31,6 @@ public class InputController : MonoBehaviour
     private void Start()
     {
         mainCamera = FindObjectOfType<Camera>();
-        //canvasCellInfo = FindObjectOfType<Canvas>();
         infoPanel = canvasCellInfo.GetComponent<UICellInfo>();
     }
 
@@ -45,15 +42,8 @@ public class InputController : MonoBehaviour
         //Если луч задел что-либо
         if (hit)
         {
-            //Информация при наведении
-            if (hit.transform.TryGetComponent<HeroBehaviour>(out focusedHero))
-            {
-                //focusedHero.GetHeroStats().GetCell().ShowInfo;
-            }
-            else if (hit.transform.TryGetComponent<Cell>(out focusedCell))
-            {
-                //focusedCell.ShowInfo();
-            }
+            //TODO: Информация при наведении
+
             //Посмотреть информацию о клетке в InfoPanel в GameUI либо выбрать персонажа на клетке, сделав его активным.
             if (Input.GetMouseButtonDown(0))
             {
@@ -67,8 +57,7 @@ public class InputController : MonoBehaviour
                         //BattleFieldManager.instance.ShowAccesibleCellsByWave(_cell);
                         heroValues = _cell.cellValues.GetHeroValues();
                         isHeroSelected = true;
-                        ClientSend.SendAvailableCells(_cell.cellValues.position);
-
+                        BattleFieldManager.instance.SelectHero(_cell.cellValues.position);
                     }
                     //Если эта клетка занята героем-соперником/другом либо является свободной, то просто выводится информация о клетке и клетка считается выбранной
                     else
@@ -80,30 +69,6 @@ public class InputController : MonoBehaviour
                         BattleFieldManager.instance.HideAvailableCells();
                     }
                 }
-                /*
-                //Vector2 rayPos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
-                //RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
-                //Если луч задел героя, то выбираем его
-                if (hit.transform.tag == "Hero")
-                {
-                    isHeroSelected = true;
-                    heroBehaviour = hit.transform.GetComponent<HeroBehaviour>();
-                    //Выбран герой heroBehaviour
-                    SelectHero(heroBehaviour);
-                }
-                //Иначе "рассредотачиваем" внимание / поле
-                else
-                {
-                    if (hit.transform.tag == "Cell")
-                    {
-                        canvasCellInfo.gameObject.SetActive(true);
-                        infoPanel.ShowCellStats(hit.transform.GetComponent<Cell>());
-                    }
-                    //battlefieldManager.HideAccesibleCells();
-                    DefocusHero();
-                    isHeroSelected = false;
-                }
-                */
             }
             //Правая кнопка мыши для того, чтобы сделать какое-то действие героем (например переместиться в клетку либо атаковать)
             else if (Input.GetMouseButtonDown(1) && isHeroSelected && hit.transform.tag == "Cell")
@@ -117,50 +82,6 @@ public class InputController : MonoBehaviour
                 }
             }
         }
-        /*
-        //Левая кнопка мыши для того, чтобы выбрать героя
-        if (Input.GetMouseButtonDown(0))
-        {
-            //Vector2 rayPos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
-            //RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
-            //Если луч задел что-либо
-            if (hit)
-            {
-                //Если луч задел героя, то выбираем его
-                if (hit.transform.tag == "Hero")
-                {
-                    isHeroSelected = true;
-                    heroBehaviour = hit.transform.GetComponent<HeroBehaviour>();
-                    //Выбран герой heroBehaviour
-                    SelectHero(heroBehaviour);
-                }
-                //Иначе "рассредотачиваем" внимание / поле
-                else
-                {
-                    //battlefieldManager.HideAccesibleCells();
-                    DefocusHero();
-                    isHeroSelected = false;
-                }
-            }
-        }
-        //Правая кнопка мыши для того, чтобы сделать какое-то действие героем
-        else if (Input.GetMouseButtonDown(1) && isHeroSelected)
-        {
-            //Vector2 rayPos = new Vector2(Camera.main.ScreenToWorldPoint(Input.mousePosition).x, Camera.main.ScreenToWorldPoint(Input.mousePosition).y);
-            //RaycastHit2D hit = Physics2D.Raycast(rayPos, Vector2.zero, 0f);
-            //Если луч задел что-либо
-            if (hit)
-            {
-                SelectCell(hit.transform.gameObject,heroBehaviour);
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            turn++;
-            ChangeTurn(turn);
-        }
-        */
     }
     
     /*

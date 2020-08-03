@@ -8,6 +8,11 @@ public class GameUI : MonoBehaviour
 {
     public static GameUI instance;
 
+    //TopPanel
+    public Text turnsCountText;
+
+
+    //InfoPanel
     public GameObject infoPanel;
     public Text locationName;
     public Text damage;
@@ -25,6 +30,16 @@ public class GameUI : MonoBehaviour
             Debug.Log("Instance already exists, destroying object!");
             Destroy(this);
         }
+    }
+
+    public void PressButtonReady()
+    {
+        GameManager.SendlocalPlayerReady();
+    }
+
+    public void SetTurnsCount(int _turnsCount)
+    {
+        turnsCountText.text = _turnsCount.ToString();
     }
 
     public void OpenInfoPanel()

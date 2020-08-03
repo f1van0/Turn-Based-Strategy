@@ -111,13 +111,43 @@ public class Cell : MonoBehaviour
         state = _state;
         switch ((int)state)
         {
-            case 0: { cellSprite.color = emptyColor; break; }
-            case 1: { cellSprite.color = nearbyColor; break; }
-            case 2: { cellSprite.color = wallColor; break; }
-            case 3: { cellSprite.color = heroColor; break; }
-            case 4: { cellSprite.color = enemyColor; break; }
-            case 5: { cellSprite.color = friendColor; break; }
+            case (int)CellState.empty: { cellSprite.color = emptyColor; break; }
+            case (int)CellState.nearby: { cellSprite.color = nearbyColor; break; }
+            case (int)CellState.wall: { cellSprite.color = wallColor; break; }
+            case (int)CellState.hero: { cellSprite.color = heroColor; break; }
+            case (int)CellState.enemy: { cellSprite.color = enemyColor; break; }
+            case (int)CellState.friend: { cellSprite.color = friendColor; break; }
             default: { cellSprite.color = attackColor; break; }
+        }
+    }
+
+    public void DefineBy_Team_Username_Available(int _localPlayerTeam, string _localPlayerUsername, bool _isAvailable)
+    {
+        if (cellValues.GetHeroValues().owner == _localPlayerUsername)
+        {
+            Show(CellState.hero);
+        }
+        else if (_isAvailable)
+        {
+            if (cellValues.GetHeroValues().team != _localPlayerTeam && cellValues.GetHeroValues().team != -1)
+            {
+                Show(CellState.attack);
+            }
+            else if (cellValues.GetHeroValues().team == _localPlayerTeam)
+            {
+                Show(CellState.friend);
+            }
+        }
+        else if (!_isAvailable)
+        {
+            if (cellValues.GetHeroValues().team != _localPlayerTeam && cellValues.GetHeroValues().team != -1)
+            {
+                Show(CellState.enemy);
+            }
+            else if (cellValues.GetHeroValues().team == _localPlayerTeam)
+            {
+                Show(CellState.friend);
+            }
         }
     }
 
