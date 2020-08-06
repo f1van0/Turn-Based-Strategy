@@ -24,6 +24,7 @@ namespace Assets.Scripts.Network.Server
         public static CellValues[,] battlefield = new CellValues[cols, rows];
         public static CellValues[] presets = new CellValues[1];
 
+
         public static void StartLobby()
         {
             gameStage = 0;
@@ -36,7 +37,7 @@ namespace Assets.Scripts.Network.Server
             ServerSend.SendGameStageToAllExistingPlayers(gameStage);
             GenerateBattleField();
             SpawnHeroes();
-            SetAllPlayersReady(false);
+            ToNextTurn();
         }
 
         public static void SetAllPlayersReady(bool _isReady)
@@ -54,10 +55,28 @@ namespace Assets.Scripts.Network.Server
         public static void ToNextTurn()
         {
             turnNumber++;
-            if (turnNumber % 2 == 0)
+
+            for (int j = 0; j < cols; j++)
             {
-                //TODO: герои игроков одной команды не могут ходить, а герои игроков другой команды могут.
+                for (int i = 0; i < rows; i++)
+                {
+                    if (battlefield[i, j].GetHeroValues().ID != -1)
+                    {
+                        if ((battlefield[i, j].GetHeroValues().team - turnNumber) % 2 == 0)
+                        {
+                            battlefield[i, j].GetHeroValues().energy = battlefield[i, j].GetHeroValues().defaultEnergy;
+                        }
+                        else
+                        {
+                            battlefield[i, j].GetHeroValues().energy = 0;
+                        }
+                        ServerSend.SendCellToAllExistingPlayers(battlefield[i, j]);
+                    }
+                }
             }
+
+            SetAllPlayersReady(false);
+
             ServerSend.SendTurnNumber(turnNumber);
         }
 
@@ -84,7 +103,7 @@ namespace Assets.Scripts.Network.Server
             int start = CountOfAllNodes - CountOfCurrentNodes;
             int io = (int)_heroPosition.x;
             int jo = (int)_heroPosition.y;
-            int stepsCount = 2;
+            int stepsCount = battlefield[(int)_heroPosition.x, (int)_heroPosition.y].GetHeroValues().energy;
             //Soon
             //int stepsCount = battlefield[io, jo].GetHeroStats().GetHeroEnergy();
 
@@ -177,6 +196,7 @@ namespace Assets.Scripts.Network.Server
 
         public static void SpawnHeroes()
         {
+
             //So far players are spawning in line, depending on their team
             //Hero's id equals player's id. Hero's owner = player's username
             foreach (Client _client in Server.clients.Values)
@@ -216,6 +236,48 @@ namespace Assets.Scripts.Network.Server
             from_cellValues.SetHeroValues(new HeroValues(null));
 
             ServerSend.SendMoveHero(from_cellValues, to_cellValues);
+        }
+
+        public static void MoveHero(int _heroId, CellValues _moveFrom, CellValues _moveTo)
+        {
+
+            _moveTo.SetHeroValues(_moveFrom.GetHeroValues());
+            _moveTo.GetHeroValues().position = _moveTo.position;
+            _moveFrom.SetHeroValues(new HeroValues(null));
+        }
+
+        public static void AttackHero(int _heroId, CellValues _AttackingHero, CellValues _AttackedHero)
+        {
+            _AttackedHero.GetHeroValues().GetDamage(_AttackingHero.GetHeroValues());
+        }
+
+        public static void ActionHero(int _heroId, Vector2 _currentHeroPosition, Vector2 _actionPosition)
+        {
+            ref CellValues current_cellValues = ref battlefield[(int)_currentHeroPosition.x, (int)_currentHeroPosition.y];
+            ref CellValues action_cellValues = ref battlefield[(int)_actionPosition.x, (int)_actionPosition.y];
+
+            int _distanceOx = (int) Mathf.Abs(current_cellValues.position.x - action_cellValues.position.x);
+            int _distanceOy = (int) Mathf.Abs(current_cellValues.position.y - action_cellValues.position.y);
+            int _distance = (int)(_distanceOx + _distanceOy);
+
+            //Уменьшаем энергию героя
+            current_cellValues.GetHeroValues().energy = current_cellValues.GetHeroValues().energy - _distance;
+
+            if (action_cellValues.GetHeroValues().ID == -1)
+            {
+                //MoveHero
+                MoveHero(_heroId, current_cellValues, action_cellValues);
+            }
+            else
+            {
+                //AttackHero
+                AttackHero(_heroId, current_cellValues, action_cellValues);
+            }
+
+            CellValues _currentHeroCell = battlefield[(int)_currentHeroPosition.x, (int)_currentHeroPosition.y];
+            CellValues _actionHeroCell = battlefield[(int)_actionPosition.x, (int)_actionPosition.y];
+
+            ServerSend.SendActionHero(_currentHeroCell, _actionHeroCell);
         }
 
         public static void SetPlayerReadiness(ref Player _player)

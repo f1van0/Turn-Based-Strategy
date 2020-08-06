@@ -284,7 +284,7 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.udpTest, ClientHandle.UDPTest },
                 { (int)ServerPackets.playerInfo, ClientHandle.GetPlayerInfo },
                 { (int)ServerPackets.playerNickname, ClientHandle.GetPlayerNickname },
-                { (int)ServerPackets.playerReady, ClientHandle.GetPlayerReadiness },
+                { (int)ServerPackets.playerReady, ClientHandle.GetPlayerReady },
                 { (int)ServerPackets.playerTeam, ClientHandle.GetPlayerTeam },
                 { (int)ServerPackets.playerPosition, ClientHandle.GetPlayerPosition },
                 { (int)ServerPackets.chatMessage, ClientHandle.GetChatMessage },
@@ -293,7 +293,9 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.cell, ClientHandle.GetCell },
                 { (int)ServerPackets.spawnHero, ClientHandle.GetSpawnHero },
                 { (int)ServerPackets.moveHero, ClientHandle.GetMoveHero },
+                { (int)ServerPackets.actionHero, ClientHandle.GetActionHero },
                 { (int)ServerPackets.availableCells, ClientHandle.GetAvailableCells },
+                { (int)ServerPackets.turnNumber, ClientHandle.GetTurnNumber },
             };
         Debug.Log("Initialized packets.");
     }

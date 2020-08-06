@@ -22,6 +22,7 @@ namespace Assets.Scripts.Network.Server
         cell,
         spawnHero,
         moveHero,
+        actionHero,
         availableCells
 //        playerPosition,
 //        playerReadiness,
@@ -40,6 +41,7 @@ namespace Assets.Scripts.Network.Server
         playerTeamReceived,
         chatMessageReceived,
         moveHeroReceived,
+        actionHeroReceived,
         availableCellsReceived
         //turnsCountReceived,
         //gameStageReceived
@@ -230,6 +232,15 @@ namespace Assets.Scripts.Network.Server
             Write(_value.position);
             Write(_value.owner);
             Write(_value.team);
+
+            Write(_value.defaultHealth);
+            Write(_value.health);
+
+            Write(_value.defaultDamage);
+            Write(_value.damage);
+
+            Write(_value.defaultEnergy);
+            Write(_value.energy);
         }
 
         public void Write(Vector2 _value)
@@ -395,7 +406,7 @@ namespace Assets.Scripts.Network.Server
 
         public HeroValues ReadHeroValues(bool _moveReadPos = true)
         {
-            return new HeroValues(ReadInt(), ReadVector2(), ReadString(), ReadInt());
+            return new HeroValues(ReadInt(), ReadVector2(), ReadString(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt());
         }
 
         public Vector2[] ReadVector2Array(bool _moveReadPos = true)

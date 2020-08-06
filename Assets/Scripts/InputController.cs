@@ -74,11 +74,18 @@ public class InputController : MonoBehaviour
             else if (Input.GetMouseButtonDown(1) && isHeroSelected && hit.transform.tag == "Cell")
             {
                 Cell _cell = hit.transform.GetComponent<Cell>();
-                if (_cell.cellValues.GetHeroValues().owner == "None" && BattleFieldManager.instance.isAvailableCellSelected(_cell.cellValues.position))
+                if (BattleFieldManager.instance.isAvailableCellSelected(_cell.cellValues.position))
                 {
-                    //                      (hero's id,      previous position,    next position)
-                    GameManager.SendMoveHero(heroValues.ID, heroValues.position, _cell.cellValues.position);
+                    GameManager.SendActionHero(heroValues.ID, heroValues.position, _cell.cellValues.position);
                     BattleFieldManager.instance.HideAvailableCells();
+                    /*
+                    if (_cell.cellValues.GetHeroValues().ID == -1)
+                    {
+                        //                      (hero's id,      previous position,    next position)
+                        GameManager.SendActionHero(heroValues.ID, heroValues.position, _cell.cellValues.position);
+                        BattleFieldManager.instance.HideAvailableCells();
+                    }
+                    */
                 }
             }
         }

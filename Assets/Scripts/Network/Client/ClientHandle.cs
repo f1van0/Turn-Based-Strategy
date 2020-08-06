@@ -60,13 +60,13 @@ public class ClientHandle : MonoBehaviour
         GameManager.SetPlayerUsername(_id, _nickname);
     }
 
-    public static void GetPlayerReadiness(Packet _packet)
+    public static void GetPlayerReady(Packet _packet)
     {
         int _id = _packet.ReadInt();
         bool _isReady = _packet.ReadBool();
 
         GameManager.SetPlayerReady(_id, _isReady);
-        if (_id == Client.instance.myId)
+        if (_id == Client.instance.myId && GameManager.gameStage == 0)
         {
             GameManager.SetLocalPlayerReady(_isReady);
         }
@@ -113,9 +113,8 @@ public class ClientHandle : MonoBehaviour
     public static void GetCell(Packet _packet)
     {
         CellValues _cellValues = _packet.ReadCellValues();
-        bool _isCellAvailable = _packet.ReadBool();
 
-        GameManager.SetCellInfo(_cellValues, _isCellAvailable);
+        GameManager.SetCell(_cellValues);
     }
 
     public static void GetSpawnHero(Packet _packet)
@@ -133,10 +132,25 @@ public class ClientHandle : MonoBehaviour
         GameManager.MoveHero(from_cellValues, to_cellValues);
     }
 
+    public static void GetActionHero(Packet _packet)
+    {
+        CellValues current = _packet.ReadCellValues();
+        CellValues action = _packet.ReadCellValues();
+
+        GameManager.ActionHero(current, action);
+    }
+
     public static void GetAvailableCells(Packet _packet)
     {
         Vector2[] _availableCells = _packet.ReadVector2Array();
 
         GameManager.ShowAvailableCells(_availableCells);
+    }
+
+    public static void GetTurnNumber(Packet _packet)
+    {
+        int _turnNumber = _packet.ReadInt();
+
+        GameManager.SetTurn(_turnNumber);
     }
 }

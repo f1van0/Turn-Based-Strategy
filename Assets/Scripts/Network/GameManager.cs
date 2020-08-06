@@ -16,6 +16,8 @@ public static class GameManager
     public static int playersCount = 0;
     public static int clientId = 0;
 
+    public static int gameStage = 0;
+
     public static void AddNewPlayer(int _id, string _username, int _team, bool _isReady)
     {
         players.Add(_id, new PlayerManager(_username, _team, _isReady));
@@ -29,10 +31,12 @@ public static class GameManager
         if (_gameStage == 0)
         {
             StartLobby();
+            gameStage = 0;
         }
         else
         {
             StartGame();
+            gameStage = 1;
         }
     }
 
@@ -54,9 +58,14 @@ public static class GameManager
         BattleFieldManager.instance.SpawnBattlefield(_battleground);
     }
 
-    public static void SetCellInfo(CellValues _cell, bool _isCellAvailable)
+    //public static void SetCellInfo(CellValues _cell, bool _isCellAvailable)
+    //{
+    //    BattleFieldManager.instance.SetCellInfo(_cell, _isCellAvailable);
+    //}
+
+    public static void SetCell(CellValues _cell)
     {
-        BattleFieldManager.instance.SetCellInfo(_cell, _isCellAvailable);
+        BattleFieldManager.instance.SetCell(_cell);
     }
 
     public static void UpdateExsistingPlayer(int _id, string _username, int _team, bool _isReady)
@@ -105,7 +114,14 @@ public static class GameManager
     public static void SetPlayerReady(int _id, bool _isReady)
     {
         players[_id].isReady = _isReady;
-        LobbyManager.instance.SetPlayerReady(_id, _isReady);
+        if (gameStage == 0)
+        {
+            LobbyManager.instance.SetPlayerReady(_id, _isReady);
+        }
+        else if (gameStage == 0)
+        {
+            GameUI.instance.readyButton.interactable = false;
+        }
     }
 
     public static void SpawnHero(HeroValues _heroValues)
@@ -123,8 +139,24 @@ public static class GameManager
         ClientSend.SendMoveHero(_heroId, _moveFromPosition, _moveToPosition);
     }
 
+    public static void ActionHero(CellValues _current, CellValues _action)
+    {
+        BattleFieldManager.instance.ActionHero(_current, _action);
+    }
+
+    public static void SendActionHero(int _heroId, Vector2 _current, Vector2 _action)
+    {
+        ClientSend.SendActionHero(_heroId, _current, _action);
+    }
+
     public static void ShowAvailableCells( Vector2[] _availableCells)
     {
         BattleFieldManager.instance.ShowAvailableCells(_availableCells);
+    }
+
+    public static void SetTurn(int _turnNumber)
+    {
+        GameUI.instance.SetTurnsNumber(_turnNumber);
+        BattleFieldManager.instance.HideAvailableCells();
     }
 }

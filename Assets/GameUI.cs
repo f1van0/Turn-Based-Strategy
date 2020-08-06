@@ -10,7 +10,11 @@ public class GameUI : MonoBehaviour
 
     //TopPanel
     public Text turnsCountText;
+    public Button readyButton;
 
+    private int turnNumber = 0;
+
+    //private bool _readyState = false;
 
     //InfoPanel
     public GameObject infoPanel;
@@ -34,12 +38,17 @@ public class GameUI : MonoBehaviour
 
     public void PressButtonReady()
     {
-        GameManager.SendlocalPlayerReady();
+        if ((GameManager.players[GameManager.clientId].team - turnNumber) % 2 == 0)
+        {
+            GameManager.SendlocalPlayerReady();
+        }
     }
 
-    public void SetTurnsCount(int _turnsCount)
+    public void SetTurnsNumber(int _turnsNumber)
     {
-        turnsCountText.text = _turnsCount.ToString();
+        turnNumber = _turnsNumber;
+
+        turnsCountText.text = "Turn " + turnNumber.ToString();
     }
 
     public void OpenInfoPanel()

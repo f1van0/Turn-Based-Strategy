@@ -18,7 +18,7 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
     public Cell[,] battlefield;
     public Dictionary<int, GameObject> heroes = new Dictionary<int, GameObject>();
 
-    public Vector2[] availableCells;
+    public Vector2[] availableCells = null;
 
     private const int cols = 8;
     private const int rows = 6;
@@ -58,19 +58,20 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
                 battlefield[i, j].objectCell = _cellGameObject;
             }
         }
+        availableCells = null;
     }
 
+        /*
     public void SetCellInfo(CellValues _cell, bool _isCellAvailable)
     {
-        /*
         if (_isCellAvailable)
             battlefield[(int)_cell.position.x, (int)_cell.position.y] = new Cell(_cell.locationName, _cell.damagePerTurn, _cell.healthPerTurn, _cell.energyPerTurn, CellState.nearby, new Vector2(_cell.position.x, _cell.position.y));
         else
             battlefield[(int)_cell.position.x, (int)_cell.position.y] = new Cell(_cell.locationName, _cell.damagePerTurn, _cell.healthPerTurn, _cell.energyPerTurn, CellState.wall, new Vector2(_cell.position.x, _cell.position.y));
 
         battlefield[(int)_cell.position.x, (int)_cell.position.y].Show();
-        */
     }
+        */
 
     /*
     public void SpawnHero(int _id, Vector2 _position)
@@ -96,13 +97,10 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         battlefield[(int)_heroPosition.x, (int)_heroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
     }
 
-    /*
-    public void MoveHero(int _id, Vector2 _position)
+    public void SetCell(CellValues _cell)
     {
-        heroes[_id].gameObject.transform.position = _position;
-        heroes[_id].transform.SetParent(battlefield[(int)_position.x, (int)_position.y].gameObject.transform, false);
+        battlefield[(int)_cell.position.x, (int)_cell.position.y].cellValues = _cell;
     }
-    */
 
     public void MoveHero(CellValues from_cellValues, CellValues to_cellValues)
     {
@@ -117,6 +115,16 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         heroes[_heroId].transform.SetParent(battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].gameObject.transform, false);
 
         battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
+    }
+
+    public void AttackHero(CellValues _attackingHero, CellValues _attackedHero)
+    {
+        //play animation or something
+    }
+
+    public void ActionHero(CellValues _current, CellValues _action)
+    {
+        MoveHero(_current, _action);
     }
 
     public void SelectHero(Vector2 _heroPosition)
@@ -163,9 +171,9 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
                 battlefield[(int)availableCells[i].x, (int)availableCells[i].y].Show(CellState.empty);
             }
             battlefield[(int)availableCells[0].x, (int)availableCells[0].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
-        }
 
-        availableCells = null;
+            availableCells = null;
+        }
     }
 
     public bool isAvailableCellSelected(Vector2 _position)

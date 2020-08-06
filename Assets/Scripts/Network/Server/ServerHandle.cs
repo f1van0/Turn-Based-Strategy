@@ -52,8 +52,53 @@ namespace Assets.Scripts.Network.Server
         public static void GetPlayerReady(int _fromClient, Packet _packet)
         {
             Server.clients[_fromClient].player.isReady = !Server.clients[_fromClient].player.isReady;
-            //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
-            ServerSend.SendPlayerReadinessToAllExistingPlayers(Server.clients[_fromClient].player);
+            bool _isAllTeammatesAreReady = true;
+            if (GameManager.gameStage == 0)
+            {
+                foreach (Client _client in Server.clients.Values)
+                {
+                    if (_client.player != null)
+                    {
+                        if (!_client.player.isReady)
+                        {
+                            _isAllTeammatesAreReady = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (GameManager.gameStage == 1)
+            {
+                foreach (Client _client in Server.clients.Values)
+                {
+                    if (_client.player != null)
+                    {
+                        //Part of code for final version, where only a specific team of players can switch the turn
+                        if (((_client.player.team - ServerSideComputing.turnNumber) % 2 == 0) && (!_client.player.isReady))
+                        {
+                            _isAllTeammatesAreReady = false;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (_isAllTeammatesAreReady)
+            {
+                if (ServerSideComputing.gameStage == 0)
+                {
+                    ServerSideComputing.StartGame();
+                }
+                else if (ServerSideComputing.gameStage == 1)
+                {
+                    ServerSideComputing.ToNextTurn();
+                }
+            }
+            else
+            {
+                //отправляем полученную информацию об игроке _fromClient или _clientIdCheck (одно и то же должно быть) всем игрокам, включая него в знак, что инфа на сервере и у клиентов, а значит можно её менять и у себя на компе (у игрока) (например что-то вывести в меню)
+                ServerSend.SendPlayerReadinessToAllExistingPlayers(Server.clients[_fromClient].player);
+            }
         }
 
         public static void GetPlayerNickname(int _fromClient, Packet _packet)
@@ -97,6 +142,15 @@ namespace Assets.Scripts.Network.Server
             Vector2 _moveToPosition = _packet.ReadVector2();
 
             ServerSideComputing.MoveHero(_heroId, _moveFromPosition, _moveToPosition);
+        }
+
+        public static void GetMoveAction(int _fromClient, Packet _packet)
+        {
+            int _heroId = _packet.ReadInt();
+            Vector2 _currentHeroPosition = _packet.ReadVector2();
+            Vector2 _actionPosition = _packet.ReadVector2();
+
+            ServerSideComputing.ActionHero(_heroId, _currentHeroPosition, _actionPosition);
         }
 
         public static void GetRequestToShowAvailableCells(int _fromClient, Packet _packet)

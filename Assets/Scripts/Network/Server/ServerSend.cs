@@ -187,12 +187,11 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public static void SendCellToAllExistingPlayers(CellValues _cell, bool isCellAvailable)
+        public static void SendCellToAllExistingPlayers(CellValues _cell)
         {
             using (Packet _packet = new Packet((int)ServerPackets.cell))
             {
                 _packet.Write(_cell);
-                _packet.Write(isCellAvailable);
 
                 SendTCPDataToAllExistingPlayers(_packet);
             }
@@ -224,6 +223,17 @@ namespace Assets.Scripts.Network.Server
             {
                 _packet.Write(from_cellValues);
                 _packet.Write(to_cellValues);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendActionHero(CellValues _currentHeroCell, CellValues _actionCell)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.actionHero))
+            {
+                _packet.Write(_currentHeroCell);
+                _packet.Write(_actionCell);
 
                 SendTCPDataToAllExistingPlayers(_packet);
             }

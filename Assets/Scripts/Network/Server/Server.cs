@@ -133,6 +133,7 @@ namespace Assets.Scripts.Network.Server
                 { (int)ClientPackets.playerPositionReceived, ServerHandle.GetPlayerPosition },
                 { (int)ClientPackets.chatMessageReceived, ServerHandle.GetChatMessage },
                 { (int)ClientPackets.moveHeroReceived, ServerHandle.GetMoveHero },
+                { (int)ClientPackets.actionHeroReceived, ServerHandle.GetMoveAction },
                 { (int)ClientPackets.availableCellsReceived, ServerHandle.GetRequestToShowAvailableCells }
                 //{ (int)ClientPackets.moveHeroReceived, ServerHandle.GetHero }
                 //{ (int)ClientPackets.gameStageReceived, ServerHandle },

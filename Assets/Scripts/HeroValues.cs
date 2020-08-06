@@ -9,19 +9,17 @@ namespace Assets.Scripts
 {
     public class HeroValues
     {
-        /*
         internal int health { get; set; }
-        internal int mana { get; set; }
-        internal int damage { get; set; }
-        internal int energy { get; set; }
+        internal int defaultHealth { get; set; }
 
-        internal int defaultHealth = 100;
-        internal int defaultMana = 120;
-        internal int defaultDamage = 30;
-        internal int defaultEnergy = 2;
+        internal int damage { get; set; }
+        internal int defaultDamage { get; set; }
+
+        internal int energy { get; set; }
+        internal int defaultEnergy { get; set; }
+
 
         internal int targetID { get; set; }
-        */
         internal int ID { get; set; }
 
         internal Vector2 position;
@@ -40,6 +38,15 @@ namespace Assets.Scripts
                 position = new Vector2(-1f, -1f);
                 owner = "None";
                 team = -1;
+
+                defaultHealth = 0;
+                health = defaultHealth;
+
+                defaultDamage = 0;
+                damage = defaultDamage;
+
+                defaultEnergy = 0;
+                energy = defaultEnergy;
             }
             else
             {
@@ -47,24 +54,50 @@ namespace Assets.Scripts
                 position = _heroValues.position;
                 owner = _heroValues.owner;
                 team = _heroValues.team;
+
+                defaultHealth = _heroValues.defaultHealth;
+                health = _heroValues.health;
+
+                defaultDamage = _heroValues.defaultDamage;
+                damage = _heroValues.damage;
+
+                defaultEnergy = _heroValues.defaultEnergy;
+                energy = _heroValues.energy;
             }
         }
 
-        public HeroValues(int _id, Vector2 _position, string _owner, int _team)
+        public HeroValues(int _id, Vector2 _position, string _owner, int _team, int _defaultHealth, int _health, int _defaultDamage, int _damage, int _defaultEnergy, int _energy)
         {
-            /*
-            health = 100;
-            mana = 120;
-            damage = 30;
-            energy = 2;
-            defaultEnergy = 2;
-            */
             ID = _id;
             position = _position;
             owner = _owner;
             team = _team;
-            //targetID = -1;
-            //this._cell = null;
+
+            defaultHealth = _defaultHealth;
+            health = _health;
+
+            defaultDamage = _defaultDamage;
+            damage = _damage;
+
+            defaultEnergy = _defaultEnergy;
+            energy = _energy;
+        }
+
+        public HeroValues(int _id, Vector2 _position, string _owner, int _team)
+        {
+            ID = _id;
+            position = _position;
+            owner = _owner;
+            team = _team;
+
+            defaultHealth = 100;
+            health = defaultHealth;
+
+            defaultDamage = 20;
+            damage = defaultDamage;
+
+            defaultEnergy = 2;
+            energy = defaultEnergy;
         }
 
         public HeroValues()
@@ -134,6 +167,11 @@ namespace Assets.Scripts
         public void SetTeam(int teamNumber)
         {
             team = teamNumber;
+        }
+
+        public void GetDamage(HeroValues _attakingHero)
+        {
+            health -= _attakingHero.damage;
         }
     }
 }

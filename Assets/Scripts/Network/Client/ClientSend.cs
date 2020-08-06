@@ -114,6 +114,18 @@ public class ClientSend : MonoBehaviour
         }
     }
 
+    public static void SendActionHero(int _heroId, Vector2 _current, Vector2 _action)
+    {
+        using (Packet _packet = new Packet((int)ClientPackets.actionHeroReceived))
+        {
+            _packet.Write(_heroId);
+            _packet.Write(_current);
+            _packet.Write(_action);
+
+            SendTCPData(_packet);
+        }
+    }
+
     public static void SendAvailableCells(Vector2 _heroPosition)
     {
         using (Packet _packet = new Packet((int)ClientPackets.availableCellsReceived))
