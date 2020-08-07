@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts;
+using UnityEngine.UI;
 
 public class BattleFieldManager : MonoBehaviour//, IDisposable
 {
@@ -120,11 +121,22 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
     public void AttackHero(CellValues _attackingHero, CellValues _attackedHero)
     {
         //play animation or something
+        int _heroId = _attackedHero.GetHeroValues().ID;
+
+        heroes[_heroId].GetComponent<SpriteRenderer>().color = Color.red;
+        heroes[_heroId].GetComponentInChildren<Text>().text = _attackedHero.GetHeroValues().health.ToString();
     }
 
     public void ActionHero(CellValues _current, CellValues _action)
     {
-        MoveHero(_current, _action);
+        if (_current.GetHeroValues().ID != -1 && _action.GetHeroValues().ID != -1)
+        {
+            AttackHero(_current, _action);
+        }
+        else
+        {
+            MoveHero(_current, _action);
+        }
     }
 
     public void SelectHero(Vector2 _heroPosition)
@@ -168,9 +180,15 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         {
             for (int i = 0; i < availableCells.Length; i++)
             {
-                battlefield[(int)availableCells[i].x, (int)availableCells[i].y].Show(CellState.empty);
+                if (battlefield[(int)availableCells[i].x, (int)availableCells[i].y].cellValues.GetHeroValues().ID != -1)
+                {
+                    battlefield[(int)availableCells[i].x, (int)availableCells[i].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
+                }
+                else
+                {
+                    battlefield[(int)availableCells[i].x, (int)availableCells[i].y].Show(CellState.empty);
+                }
             }
-            battlefield[(int)availableCells[0].x, (int)availableCells[0].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
 
             availableCells = null;
         }

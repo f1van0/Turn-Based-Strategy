@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
 
     public GameObject ConnectionMenu;
     public GameObject LobbyMenu;
-    public GameObject GameUI;
+    public GameObject GameUIMenu;
 
     private void Awake()
     {
@@ -31,21 +31,21 @@ public class UIManager : MonoBehaviour
     {
         ConnectionMenu.SetActive(true);
         LobbyMenu.SetActive(false);
-        GameUI.SetActive(false);
+        GameUIMenu.SetActive(false);
     }
 
     public void OpenLobbyMenu()
     {
         ConnectionMenu.SetActive(false);
         LobbyMenu.SetActive(true);
-        GameUI.SetActive(false);
+        GameUIMenu.SetActive(false);
     }
 
     public void OpenGameUI()
     {
         ConnectionMenu.SetActive(false);
         LobbyMenu.SetActive(false);
-        GameUI.SetActive(true);
+        GameUIMenu.SetActive(true);
     }
 
     public void ConnectToServer()
@@ -68,6 +68,7 @@ public class UIManager : MonoBehaviour
             Instantiate(serverPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
 
             LobbyManager.instance.ShowStartGameButton();
+            GameUI.instance.ShowNextTurnButton();
         }
         else
             PlayerNickNameField.GetComponent<Image>().color = Color.red;

@@ -11,6 +11,7 @@ public class GameUI : MonoBehaviour
     //TopPanel
     public Text turnsCountText;
     public Button readyButton;
+    public Button nextTurnButton;
 
     private int turnNumber = 0;
 
@@ -34,6 +35,16 @@ public class GameUI : MonoBehaviour
             Debug.Log("Instance already exists, destroying object!");
             Destroy(this);
         }
+    }
+
+    public void ShowNextTurnButton()
+    {
+        nextTurnButton.gameObject.SetActive(true);
+    }
+
+    public void ToNextTurn()
+    {
+        Assets.Scripts.Network.Server.ServerSideComputing.ToNextTurn();
     }
 
     public void PressButtonReady()
@@ -81,7 +92,7 @@ public class GameUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        nextTurnButton.gameObject.SetActive(false);
     }
 
     // Update is called once per frame

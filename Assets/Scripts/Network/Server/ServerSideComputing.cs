@@ -24,7 +24,7 @@ namespace Assets.Scripts.Network.Server
         public static CellValues[,] battlefield = new CellValues[cols, rows];
         public static CellValues[] presets = new CellValues[1];
 
-
+        //TODO: part of refactoring. make it so that the player can connect not only during lobby gameStage
         public static void StartLobby()
         {
             gameStage = 0;
@@ -80,6 +80,7 @@ namespace Assets.Scripts.Network.Server
             ServerSend.SendTurnNumber(turnNumber);
         }
 
+        //TODO: part of refactoring. spawn battlefield based on cellValues presets
         public static void GenerateBattleField()
         {
             //creating a field while just creating cells without any kind of presets
@@ -94,6 +95,7 @@ namespace Assets.Scripts.Network.Server
             ServerSend.SendBattleFieldToAllExistingPlayers(battlefield);
         }
 
+        //TODO: part of refactoring. make more func, based on new CellValues and HeroValues
         public static void ShowAccesibleCellsByWave(int _toClient, Vector2 _heroPosition)
         {
             int CountOfCurrentNodes = 1;
@@ -118,67 +120,69 @@ namespace Assets.Scripts.Network.Server
                     newCount = 0;
                     int i = Mathf.RoundToInt(currentNodes[t].x);
                     int j = Mathf.RoundToInt(currentNodes[t].y);
-
-                    if (i < cols - 1)
+                    if (battlefield[i,j].GetHeroValues().ID == -1 || t == 0)
                     {
-                        if (battlefield[i + 1, j].isCellEmpty)
+                        if (i < cols - 1)
                         {
-                            currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i + 1, j);
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i + 1, j], true);
-                            newCount++;
-                            CountOfNewNodes++;
+                            if (battlefield[i + 1, j].isCellEmpty)
+                            {
+                                currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i + 1, j);
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i + 1, j], true);
+                                newCount++;
+                                CountOfNewNodes++;
+                            }
+                            else
+                            {
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i + 1, j], false);
+                            }
                         }
-                        else
+                        if (i > 0)
                         {
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i + 1, j], false);
+                            if (battlefield[i - 1, j].isCellEmpty)
+                            {
+                                currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i - 1, j);
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i - 1, j], true);
+                                newCount++;
+                                CountOfNewNodes++;
+                            }
+                            else
+                            {
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i - 1, j], false);
+                            }
                         }
+                        if (j < rows - 1)
+                        {
+                            if (battlefield[i, j + 1].isCellEmpty)
+                            {
+                                currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i, j + 1);
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j + 1], true);
+                                newCount++;
+                                CountOfNewNodes++;
+                            }
+                            else
+                            {
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j + 1], false);
+                            }
+                        }
+                        if (j > 0)
+                        {
+                            if (battlefield[i, j - 1].isCellEmpty)
+                            {
+                                currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i, j - 1);
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j - 1], true);
+                                newCount++;
+                                CountOfNewNodes++;
+                            }
+                            else
+                            {
+                                //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j - 1], false);
+                            }
+                        }
+                        //сделать шаги в стороны
+                        //очистить текущие
+                        //проверить были ли они в истории
+                        //добавить полученные в текущие
                     }
-                    if (i > 0)
-                    {
-                        if (battlefield[i - 1, j].isCellEmpty)
-                        {
-                            currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i - 1, j);
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i - 1, j], true);
-                            newCount++;
-                            CountOfNewNodes++;
-                        }
-                        else
-                        {
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i - 1, j], false);
-                        }
-                    }
-                    if (j < rows - 1)
-                    {
-                        if (battlefield[i, j + 1].isCellEmpty)
-                        {
-                            currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i, j + 1);
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j + 1], true);
-                            newCount++;
-                            CountOfNewNodes++;
-                        }
-                        else
-                        {
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j + 1], false);
-                        }
-                    }
-                    if (j > 0)
-                    {
-                        if (battlefield[i, j - 1].isCellEmpty)
-                        {
-                            currentNodes[CountOfAllNodes + CountOfNewNodes] = new Vector2(i, j - 1);
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j - 1], true);
-                            newCount++;
-                            CountOfNewNodes++;
-                        }
-                        else
-                        {
-                            //ServerSend.SendCellToAllExistingPlayers(battlefield[i, j - 1], false);
-                        }
-                    }
-                    //сделать шаги в стороны
-                    //очистить текущие
-                    //проверить были ли они в истории
-                    //добавить полученные в текущие
                 }
                 start = CountOfAllNodes;
                 CountOfAllNodes += CountOfNewNodes;
@@ -194,6 +198,7 @@ namespace Assets.Scripts.Network.Server
             ServerSend.SendAvailableCells(_toClient, nodes);
         }
 
+        //TODO: part of refactoring. Add hero presets, hero position
         public static void SpawnHeroes()
         {
 
