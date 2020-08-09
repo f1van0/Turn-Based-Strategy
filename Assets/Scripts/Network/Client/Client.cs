@@ -285,17 +285,18 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.playerInfo, ClientHandle.GetPlayerInfo },
                 { (int)ServerPackets.playerNickname, ClientHandle.GetPlayerNickname },
                 { (int)ServerPackets.playerReady, ClientHandle.GetPlayerReady },
-                { (int)ServerPackets.playerTeam, ClientHandle.GetPlayerTeam },
                 { (int)ServerPackets.playerPosition, ClientHandle.GetPlayerPosition },
+                { (int)ServerPackets.playerTeam, ClientHandle.GetPlayerTeam },
                 { (int)ServerPackets.chatMessage, ClientHandle.GetChatMessage },
+                { (int)ServerPackets.turnNumber, ClientHandle.GetTurnNumber },
                 { (int)ServerPackets.gameStage, ClientHandle.GetGameStage },
                 { (int)ServerPackets.battleground, ClientHandle.GetBattleGround },
                 { (int)ServerPackets.cell, ClientHandle.GetCell },
                 { (int)ServerPackets.spawnHero, ClientHandle.GetSpawnHero },
                 { (int)ServerPackets.moveHero, ClientHandle.GetMoveHero },
-                { (int)ServerPackets.actionHero, ClientHandle.GetActionHero },
                 { (int)ServerPackets.availableCells, ClientHandle.GetAvailableCells },
-                { (int)ServerPackets.turnNumber, ClientHandle.GetTurnNumber },
+                { (int)ServerPackets.attackHero, ClientHandle.GetAttackHero },
+                { (int)ServerPackets.heroValues, ClientHandle.GetHeroValues },
             };
         Debug.Log("Initialized packets.");
     }

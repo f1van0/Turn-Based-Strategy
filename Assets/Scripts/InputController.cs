@@ -7,31 +7,31 @@ using UnityEngine;
 public class InputController : MonoBehaviour
 {
     private Camera mainCamera;
-    private Cell selectedNeededCell;
-    private BattleFieldManager battlefieldManager;
-    private HeroBehaviour heroBehaviour;
-    private HeroBehaviour focusedHero;
-    private Cell focusedCell;
+    //private Cell selectedNeededCell;
+    //private HeroBehaviour heroBehaviour;
+    //private HeroBehaviour focusedHero;
+    //private Cell focusedCell;
 
-    public Canvas canvasCellInfo;
-    private UICellInfo infoPanel;
+    //public Canvas canvasCellInfo;
+    //private UICellInfo infoPanel;
 
-    private bool isHeroSelected = false;
-
+    //private bool isHeroSelected = false;
+    private int selectedHeroId = -1;
+    /*
     public event Action<HeroBehaviour> SelectHero;
     public event Action DefocusHero;
     public event Action<GameObject, HeroBehaviour> SelectCell;
     public event Action<int> ChangeTurn;
-
+    */
     private Vector2 rayPos;
     private RaycastHit2D hit;
 
-    public HeroValues heroValues;
+    //public HeroValues heroValues;
 
     private void Start()
     {
         mainCamera = FindObjectOfType<Camera>();
-        infoPanel = canvasCellInfo.GetComponent<UICellInfo>();
+        //infoPanel = canvasCellInfo.GetComponent<UICellInfo>();
     }
 
 
@@ -51,13 +51,15 @@ public class InputController : MonoBehaviour
                 {
                     //Если эта клетка занята подконтрольным вам героем, то необходимо узнать у сервера информацию о доступных для перемещения клеток
                     Cell _cell = hit.transform.GetComponent<Cell>();
-                    if (_cell.cellValues.GetHeroValues().owner != "None")
+                    int _heroIdInCell = _cell.cellValues.heroId;
+
+                    if (_heroIdInCell != -1)
                     {
                         //TODO: Show AccesibleCellsForHero
                         //BattleFieldManager.instance.ShowAccesibleCellsByWave(_cell);
-                        heroValues = _cell.cellValues.GetHeroValues();
-                        isHeroSelected = true;
-                        BattleFieldManager.instance.SelectHero(_cell.cellValues.position);
+
+                        selectedHeroId = _heroIdInCell;
+                        BattleFieldManager.instance.SelectHero(_heroIdInCell);
                     }
                     //Если эта клетка занята героем-соперником/другом либо является свободной, то просто выводится информация о клетке и клетка считается выбранной
                     else
@@ -65,27 +67,48 @@ public class InputController : MonoBehaviour
                         //TODO: Show InfoPanel
                         //GameUI.instance.OpenInfoPanel();
                         //GameUI.instance.UpdateinfoPanel(_cell);
-                        isHeroSelected = false;
+
+                        selectedHeroId = -1;
                         BattleFieldManager.instance.HideAvailableCells();
                     }
                 }
+                else if (hit.transform.tag == "Hero")
+                {
+                    Hero _hero = hit.transform.GetComponent<Hero>();
+
+                    selectedHeroId = _hero.heroValues.ID;
+                    BattleFieldManager.instance.SelectHero(_hero.heroValues.ID);
+                }
             }
             //Правая кнопка мыши для того, чтобы сделать какое-то действие героем (например переместиться в клетку либо атаковать)
-            else if (Input.GetMouseButtonDown(1) && isHeroSelected && hit.transform.tag == "Cell")
+            else if (Input.GetMouseButtonDown(1) && selectedHeroId != -1)
             {
-                Cell _cell = hit.transform.GetComponent<Cell>();
-                if (BattleFieldManager.instance.isAvailableCellSelected(_cell.cellValues.position))
+                if (hit.transform.tag == "Cell")
                 {
-                    GameManager.SendActionHero(heroValues.ID, heroValues.position, _cell.cellValues.position);
-                    BattleFieldManager.instance.HideAvailableCells();
-                    /*
-                    if (_cell.cellValues.GetHeroValues().ID == -1)
+                    Cell _cell = hit.transform.GetComponent<Cell>();
+                    if (BattleFieldManager.instance.isAvailableCellSelected(_cell.cellValues.position))
                     {
-                        //                      (hero's id,      previous position,    next position)
-                        GameManager.SendActionHero(heroValues.ID, heroValues.position, _cell.cellValues.position);
+                        if (_cell.cellValues.heroId == -1)
+                        {
+                            HeroValues _selectedHeroValues = BattleFieldManager.instance.GetHeroValuesById(selectedHeroId);
+                            GameManager.SendMoveHero(selectedHeroId, _selectedHeroValues.position, _cell.cellValues.position);
+                        }
+                        else
+                        {
+                            GameManager.SendAttackHero(selectedHeroId, _cell.cellValues.heroId);
+                        }
+
+                        selectedHeroId = -1;
                         BattleFieldManager.instance.HideAvailableCells();
                     }
-                    */
+                }
+                else if (hit.transform.tag == "Hero")
+                {
+                    Hero _targetHero = hit.transform.GetComponent<Hero>();
+                    GameManager.SendAttackHero(selectedHeroId, _targetHero.heroValues.ID);
+
+                    selectedHeroId = -1;
+                    BattleFieldManager.instance.HideAvailableCells();
                 }
             }
         }
@@ -224,4 +247,4 @@ public class InputController : MonoBehaviour
         }
     }
         */
-        }
+}

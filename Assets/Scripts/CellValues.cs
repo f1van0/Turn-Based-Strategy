@@ -13,9 +13,9 @@ namespace Assets.Scripts
         public int damagePerTurn = 1;
         public int healthPerTurn = 1;
         public int energyPerTurn = 0;
-        public Vector2 position; // Позиция не в прямом смысле, здесь скорее индекс клетки, чтобы узнать положение этой клетки относительно других
+        public Vector2Int position; // Позиция не в прямом смысле, здесь скорее индекс клетки, чтобы узнать положение этой клетки относительно других
         public bool isCellEmpty = true;
-        private HeroValues heroValues;
+        public int heroId = -1;
 
         public CellValues()
         {
@@ -23,12 +23,12 @@ namespace Assets.Scripts
             damagePerTurn = 1;
             healthPerTurn = 1;
             energyPerTurn = 0;
-            position = new Vector2(0 ,0);
+            position = new Vector2Int(0 ,0);
             isCellEmpty = true;
-            heroValues = new HeroValues(null);
+            heroId = -1;
         }
 
-        public CellValues(Vector2 _position)
+        public CellValues(Vector2Int _position)
         {
             locationName = "Hills";
             damagePerTurn = 1;
@@ -36,10 +36,10 @@ namespace Assets.Scripts
             energyPerTurn = 0;
             position = _position;
             isCellEmpty = true;
-            heroValues = new HeroValues(null);
+            heroId = -1;
         }
 
-        public CellValues(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, Vector2 _position)
+        public CellValues(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, Vector2Int _position)
         {
             locationName = _locationName;
             damagePerTurn = _damagePerTurn;
@@ -47,10 +47,10 @@ namespace Assets.Scripts
             energyPerTurn = _energyPerTurn;
             position = _position;
             isCellEmpty = true;
-            heroValues = new HeroValues(null);
+            heroId = -1;
         }
 
-        public CellValues(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, Vector2 _position, HeroValues _heroValues)
+        public CellValues(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, Vector2Int _position, int _heroId)
         {
             locationName = _locationName;
             damagePerTurn = _damagePerTurn;
@@ -58,37 +58,7 @@ namespace Assets.Scripts
             energyPerTurn = _energyPerTurn;
             position = _position;
             isCellEmpty = true;
-            heroValues = _heroValues;
-        }
-
-        public void SpawnHero(int _id, Vector2 _position, string _username, int _team)
-        {
-            heroValues = new HeroValues(_id, _position, _username, _team);
-        }
-
-        public void SpawnHero(HeroValues _heroValues)
-        {
-            //heroValues = new HeroValues(_heroValues);
-        }
-
-        public void AddHeroOnCell(HeroValues _heroStats)
-        {
-            heroValues = _heroStats;
-        }
-
-        public void DeleteHeroOnCell()
-        {
-            heroValues = null;
-        }
-
-        public HeroValues GetHeroValues()
-        {
-            return heroValues;
-        }
-
-        public void SetHeroValues(HeroValues _heroStats)
-        {
-            heroValues = _heroStats;
+            heroId = _heroId;
         }
     }
 }

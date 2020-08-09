@@ -17,16 +17,16 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
     private HeroBehaviour[] heroBehaviours = new HeroBehaviour[cols];
     private Cell[,] cell = new Cell[cols, rows];
     public Cell[,] battlefield;
-    public Dictionary<int, GameObject> heroes = new Dictionary<int, GameObject>();
+    public Dictionary<int, Hero> heroes = new Dictionary<int, Hero>();
 
-    public Vector2[] availableCells = null;
+    public Vector2Int[] availableCells = null;
 
     private const int cols = 8;
     private const int rows = 6;
     private const int heroesCount = 4;
     private const int teamCount = 2;
     private const float distanceBetweenCells = 1.5f;
-    private Vector2 cameraCenter;
+    private Vector2Int cameraCenter;
 
     InputController inputController;
     //private int turn = 0;
@@ -85,48 +85,56 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
     public void SpawnHero(HeroValues _heroValues)
     {
         int _heroId = _heroValues.ID;
-        Vector2 _heroPosition = _heroValues.position;
+        Vector2Int _heroPosition = _heroValues.position;
 
-        battlefield[(int)_heroPosition.x, (int)_heroPosition.y].SetHeroValues(_heroValues);
+        //legacy
+        //battlefield[(int)_heroPosition.x, (int)_heroPosition.y].SetHeroValues(_heroValues);
+        GameObject _heroGameObject = Instantiate(heroPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
+        heroes.Add(_heroId, _heroGameObject.GetComponent<Hero>());
+        heroes[_heroId].Initialize(_heroValues);
 
-        heroes.Add(_heroId, Instantiate(heroPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0)));
-        Transform cellParent = battlefield[(int)_heroPosition.x, (int)_heroPosition.y].objectCell.transform;
+        ref Cell _cell = ref battlefield[_heroPosition.x, _heroPosition.y];
 
-        heroes[_heroId].transform.SetParent(cellParent, false);
+        Vector3 cellPosition = _cell.objectCell.transform.position;
+        _cell.cellValues.heroId = _heroId;
+
+        heroes[_heroId].transform.position = cellPosition;
 
         //Display cell in Unity scene (by changing cell color).
-        battlefield[(int)_heroPosition.x, (int)_heroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
+        //legacy
+        //battlefield[(int)_heroPosition.x, (int)_heroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
     }
 
     public void SetCell(CellValues _cell)
     {
-        battlefield[(int)_cell.position.x, (int)_cell.position.y].cellValues = _cell;
+        battlefield[_cell.position.x, _cell.position.y].cellValues = _cell;
     }
 
-    public void MoveHero(CellValues from_cellValues, CellValues to_cellValues)
+    public void MoveHero(HeroValues _heroValues, CellValues from_cellValues, CellValues to_cellValues)
     {
-        int _heroId = to_cellValues.GetHeroValues().ID;
-        Vector2 _previousHeroPosition = from_cellValues.position;
-        Vector2 _nextHeroPosition = to_cellValues.position;
-        //Удаляем героя из прошлой клетки
-        battlefield[(int)_previousHeroPosition.x, (int)_previousHeroPosition.y].SetHeroValues(new HeroValues(null));
-        battlefield[(int)_previousHeroPosition.x, (int)_previousHeroPosition.y].Show(CellState.empty);
-        //Добавляем героя, меняя информацию в клетке, в новую клетку
-        battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].SetHeroValues(to_cellValues.GetHeroValues());
-        heroes[_heroId].transform.SetParent(battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].gameObject.transform, false);
+        Vector2Int _previousHeroPosition = from_cellValues.position;
+        Vector2Int _nextHeroPosition = to_cellValues.position;
 
-        battlefield[(int)_nextHeroPosition.x, (int)_nextHeroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
+        //Меняем информацию у клеткок и у героя
+        battlefield[_previousHeroPosition.x, _previousHeroPosition.y].cellValues = from_cellValues;
+        battlefield[_nextHeroPosition.x, _nextHeroPosition.y].cellValues = to_cellValues;
+        heroes[_heroValues.ID].heroValues = _heroValues;
+
+        battlefield[_nextHeroPosition.x, _nextHeroPosition.y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false, heroes[_heroValues.ID].heroValues);
     }
 
-    public void AttackHero(CellValues _attackingHero, CellValues _attackedHero)
+    public void AttackHero(int _attackingHeroId, HeroValues _attackedHeroValues)
     {
+        int _attackedHeroId = _attackedHeroValues.ID;
+        heroes[_attackedHeroId].heroValues = _attackedHeroValues;
+
         //play animation or something
-        int _heroId = _attackedHero.GetHeroValues().ID;
 
-        heroes[_heroId].GetComponent<SpriteRenderer>().color = Color.red;
-        heroes[_heroId].GetComponentInChildren<Text>().text = _attackedHero.GetHeroValues().health.ToString();
+        heroes[_attackingHeroId].GetComponent<SpriteRenderer>().color = Color.grey;
+        heroes[_attackedHeroId].GetComponent<SpriteRenderer>().color = Color.gray;
+        heroes[_attackedHeroId].GetComponentInChildren<Text>().text = heroes[_attackedHeroId].heroValues.health.ToString();
     }
-
+    /*
     public void ActionHero(CellValues _current, CellValues _action)
     {
         if (_current.GetHeroValues().ID != -1 && _action.GetHeroValues().ID != -1)
@@ -138,16 +146,15 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
             MoveHero(_current, _action);
         }
     }
-
-    public void SelectHero(Vector2 _heroPosition)
+    */
+    public void SelectHero(int _heroId)
     {
-        Cell _cellWithHero = battlefield[(int)_heroPosition.x, (int)_heroPosition.y].GetComponent<Cell>();
-        HeroValues _heroValues = _cellWithHero.cellValues.GetHeroValues();
+        HeroValues _heroValues = heroes[_heroId].heroValues;
         if (_heroValues.ID != -1)
         {
             if (_heroValues.owner == GameManager.players[GameManager.clientId].username)
             {
-                ClientSend.SendAvailableCells(_heroPosition);
+                ClientSend.SendAvailableCells(_heroValues.position);
             }
             else
             {
@@ -156,20 +163,21 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         }
     }
 
-    public void ShowAvailableCells(Vector2[] _availableCells)
+    public void ShowAvailableCells(Vector2Int[] _availableCells)
     {
         for (int i = 0; i < _availableCells.Length; i++)
         {
-            if (battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].cellValues.GetHeroValues().ID != -1)
+            if (battlefield[_availableCells[i].x, _availableCells[i].y].cellValues.heroId != -1)
             {
-                battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, true);
+                HeroValues _heroValues = heroes[battlefield[_availableCells[i].x, _availableCells[i].y].cellValues.heroId].heroValues;
+                battlefield[_availableCells[i].x, _availableCells[i].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, true, _heroValues);
             }
             else
             {
-                battlefield[(int)_availableCells[i].x, (int)_availableCells[i].y].Show(CellState.nearby);
+                battlefield[_availableCells[i].x, _availableCells[i].y].Show(CellState.nearby);
             }
         }
-        battlefield[(int)_availableCells[0].x, (int)_availableCells[0].y].Show(CellState.hero);
+        battlefield[_availableCells[0].x, _availableCells[0].y].Show(CellState.hero);
 
         availableCells = _availableCells;
     }
@@ -180,13 +188,14 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         {
             for (int i = 0; i < availableCells.Length; i++)
             {
-                if (battlefield[(int)availableCells[i].x, (int)availableCells[i].y].cellValues.GetHeroValues().ID != -1)
+                if (battlefield[availableCells[i].x, availableCells[i].y].cellValues.heroId != -1)
                 {
-                    battlefield[(int)availableCells[i].x, (int)availableCells[i].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false);
+                    HeroValues _heroValues = heroes[battlefield[availableCells[i].x, availableCells[i].y].cellValues.heroId].heroValues;
+                    battlefield[availableCells[i].x, availableCells[i].y].DefineBy_Team_Username_Available(GameManager.players[GameManager.clientId].team, GameManager.players[GameManager.clientId].username, false, _heroValues);
                 }
                 else
                 {
-                    battlefield[(int)availableCells[i].x, (int)availableCells[i].y].Show(CellState.empty);
+                    battlefield[availableCells[i].x, availableCells[i].y].Show(CellState.empty);
                 }
             }
 
@@ -212,6 +221,15 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         return isMatchFound;
     }
 
+    public void SetHeroValues(HeroValues _heroValues)
+    {
+        heroes[_heroValues.ID].heroValues = _heroValues;
+    }
+
+    public HeroValues GetHeroValuesById(int _heroId)
+    {
+        return heroes[_heroId].heroValues;
+    }
     /*
     // Start is called before the first frame update
     void Start()

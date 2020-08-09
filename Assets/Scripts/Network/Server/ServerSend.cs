@@ -217,10 +217,11 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public static void SendMoveHero(CellValues from_cellValues, CellValues to_cellValues)
+        public static void SendMoveHero(HeroValues _hero, CellValues from_cellValues, CellValues to_cellValues)
         {
             using (Packet _packet = new Packet((int)ServerPackets.moveHero))
             {
+                _packet.Write(_hero);
                 _packet.Write(from_cellValues);
                 _packet.Write(to_cellValues);
 
@@ -228,18 +229,28 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public static void SendActionHero(CellValues _currentHeroCell, CellValues _actionCell)
+        public static void SendAttackHero(int _attackingHeroId, HeroValues _attackedHeroValues)
         {
-            using (Packet _packet = new Packet((int)ServerPackets.actionHero))
+            using (Packet _packet = new Packet((int)ServerPackets.attackHero))
             {
-                _packet.Write(_currentHeroCell);
-                _packet.Write(_actionCell);
+                _packet.Write(_attackingHeroId);
+                _packet.Write(_attackedHeroValues);
 
                 SendTCPDataToAllExistingPlayers(_packet);
             }
         }
 
-        public static void SendAvailableCells(int _toClient, Vector2[] _availableCells)
+        public static void SendHeroValues(HeroValues _heroValues)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.heroValues))
+            {
+                _packet.Write(_heroValues);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendAvailableCells(int _toClient, Vector2Int[] _availableCells)
         {
             using (Packet _packet = new Packet((int)ServerPackets.availableCells))
             {

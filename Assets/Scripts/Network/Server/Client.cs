@@ -191,7 +191,7 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public void InitializePlayerInGameFromServer(string _playerNickName, int _team, Vector2 _position, bool _isReady)
+        public void InitializePlayerInGameFromServer(string _playerNickName, int _team, Vector2Int _position, bool _isReady)
         {
             //Отправляем клиенту информацию о подключенных игроках
             foreach (Client _client in Server.clients.Values)

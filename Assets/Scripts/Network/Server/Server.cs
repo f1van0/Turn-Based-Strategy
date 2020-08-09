@@ -129,17 +129,12 @@ namespace Assets.Scripts.Network.Server
                 { (int)ClientPackets.playerInfoReceived, ServerHandle.GetPlayerInfo },
                 { (int)ClientPackets.playerNicknameReceived, ServerHandle.GetPlayerNickname },
                 { (int)ClientPackets.playerReadinessReceived, ServerHandle.GetPlayerReady },
-                { (int)ClientPackets.playerTeamReceived, ServerHandle.GetPlayerTeam },
                 { (int)ClientPackets.playerPositionReceived, ServerHandle.GetPlayerPosition },
+                { (int)ClientPackets.playerTeamReceived, ServerHandle.GetPlayerTeam },
                 { (int)ClientPackets.chatMessageReceived, ServerHandle.GetChatMessage },
                 { (int)ClientPackets.moveHeroReceived, ServerHandle.GetMoveHero },
-                { (int)ClientPackets.actionHeroReceived, ServerHandle.GetMoveAction },
-                { (int)ClientPackets.availableCellsReceived, ServerHandle.GetRequestToShowAvailableCells }
-                //{ (int)ClientPackets.moveHeroReceived, ServerHandle.GetHero }
-                //{ (int)ClientPackets.gameStageReceived, ServerHandle },
-                /* NEW UPM
-                { (int)ClientPackets.UPM_Reseived, ServerHandle.UPM_ReceivedReconizer }
-                */
+                { (int)ClientPackets.availableCellsReceived, ServerHandle.GetRequestToShowAvailableCells },
+                { (int)ClientPackets.attackHeroReceived, ServerHandle.GetAttackHero }
             };
             Debug.Log("[Server] Initialized packets.");
         }
