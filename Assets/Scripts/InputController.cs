@@ -69,7 +69,7 @@ public class InputController : MonoBehaviour
                         //GameUI.instance.UpdateinfoPanel(_cell);
 
                         selectedHeroId = -1;
-                        BattleFieldManager.instance.HideAvailableCells();
+                        BattleFieldManager.instance.ClearAvailableCells();
                     }
                 }
                 else if (hit.transform.tag == "Hero")
@@ -90,25 +90,35 @@ public class InputController : MonoBehaviour
                     {
                         if (_cell.cellValues.heroId == -1)
                         {
-                            HeroValues _selectedHeroValues = BattleFieldManager.instance.GetHeroValuesById(selectedHeroId);
-                            GameManager.SendMoveHero(selectedHeroId, _selectedHeroValues.position, _cell.cellValues.position);
+                            GameManager.SendMoveHero(selectedHeroId, _cell.cellValues.position);
                         }
                         else
                         {
-                            GameManager.SendAttackHero(selectedHeroId, _cell.cellValues.heroId);
+                            HeroValues attackingHeroValues = BattleFieldManager.instance.GetHeroValuesById(selectedHeroId);
+                            HeroValues attackedHeroValues = BattleFieldManager.instance.GetHeroValuesById(_cell.cellValues.heroId);
+
+                            //Is enemy attacked (not teammate)
+                            if (attackingHeroValues.team != attackedHeroValues.team)
+                            {
+                                GameManager.SendAttackHero(selectedHeroId, _cell.cellValues.heroId);
+                            }
                         }
 
                         selectedHeroId = -1;
-                        BattleFieldManager.instance.HideAvailableCells();
                     }
                 }
                 else if (hit.transform.tag == "Hero")
                 {
                     Hero _targetHero = hit.transform.GetComponent<Hero>();
-                    GameManager.SendAttackHero(selectedHeroId, _targetHero.heroValues.ID);
+                    HeroValues _selectedHeroValues = BattleFieldManager.instance.GetHeroValuesById(selectedHeroId);
 
-                    selectedHeroId = -1;
-                    BattleFieldManager.instance.HideAvailableCells();
+                    //Is available cell selected and is enemy attacked (not teammate)
+                    if (BattleFieldManager.instance.isAvailableCellSelected(_targetHero.heroValues.position) && (_targetHero.heroValues.team != _selectedHeroValues.team))
+                    {
+                        GameManager.SendAttackHero(selectedHeroId, _targetHero.heroValues.ID);
+
+                        selectedHeroId = -1;
+                    }
                 }
             }
         }

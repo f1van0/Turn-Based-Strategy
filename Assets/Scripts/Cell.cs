@@ -105,7 +105,7 @@ public class Cell : MonoBehaviour
         }
     }
     
-    public void DefineBy_Team_Username_Available(int _localPlayerTeam, string _localPlayerUsername, bool _isAvailable, HeroValues _heroValues)
+    public void Show(int _localPlayerTeam, string _localPlayerUsername, bool _isAvailable, HeroValues _heroValues)
     {
         if (_heroValues.owner == _localPlayerUsername)
         {

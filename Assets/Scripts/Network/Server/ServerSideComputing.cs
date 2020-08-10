@@ -156,7 +156,7 @@ namespace Assets.Scripts.Network.Server
         
         public static void CheckCellAvailability(int x, int y, ref List<Vector2Int> _nodes, int _countOfAllNodes, ref int _countOfNewNodes)
         {
-            if (battlefield[x, y].isCellEmpty && !_nodes.Contains(new Vector2Int(x, y)))
+            if (!_nodes.Contains(new Vector2Int(x, y)))
             {
                 _nodes.Add(new Vector2Int(x, y));
                 _countOfNewNodes++;
@@ -166,7 +166,6 @@ namespace Assets.Scripts.Network.Server
         //TODO: part of refactoring. Add hero presets, hero position
         public static void SpawnHeroes()
         {
-
             //So far players are spawning in line, depending on their team
             //Hero's id equals player's id. Hero's owner = player's username
             foreach (Client _client in Server.clients.Values)
@@ -205,74 +204,31 @@ namespace Assets.Scripts.Network.Server
         public static void MoveHero(int _heroId, Vector2Int _moveToPosition)
         {
             HeroValues _hero = heroes[_heroId];
-            CellValues from_cellValues = battlefield[heroes[_heroId].position.x, heroes[_heroId].position.y];
+            CellValues from_cellValues = battlefield[_hero.position.x, _hero.position.y];
             CellValues to_cellValues = battlefield[_moveToPosition.x, _moveToPosition.y];
-
+            
+            //change cells info
             from_cellValues.isCellEmpty = true;
             from_cellValues.heroId = -1;
 
             battlefield[_moveToPosition.x, _moveToPosition.y].isCellEmpty = false;
             to_cellValues.heroId = _heroId;
 
-            heroes[_heroId].position = _moveToPosition;
+            //change hero energy
+            int distance = Mathf.Abs(_hero.position.x - _moveToPosition.x) + Mathf.Abs(_hero.position.y - _moveToPosition.y);
+            _hero.energy -= distance;
+
+            //move hero to new position
+            _hero.position = _moveToPosition;
 
             ServerSend.SendMoveHero(_hero, from_cellValues, to_cellValues);
         }
 
-        /* Removed by refactoring
-        public static void MoveHero(int _heroId, CellValues _moveFrom, CellValues _moveTo)
-        {
-
-            _moveTo.SetHeroValues(_moveFrom.GetHeroValues());
-            _moveTo.GetHeroValues().position = _moveTo.position;
-            _moveFrom.SetHeroValues(new HeroValues(null));
-        }
-        */
-
         public static void AttackHero(int _attackingHeroId, int _attackedHeroId)
         {
-            heroes[_attackingHeroId].GetDamage(heroes[_attackedHeroId]);
+            heroes[_attackedHeroId].GetDamage(heroes[_attackingHeroId]);
             ServerSend.SendAttackHero(_attackingHeroId, heroes[_attackedHeroId]);
-            //_AttackedHero.GetHeroValues().GetDamage(_AttackingHero.GetHeroValues());
         }
-
-        /* Removed by refactoring
-        public static void AttackHero(int _heroId, CellValues _AttackingHero, CellValues _AttackedHero)
-        {
-            _AttackedHero.GetHeroValues().GetDamage(_AttackingHero.GetHeroValues());
-        }
-        */
-
-        /*
-        public static void ActionHero(int _heroId, Vector2 _currentHeroPosition, Vector2 _actionPosition)
-        {
-            ref CellValues current_cellValues = ref battlefield[(int)_currentHeroPosition.x, (int)_currentHeroPosition.y];
-            ref CellValues action_cellValues = ref battlefield[(int)_actionPosition.x, (int)_actionPosition.y];
-
-            int _distanceOx = (int) Mathf.Abs(current_cellValues.position.x - action_cellValues.position.x);
-            int _distanceOy = (int) Mathf.Abs(current_cellValues.position.y - action_cellValues.position.y);
-            int _distance = (int)(_distanceOx + _distanceOy);
-
-            //Уменьшаем энергию героя
-            current_cellValues.GetHeroValues().energy = current_cellValues.GetHeroValues().energy - _distance;
-
-            if (action_cellValues.GetHeroValues().ID == -1)
-            {
-                //MoveHero
-                MoveHero(_heroId, current_cellValues, action_cellValues);
-            }
-            else
-            {
-                //AttackHero
-                AttackHero(_heroId, current_cellValues, action_cellValues);
-            }
-
-            CellValues _currentHeroCell = battlefield[(int)_currentHeroPosition.x, (int)_currentHeroPosition.y];
-            CellValues _actionHeroCell = battlefield[(int)_actionPosition.x, (int)_actionPosition.y];
-
-            ServerSend.SendActionHero(_currentHeroCell, _actionHeroCell);
-        }
-        */
 
         public static void SetPlayerReadiness(ref Player _player)
         {

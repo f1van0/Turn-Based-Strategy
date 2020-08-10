@@ -102,12 +102,11 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void SendMoveHero(int _heroId, Vector2Int _moveFromPostion, Vector2Int _moveToPostion)
+    public static void SendMoveHero(int _heroId, Vector2Int _moveToPostion)
     {
         using (Packet _packet = new Packet((int)ClientPackets.moveHeroReceived))
         {
             _packet.Write(_heroId);
-            _packet.Write(_moveFromPostion);
             _packet.Write(_moveToPostion);
 
             SendTCPData(_packet);

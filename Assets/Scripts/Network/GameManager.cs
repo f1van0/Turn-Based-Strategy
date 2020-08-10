@@ -134,9 +134,9 @@ public static class GameManager
         BattleFieldManager.instance.MoveHero(_heroValues, from_cellValues, to_cellValues);
     }
 
-    public static void SendMoveHero(int _heroId, Vector2Int _moveFromPosition, Vector2Int _moveToPosition)
+    public static void SendMoveHero(int _heroId, Vector2Int _moveToPosition)
     {
-        ClientSend.SendMoveHero(_heroId, _moveFromPosition, _moveToPosition);
+        ClientSend.SendMoveHero(_heroId, _moveToPosition);
     }
 
     public static void SendAttackHero(int _attackingHeroId, int _attackedHeroId)
@@ -167,6 +167,6 @@ public static class GameManager
     public static void SetTurn(int _turnNumber)
     {
         GameUI.instance.SetTurnsNumber(_turnNumber);
-        BattleFieldManager.instance.HideAvailableCells();
+        BattleFieldManager.instance.ClearAvailableCells();
     }
 }
