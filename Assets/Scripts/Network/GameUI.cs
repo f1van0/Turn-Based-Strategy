@@ -74,9 +74,10 @@ public class GameUI : MonoBehaviour
 
     public void UpdateinfoPanel(Cell _cell)
     {
-        if (_cell.cellValues.GetHeroValues() != null)
+        if (_cell.cellValues.heroId != -1)
         {
-            locationName.text = _cell.cellValues.locationName + "  (" + _cell.cellValues.GetHeroValues().owner + ")";
+            HeroValues _heroValues = BattleFieldManager.instance.GetHeroValuesById(_cell.cellValues.heroId);
+            locationName.text = _cell.cellValues.locationName + "  (" + _heroValues + ")";
         }
         else
         {

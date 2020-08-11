@@ -22,7 +22,7 @@ namespace Assets.Scripts
         internal int targetID { get; set; }
         internal int ID { get; set; }
 
-        internal Vector2 position;
+        internal Vector2Int position;
         internal string owner;
         internal int team;
 
@@ -35,7 +35,7 @@ namespace Assets.Scripts
             if (_heroValues == null)
             {
                 ID = -1;
-                position = new Vector2(-1f, -1f);
+                position = new Vector2Int(-1, -1);
                 owner = "None";
                 team = -1;
 
@@ -66,7 +66,7 @@ namespace Assets.Scripts
             }
         }
 
-        public HeroValues(int _id, Vector2 _position, string _owner, int _team, int _defaultHealth, int _health, int _defaultDamage, int _damage, int _defaultEnergy, int _energy)
+        public HeroValues(int _id, Vector2Int _position, string _owner, int _team, int _defaultHealth, int _health, int _defaultDamage, int _damage, int _defaultEnergy, int _energy)
         {
             ID = _id;
             position = _position;
@@ -83,7 +83,7 @@ namespace Assets.Scripts
             energy = _energy;
         }
 
-        public HeroValues(int _id, Vector2 _position, string _owner, int _team)
+        public HeroValues(int _id, Vector2Int _position, string _owner, int _team)
         {
             ID = _id;
             position = _position;
@@ -102,16 +102,18 @@ namespace Assets.Scripts
 
         public HeroValues()
         {
-            /*
-            health = 100;
-            mana = 120;
-            damage = 30;
-            energy = 2;
+            defaultHealth = 100;
+            health = defaultHealth;
+
+            defaultDamage = 20;
+            damage = defaultDamage;
+
             defaultEnergy = 2;
-            */
+            energy = defaultEnergy;
+
             team = 0;
             ID = 0;
-            position = new Vector2(0, 0);
+            position = new Vector2Int(0, 0);
             //targetID = -1;
             owner = "AI";
             //this._cell = null;

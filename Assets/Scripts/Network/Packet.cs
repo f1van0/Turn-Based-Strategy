@@ -22,11 +22,12 @@ namespace Assets.Scripts.Network.Server
         cell,
         spawnHero,
         moveHero,
-        actionHero,
-        availableCells
-//        playerPosition,
-//        playerReadiness,
-//        UPM
+        availableCells,
+        attackHero,
+        heroValues
+        //        playerPosition,
+        //        playerReadiness,
+        //        UPM
     }
 
     /// <summary>Sent from client to server.</summary>
@@ -41,13 +42,8 @@ namespace Assets.Scripts.Network.Server
         playerTeamReceived,
         chatMessageReceived,
         moveHeroReceived,
-        actionHeroReceived,
-        availableCellsReceived
-        //turnsCountReceived,
-        //gameStageReceived
-        //        playerPositionReceived,
-        //        playerReadinessReceived,
-        //        UPM_Reseived
+        availableCellsReceived,
+        attackHeroReceived,
     }
 
     /*
@@ -223,7 +219,7 @@ namespace Assets.Scripts.Network.Server
             Write(_value.healthPerTurn);
             Write(_value.energyPerTurn);
             Write(_value.position);
-            Write(_value.GetHeroValues());
+            Write(_value.heroId);
         }
 
         public void Write(HeroValues _value)
@@ -250,6 +246,22 @@ namespace Assets.Scripts.Network.Server
         }
 
         public void Write(Vector2[] _value)
+        {
+            int _arrayLength = _value.Length;
+            Write(_arrayLength);
+            for (int i = 0; i < _arrayLength; i++)
+            {
+                Write(_value[i]);
+            }
+        }
+
+        public void Write(Vector2Int _value)
+        {
+            Write(_value.x);
+            Write(_value.y);
+        }
+
+        public void Write(Vector2Int[] _value)
         {
             int _arrayLength = _value.Length;
             Write(_arrayLength);
@@ -388,25 +400,25 @@ namespace Assets.Scripts.Network.Server
         {
             int _rows = ReadInt();
             int _cols = ReadInt();
-            CellValues[,] _battleground = new CellValues[_rows, _cols];
+            CellValues[,] _battlefield = new CellValues[_rows, _cols];
             for (int j = 0; j < _cols; j++)
             {
                 for (int i = 0; i < _rows; i++)
                 {
-                    _battleground[i, j] = ReadCellValues();
+                    _battlefield[i, j] = ReadCellValues();
                 }
             }
-            return _battleground;
+            return _battlefield;
         }
 
         public CellValues ReadCellValues(bool _moveReadPos = true)
         {
-            return new CellValues(ReadString(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadVector2(_moveReadPos), ReadHeroValues(_moveReadPos));
+            return new CellValues(ReadString(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadInt(_moveReadPos), ReadVector2Int(_moveReadPos), ReadInt(_moveReadPos));
         }
 
         public HeroValues ReadHeroValues(bool _moveReadPos = true)
         {
-            return new HeroValues(ReadInt(), ReadVector2(), ReadString(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt());
+            return new HeroValues(ReadInt(), ReadVector2Int(), ReadString(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt(), ReadInt());
         }
 
         public Vector2[] ReadVector2Array(bool _moveReadPos = true)
@@ -423,6 +435,22 @@ namespace Assets.Scripts.Network.Server
         public Vector2 ReadVector2(bool _moveReadPos = true)
         {
             return new Vector2(ReadFloat(_moveReadPos), ReadFloat(_moveReadPos));
+        }
+
+        public Vector2Int[] ReadVector2IntArray(bool _moveReadPos = true)
+        {
+            int _length = ReadInt();
+            Vector2Int[] _vector2IntArray = new Vector2Int[_length];
+            for (int i = 0; i < _length; i++)
+            {
+                _vector2IntArray[i] = ReadVector2Int();
+            }
+            return _vector2IntArray;
+        }
+
+        public Vector2Int ReadVector2Int(bool _moveReadPos = true)
+        {
+            return new Vector2Int(ReadInt(_moveReadPos), ReadInt(_moveReadPos));
         }
 
         /// <summary>Reads a long from the packet.</summary>

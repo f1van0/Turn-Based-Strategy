@@ -25,7 +25,7 @@ namespace Assets.Scripts.Network.Server
             }
 
             //Сообщаем всем игрокам о его появлении.
-            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, 0, new Vector2(-1f, -1f), false);
+            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, 0, new Vector2Int(-1, -1), false);
         }
 
         public static void UDPTestReceived(int _fromClient, Packet _packet)
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Network.Server
             int _clientIdCheck = _packet.ReadInt();
             string _username = _packet.ReadString();
             int _team = _packet.ReadInt();
-            Vector2 _position = _packet.ReadVector2();
+            Vector2Int _position = _packet.ReadVector2Int();
             bool _isReady = _packet.ReadBool();
 
             Server.clients[_fromClient].player = new Player(_fromClient, _username, _team, _isReady);
@@ -121,7 +121,7 @@ namespace Assets.Scripts.Network.Server
 
         public static void GetPlayerPosition(int _fromClient, Packet _packet)
         {
-            Vector2 _position = _packet.ReadVector2();
+            Vector2Int _position = _packet.ReadVector2Int();
 
             ServerSideComputing.SetPlayerPosition(_fromClient, _position);
             
@@ -138,13 +138,21 @@ namespace Assets.Scripts.Network.Server
         public static void GetMoveHero(int _fromClient, Packet _packet)
         {
             int _heroId = _packet.ReadInt();
-            Vector2 _moveFromPosition = _packet.ReadVector2();
-            Vector2 _moveToPosition = _packet.ReadVector2();
+            Vector2Int _moveToPosition = _packet.ReadVector2Int();
 
-            ServerSideComputing.MoveHero(_heroId, _moveFromPosition, _moveToPosition);
+            ServerSideComputing.MoveHero(_heroId, _moveToPosition);
         }
 
-        public static void GetMoveAction(int _fromClient, Packet _packet)
+        public static void GetAttackHero(int _fromClient, Packet _packet)
+        {
+            int _attackingHeroId = _packet.ReadInt();
+            int _attackedHeroId = _packet.ReadInt();
+
+            ServerSideComputing.AttackHero(_attackingHeroId, _attackedHeroId);
+        }
+
+        /*
+        public static void GetHeroAction(int _fromClient, Packet _packet)
         {
             int _heroId = _packet.ReadInt();
             Vector2 _currentHeroPosition = _packet.ReadVector2();
@@ -152,10 +160,10 @@ namespace Assets.Scripts.Network.Server
 
             ServerSideComputing.ActionHero(_heroId, _currentHeroPosition, _actionPosition);
         }
-
+        */
         public static void GetRequestToShowAvailableCells(int _fromClient, Packet _packet)
         {
-            Vector2 _heroPosition = _packet.ReadVector2();
+            Vector2Int _heroPosition = _packet.ReadVector2Int();
 
             ServerSideComputing.ShowAccesibleCellsByWave(_fromClient, _heroPosition);
         }

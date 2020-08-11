@@ -23,6 +23,7 @@ public class ClientHandle : MonoBehaviour
         //Ответ серверу
         ClientSend.WelcomeReceived();
 
+        // Now that we have the client's id, connect UDP
         Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
     }
 
@@ -39,7 +40,7 @@ public class ClientHandle : MonoBehaviour
         int _id = _packet.ReadInt();
         string _username = _packet.ReadString();
         int _team = _packet.ReadInt();
-        Vector2 _position = _packet.ReadVector2();
+        Vector2Int _position = _packet.ReadVector2Int();
         bool _isReady = _packet.ReadBool();
 
         if (_id > GameManager.playersCount)
@@ -83,7 +84,7 @@ public class ClientHandle : MonoBehaviour
     public static void GetPlayerPosition(Packet _packet)
     {
         int _id = _packet.ReadInt();
-        Vector2 _position = _packet.ReadVector2();
+        Vector2Int _position = _packet.ReadVector2Int();
 
         GameManager.SetPlayerPosition(_id, _position);
     }
@@ -126,25 +127,41 @@ public class ClientHandle : MonoBehaviour
 
     public static void GetMoveHero(Packet _packet)
     {
+        HeroValues _heroValues = _packet.ReadHeroValues();
         CellValues from_cellValues = _packet.ReadCellValues();
         CellValues to_cellValues = _packet.ReadCellValues();
 
-        GameManager.MoveHero(from_cellValues, to_cellValues);
+        GameManager.MoveHero(_heroValues, from_cellValues, to_cellValues);
     }
-
+    /*
     public static void GetActionHero(Packet _packet)
     {
-        CellValues current = _packet.ReadCellValues();
-        CellValues action = _packet.ReadCellValues();
+        CellValues _current = _packet.ReadCellValues();
+        CellValues _action = _packet.ReadCellValues();
 
-        GameManager.ActionHero(current, action);
+        GameManager.ActionHero(_current, _action);
+    }
+    */
+    public static void GetAttackHero(Packet _packet)
+    {
+        int _attackingHeroId = _packet.ReadInt();
+        HeroValues _attackedHeroValues = _packet.ReadHeroValues();
+
+        GameManager.AttackHero(_attackingHeroId, _attackedHeroValues);
     }
 
     public static void GetAvailableCells(Packet _packet)
     {
-        Vector2[] _availableCells = _packet.ReadVector2Array();
+        Vector2Int[] _availableCells = _packet.ReadVector2IntArray();
 
         GameManager.ShowAvailableCells(_availableCells);
+    }
+
+    public static void GetHeroValues(Packet _packet)
+    {
+        HeroValues _heroValues = _packet.ReadHeroValues();
+
+        GameManager.SetHeroValues(_heroValues);
     }
 
     public static void GetTurnNumber(Packet _packet)

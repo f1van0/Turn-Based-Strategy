@@ -129,34 +129,44 @@ public static class GameManager
         BattleFieldManager.instance.SpawnHero(_heroValues);
     }
 
-    public static void MoveHero(CellValues from_cellValues, CellValues to_cellValues)
+    public static void MoveHero(HeroValues _heroValues, CellValues from_cellValues, CellValues to_cellValues)
     {
-        BattleFieldManager.instance.MoveHero(from_cellValues, to_cellValues);
+        BattleFieldManager.instance.MoveHero(_heroValues, from_cellValues, to_cellValues);
     }
 
-    public static void SendMoveHero(int _heroId, Vector2 _moveFromPosition, Vector2 _moveToPosition)
+    public static void SendMoveHero(int _heroId, Vector2Int _moveToPosition)
     {
-        ClientSend.SendMoveHero(_heroId, _moveFromPosition, _moveToPosition);
+        ClientSend.SendMoveHero(_heroId, _moveToPosition);
     }
 
+    public static void SendAttackHero(int _attackingHeroId, int _attackedHeroId)
+    {
+        ClientSend.SendAttackHero(_attackingHeroId, _attackedHeroId);
+    }
+    /*
     public static void ActionHero(CellValues _current, CellValues _action)
     {
         BattleFieldManager.instance.ActionHero(_current, _action);
     }
-
-    public static void SendActionHero(int _heroId, Vector2 _current, Vector2 _action)
+    */
+    public static void AttackHero(int _attackingHeroId, HeroValues _attackedHeroValues)
     {
-        ClientSend.SendActionHero(_heroId, _current, _action);
+        BattleFieldManager.instance.AttackHero(_attackingHeroId, _attackedHeroValues);
     }
 
-    public static void ShowAvailableCells( Vector2[] _availableCells)
+    public static void ShowAvailableCells( Vector2Int[] _availableCells)
     {
         BattleFieldManager.instance.ShowAvailableCells(_availableCells);
+    }
+
+    public static void SetHeroValues(HeroValues _heroValues)
+    {
+        BattleFieldManager.instance.SetHeroValues(_heroValues);
     }
 
     public static void SetTurn(int _turnNumber)
     {
         GameUI.instance.SetTurnsNumber(_turnNumber);
-        BattleFieldManager.instance.HideAvailableCells();
+        BattleFieldManager.instance.ClearAvailableCells();
     }
 }

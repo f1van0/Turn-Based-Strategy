@@ -41,27 +41,12 @@ public class Cell : MonoBehaviour
         //ShowCell
     }
 
-    public Cell(HeroValues _heroValues)
-    {
-        cellValues.SetHeroValues(_heroValues);
-        //if hero in cell setstate ...
-        //ShowCell
-    }
-
-    public void SetHeroValues(HeroValues _heroValues)
-    {
-        cellValues.SetHeroValues(_heroValues);
-        //if hero in cell setstate ...
-        //ShowCell
-    }
-
     public Cell(CellValues _cellValues)
     {
         cellValues.locationName = _cellValues.locationName;
         cellValues.damagePerTurn = _cellValues.damagePerTurn;
         cellValues.healthPerTurn = _cellValues.healthPerTurn;
         cellValues.energyPerTurn = _cellValues.energyPerTurn;
-        cellValues.SetHeroValues(_cellValues.GetHeroValues());
         //state = _state;
         cellValues.position = _cellValues.position;
         //ShowCell
@@ -73,19 +58,18 @@ public class Cell : MonoBehaviour
         cellValues.damagePerTurn = _cellValues.damagePerTurn;
         cellValues.healthPerTurn = _cellValues.healthPerTurn;
         cellValues.energyPerTurn = _cellValues.energyPerTurn;
-        cellValues.SetHeroValues(_cellValues.GetHeroValues());
         //state = _state;
         cellValues.position = _cellValues.position;
         //ShowCell
     }
 
-    public Cell(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, HeroValues _heroStats, Vector2 _position)
+    public Cell(string _locationName, int _damagePerTurn, int _healthPerTurn, int _energyPerTurn, int _heroId, Vector2Int _position)
     {
         cellValues.locationName = _locationName;
         cellValues.damagePerTurn = _damagePerTurn;
         cellValues.healthPerTurn = _healthPerTurn;
         cellValues.energyPerTurn = _energyPerTurn;
-        cellValues.SetHeroValues(_heroStats);
+        cellValues.heroId = _heroId;
         //state = _state;
         cellValues.position = _position;
     }
@@ -120,31 +104,31 @@ public class Cell : MonoBehaviour
             default: { cellSprite.color = attackColor; break; }
         }
     }
-
-    public void DefineBy_Team_Username_Available(int _localPlayerTeam, string _localPlayerUsername, bool _isAvailable)
+    
+    public void Show(int _localPlayerTeam, string _localPlayerUsername, bool _isAvailable, HeroValues _heroValues)
     {
-        if (cellValues.GetHeroValues().owner == _localPlayerUsername)
+        if (_heroValues.owner == _localPlayerUsername)
         {
             Show(CellState.hero);
         }
         else if (_isAvailable)
         {
-            if (cellValues.GetHeroValues().team != _localPlayerTeam && cellValues.GetHeroValues().team != -1)
+            if (_heroValues.team != _localPlayerTeam && _heroValues.team != -1)
             {
                 Show(CellState.attack);
             }
-            else if (cellValues.GetHeroValues().team == _localPlayerTeam)
+            else if (_heroValues.team == _localPlayerTeam)
             {
                 Show(CellState.friend);
             }
         }
         else if (!_isAvailable)
         {
-            if (cellValues.GetHeroValues().team != _localPlayerTeam && cellValues.GetHeroValues().team != -1)
+            if (_heroValues.team != _localPlayerTeam && _heroValues.team != -1)
             {
                 Show(CellState.enemy);
             }
-            else if (cellValues.GetHeroValues().team == _localPlayerTeam)
+            else if (_heroValues.team == _localPlayerTeam)
             {
                 Show(CellState.friend);
             }

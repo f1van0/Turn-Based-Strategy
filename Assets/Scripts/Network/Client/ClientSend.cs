@@ -40,7 +40,7 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void SendPlayerInfo(string _username, int _team, Vector2 _position, bool _isReady)
+    public static void SendPlayerInfo(string _username, int _team, Vector2Int _position, bool _isReady)
     {
         using (Packet _packet = new Packet((int)ClientPackets.playerInfoReceived))
         {
@@ -82,7 +82,7 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void SendPlayerPosition(Vector2 _position)
+    public static void SendPlayerPosition(Vector2Int _position)
     {
         using (Packet _packet = new Packet((int)ClientPackets.playerPositionReceived))
         {
@@ -102,31 +102,28 @@ public class ClientSend : MonoBehaviour
         }
     }
 
-    public static void SendMoveHero(int _heroId, Vector2 _moveFromPostion, Vector2 _moveToPostion)
+    public static void SendMoveHero(int _heroId, Vector2Int _moveToPostion)
     {
         using (Packet _packet = new Packet((int)ClientPackets.moveHeroReceived))
         {
             _packet.Write(_heroId);
-            _packet.Write(_moveFromPostion);
             _packet.Write(_moveToPostion);
 
             SendTCPData(_packet);
         }
     }
-
-    public static void SendActionHero(int _heroId, Vector2 _current, Vector2 _action)
+    public static void SendAttackHero(int _attackingHeroId, int _attackedHeroId)
     {
-        using (Packet _packet = new Packet((int)ClientPackets.actionHeroReceived))
+        using (Packet _packet = new Packet((int)ClientPackets.attackHeroReceived))
         {
-            _packet.Write(_heroId);
-            _packet.Write(_current);
-            _packet.Write(_action);
+            _packet.Write(_attackingHeroId);
+            _packet.Write(_attackedHeroId);
 
             SendTCPData(_packet);
         }
     }
 
-    public static void SendAvailableCells(Vector2 _heroPosition)
+    public static void SendAvailableCells(Vector2Int _heroPosition)
     {
         using (Packet _packet = new Packet((int)ClientPackets.availableCellsReceived))
         {
