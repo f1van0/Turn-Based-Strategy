@@ -16,7 +16,7 @@ public abstract class Turn
     }
 
     public abstract IEnumerator Start(); // происходит на старте состояния
-    public abstract IEnumerator SelectHero(HeroBehaviour hero); // выбрать героя
+    //public abstract IEnumerator SelectHero(HeroBehaviour hero); // выбрать героя
     public abstract IEnumerator UseHero(string action); // походить героем
     public abstract IEnumerator FinishTurn(); // заканчиваем ход
 }
@@ -31,12 +31,12 @@ public class TeamTurn: Turn
     {
         throw new NotImplementedException();
     }
-
+    /*
     public override IEnumerator SelectHero(HeroBehaviour hero)
     {
         throw new NotImplementedException();
     }
-
+    */
     public override IEnumerator Start()
     {
         throw new NotImplementedException();
@@ -60,11 +60,11 @@ public class NextTurn : Turn
         throw new NotImplementedException();
     }
 
-    public override IEnumerator SelectHero(HeroBehaviour hero)
+    /*public override IEnumerator SelectHero(HeroBehaviour hero)
     {
         throw new NotImplementedException();
     }
-
+    */
     public override IEnumerator Start()
     {
         throw new NotImplementedException();
@@ -87,12 +87,12 @@ public class Yielding : Turn
     {
         throw new NotImplementedException();
     }
-
+    /*
     public override IEnumerator SelectHero(HeroBehaviour hero)
     {
         throw new NotImplementedException();
     }
-
+    */
     public override IEnumerator Start()
     {
         throw new NotImplementedException();

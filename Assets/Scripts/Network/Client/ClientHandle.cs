@@ -15,7 +15,7 @@ public class ClientHandle : MonoBehaviour
         int _myId = _packet.ReadInt();
         int _gameStage = _packet.ReadInt();
 
-        Debug.Log($"Message from server: {_message}");
+        GameManager.AddNewLocalMessage($"Message from server: {_message}", MessageType.fromClient);
         Client.instance.myId = _myId;
 
         GameManager.SetLocalClientId(_myId);
@@ -31,7 +31,7 @@ public class ClientHandle : MonoBehaviour
     {
         string _msg = _packet.ReadString();
 
-        Debug.Log($"Received packet via UDP. Containsmessage: {_msg}");
+        GameManager.AddNewLocalMessage($"Received packet via UDP. Containsmessage: {_msg}", MessageType.fromClient);
         ClientSend.UDPTestReceived();
     }
 

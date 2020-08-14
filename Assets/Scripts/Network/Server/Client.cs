@@ -64,7 +64,7 @@ namespace Assets.Scripts.Network.Server
                 }
                 catch (Exception _ex)
                 {
-                    Debug.Log($"[Server] Error sending data to player {id} via TCP: {_ex}");
+                    Debug.Log($"Error sending data to player {id} via TCP: {_ex}");
                 }
             }
 
@@ -87,7 +87,7 @@ namespace Assets.Scripts.Network.Server
                 }
                 catch (Exception _ex)
                 {
-                    Debug.Log($"[Server] Error receiving TCP data: {_ex}");
+                    Debug.Log($"Error receiving TCP data: {_ex}");
                     Server.clients[id].Disconnect();
                 }
             }
@@ -214,7 +214,7 @@ namespace Assets.Scripts.Network.Server
 
         private void Disconnect()
         {
-            Debug.Log($"<color=green>{tcp.socket.Client.RemoteEndPoint} has disconnected.</color>");
+            GameManager.AddNewLocalMessage($"{tcp.socket.Client.RemoteEndPoint} has disconnected.", MessageType.fromServer);
             //TODO: дисконнект по нажатию кнопки и убирание игрока из игры
             player = null;
 

@@ -32,7 +32,7 @@ public class Client : MonoBehaviour
         }
         else if (instance != this)
         {
-            Debug.Log("Instance already exists, destroying object!");
+            GameManager.AddNewLocalMessage("Instance already exists, destroying object!", MessageType.fromClient);
             Destroy(this);
         }
     }
@@ -50,6 +50,16 @@ public class Client : MonoBehaviour
 
     public void ConnectToServer()
     {
+        InitializeClientData();
+        isConnected = true;
+        tcp.Connect();
+    }
+
+    public void ConnectToServer(string _ip, int _port)
+    {
+        ip = _ip;
+        port = _port;
+
         InitializeClientData();
         isConnected = true;
         tcp.Connect();
@@ -102,6 +112,7 @@ public class Client : MonoBehaviour
             catch (Exception _exception)
             {
                 Debug.Log($"Exception sending data to server via TCP: {_exception}");
+                //GameManager.AddNewLocalMessage($"Exception sending data to server via TCP: {_exception}", MessageType.fromClient);
             }
         }
 
@@ -126,7 +137,7 @@ public class Client : MonoBehaviour
             }
             catch (Exception _exception)
             {
-                Debug.Log($"Error receiving TCP data: {_exception}");
+                GameManager.AddNewLocalMessage($"Error receiving TCP data: {_exception}", MessageType.fromClient);
                 Disconnect();
             }
         }
@@ -196,6 +207,7 @@ public class Client : MonoBehaviour
         public UDP()
         {
             endPoint = new IPEndPoint(IPAddress.Parse(instance.ip), instance.port);
+            GameManager.ShowAddressAndPort(endPoint.Address.ToString(), endPoint.Port);
         }
 
         public void Connect(int _localPort)
@@ -223,7 +235,7 @@ public class Client : MonoBehaviour
             }
             catch (Exception _exception)
             {
-                Debug.Log($"Error sending data to server via UDP: {_exception}");
+                GameManager.AddNewLocalMessage($"Error sending data to server via UDP: {_exception}", MessageType.fromClient);
             }
         }
         
@@ -298,7 +310,7 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.attackHero, ClientHandle.GetAttackHero },
                 { (int)ServerPackets.heroValues, ClientHandle.GetHeroValues },
             };
-        Debug.Log("Initialized packets.");
+        GameManager.AddNewLocalMessage("Initialized packets.", MessageType.fromClient);
     }
 
     private void Disconnect()
@@ -309,7 +321,7 @@ public class Client : MonoBehaviour
             tcp.socket.Close();
             udp.socket.Close();
 
-            Debug.Log("Disconnected from server.");
+            GameManager.AddNewLocalMessage("Disconnected from server.", MessageType.fromClient);
         }
     }
 }

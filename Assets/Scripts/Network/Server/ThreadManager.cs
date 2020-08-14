@@ -21,7 +21,7 @@ namespace Assets.Scripts.Network.Server
         {
             if (_action == null)
             {
-                Debug.Log("[Server] No action to execute on main thread!");
+                GameManager.AddNewLocalMessage("No action to execute on main thread!", MessageType.fromServer);
                 return;
             }
 

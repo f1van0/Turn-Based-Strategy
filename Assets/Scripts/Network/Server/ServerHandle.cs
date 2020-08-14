@@ -17,11 +17,11 @@ namespace Assets.Scripts.Network.Server
             int _clientIdCheck = _packet.ReadInt();
             string _username = _packet.ReadString();
 
-            Debug.Log($"[Server] {Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}, his nickname is {_username}.");
+            GameManager.AddNewLocalMessage($"{Server.clients[_fromClient].tcp.socket.Client.RemoteEndPoint} connected successfully and is now player {_fromClient}, his nickname is {_username}.", MessageType.fromServer);
 
             if (_fromClient != _clientIdCheck)
             {
-                Debug.Log($"[Server] Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck}) (from ServerHandle.cs, WelcomeRecevied)");
+                GameManager.AddNewLocalMessage($"Player \"{_username}\" (ID: {_fromClient}) has assumed the wrong client ID ({_clientIdCheck}) (from ServerHandle.cs, WelcomeRecevied)", MessageType.fromServer);
             }
 
             //Сообщаем всем игрокам о его появлении.
@@ -32,7 +32,7 @@ namespace Assets.Scripts.Network.Server
         {
             string _msg = _packet.ReadString();
 
-            Debug.Log($"[Server] Received packet via UDP. Contains message: {_msg}");
+            GameManager.AddNewLocalMessage($"Received packet via UDP. Contains message: {_msg}", MessageType.fromServer);
         }
 
         //Принимаем информацию

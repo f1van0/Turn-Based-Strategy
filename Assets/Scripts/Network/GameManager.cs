@@ -14,9 +14,14 @@ public static class GameManager
 
     public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
     public static int playersCount = 0;
-    public static int clientId = 0;
+    public static int clientId = -1;
 
     public static int gameStage = 0;
+
+    public static void ShowAddressAndPort(string _ipAddress, int _port)
+    {
+        UIManager.instance.ShowAddressAndPort(_ipAddress, _port);
+    }
 
     public static void AddNewPlayer(int _id, string _username, int _team, bool _isReady)
     {
@@ -57,11 +62,6 @@ public static class GameManager
         //TODO: initialize battleground
         BattleFieldManager.instance.SpawnBattlefield(_battleground);
     }
-
-    //public static void SetCellInfo(CellValues _cell, bool _isCellAvailable)
-    //{
-    //    BattleFieldManager.instance.SetCellInfo(_cell, _isCellAvailable);
-    //}
 
     public static void SetCell(CellValues _cell)
     {
@@ -168,5 +168,10 @@ public static class GameManager
     {
         GameUI.instance.SetTurnsNumber(_turnNumber);
         BattleFieldManager.instance.ClearAvailableCells();
+    }
+
+    public static void AddNewLocalMessage(string _message, MessageType _messageType)
+    {
+        Chat.instance.AddNewLocalMessage(_message, _messageType);
     }
 }

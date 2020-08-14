@@ -26,10 +26,6 @@ namespace Assets.Scripts
         internal string owner;
         internal int team;
 
-
-        //Клетка на поле в которой находится герой
-        //private Cell _cell;
-
         public HeroValues(HeroValues _heroValues)
         {
             if (_heroValues == null)
@@ -133,24 +129,7 @@ namespace Assets.Scripts
             ID = id;
             //targetID = -1;
         }
-        /*
-        //Узнать количество доступных шагов
-        public int GetHeroEnergy()
-        {
-            return energy;
-        }
 
-        //Изменить количество доступных шагов
-        public void SetEnergyCount(int _energy)
-        {
-            this.energy = _energy;
-        }
-
-        public void RestoreEnergy()
-        {
-            energy = defaultEnergy;
-        }
-        */
         public int GetTeam()
         {
             return team;

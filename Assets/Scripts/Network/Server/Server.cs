@@ -26,7 +26,8 @@ namespace Assets.Scripts.Network.Server
             MaxPlayers = _maxPlayers;
             Port = _port;
 
-            Debug.Log($"[Server] Starting server");
+            GameManager.AddNewLocalMessage($"Starting server.", MessageType.fromServer);
+
             InitializeServerData();
 
             tcpListener = new TcpListener(IPAddress.Any, Port);
@@ -36,7 +37,7 @@ namespace Assets.Scripts.Network.Server
             udpListener = new UdpClient(Port);
             udpListener.BeginReceive(UDPReceiveCallBack, null);
 
-            Debug.Log($"[Server] Server start on {Port}.");
+            GameManager.AddNewLocalMessage($"Server start on {Port}.", MessageType.fromServer);
         }
 
         private static void TCPConnectCallback(IAsyncResult _result)
@@ -44,7 +45,7 @@ namespace Assets.Scripts.Network.Server
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
             tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
-            Debug.Log($"[Server] Incoming connection from {_client.Client.RemoteEndPoint} ...");
+            GameManager.AddNewLocalMessage($"Incoming connection from {_client.Client.RemoteEndPoint} ...", MessageType.fromServer);
 
             for (int i = 1; i <= MaxPlayers; i++)
             {
@@ -55,7 +56,7 @@ namespace Assets.Scripts.Network.Server
                 }
             }
 
-            Debug.Log($"[Server] {_client.Client.RemoteEndPoint} failed to connect: Server is full");
+            GameManager.AddNewLocalMessage($"{_client.Client.RemoteEndPoint} failed to connect: Server is full", MessageType.fromServer);
         }
 
         private static void UDPReceiveCallBack(IAsyncResult _result)
@@ -94,7 +95,7 @@ namespace Assets.Scripts.Network.Server
             }
             catch (Exception _exception)
             {
-                Debug.Log($"[Server] Error receiving UDP data: {_exception}");
+                GameManager.AddNewLocalMessage($"Error receiving UDP data: {_exception}", MessageType.fromServer);
             }
         }
 
@@ -109,7 +110,7 @@ namespace Assets.Scripts.Network.Server
             }
             catch (Exception _exception)
             {
-                Debug.Log($"[Server] Error sending data to {_clientEndPoint} via UDP: {_exception}");
+                GameManager.AddNewLocalMessage($"Error sending data to {_clientEndPoint} via UDP: {_exception}", MessageType.fromServer);
             }
         }
 
@@ -136,7 +137,7 @@ namespace Assets.Scripts.Network.Server
                 { (int)ClientPackets.availableCellsReceived, ServerHandle.GetRequestToShowAvailableCells },
                 { (int)ClientPackets.attackHeroReceived, ServerHandle.GetAttackHero }
             };
-            Debug.Log("[Server] Initialized packets.");
+            GameManager.AddNewLocalMessage("Initialized packets.", MessageType.fromServer);
         }
     }
 }
