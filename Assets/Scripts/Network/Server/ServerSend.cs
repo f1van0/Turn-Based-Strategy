@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Network.Server
 {
-    class ServerSend
+    static class ServerSend
     {
         //Готовит пакет к отправке
         private static void SendTCPData(int _toClient, Packet _packet)
@@ -177,13 +177,23 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public static void SendGameStageToAllExistingPlayers(int gameStage)
+        public static void SendGameStage(int _gameStage)
         {
             using (Packet _packet = new Packet((int)ServerPackets.gameStage))
             {
-                _packet.Write(gameStage);
+                _packet.Write(_gameStage);
 
                 SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendGameStage(int _toClient, int _gameStage)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.gameStage))
+            {
+                _packet.Write(_gameStage);
+
+                SendTCPData(_toClient, _packet);
             }
         }
 
@@ -197,13 +207,23 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public static void SendBattleFieldToAllExistingPlayers(CellValues[,] battleground)
+        public static void SendBattleField(CellValues[,] battleground)
         {
             using (Packet _packet = new Packet((int)ServerPackets.battleground))
             {
                 _packet.Write(battleground);
 
                 SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendBattleField(int _toClient, CellValues[,] battlefield)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.battleground))
+            {
+                _packet.Write(battlefield);
+
+                SendTCPData(_toClient, _packet);
             }
         }
 
@@ -214,6 +234,16 @@ namespace Assets.Scripts.Network.Server
                 _packet.Write(_heroValues);
 
                 SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendSpawnHero(int _toClient, HeroValues _heroValues)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.spawnHero))
+            {
+                _packet.Write(_heroValues);
+
+                SendTCPData(_toClient, _packet);
             }
         }
 
@@ -265,6 +295,27 @@ namespace Assets.Scripts.Network.Server
             using (Packet _packet = new Packet((int)ServerPackets.turnNumber))
             {
                 _packet.Write(_turnNumber);
+
+                SendTCPDataToAllExistingPlayers(_packet);
+            }
+        }
+
+        public static void SendTurnNumber(int _toClient, int _turnNumber)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.turnNumber))
+            {
+                _packet.Write(_turnNumber);
+
+                SendTCPData(_toClient, _packet);
+            }
+        }
+
+        public static void SendCommand(int _clientId, int _messageCode)
+        {
+            using (Packet _packet = new Packet((int)ServerPackets.command))
+            {
+                _packet.Write(_clientId);
+                _packet.Write(_messageCode);
 
                 SendTCPDataToAllExistingPlayers(_packet);
             }

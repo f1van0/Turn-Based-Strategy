@@ -37,6 +37,21 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    public void RemovePlayer(int _id)
+    {
+        //remove from some player list (like just show to all clients that this player is disconnected and cant control his heroes, so they can control his heroes or his heroes just friezed) or delete his heroes on battlefield
+    }
+
+    public void ResetGameUI()
+    {
+        turnNumber = 0;
+        SetTurnsNumber(0);
+        CloseInfoPanel();
+        nextTurnButton.gameObject.SetActive(false);
+
+        BattleFieldManager.instance.ResetBattlefield();
+    }
+
     public void ShowNextTurnButton()
     {
         nextTurnButton.gameObject.SetActive(true);
@@ -69,7 +84,7 @@ public class GameUI : MonoBehaviour
 
     public void CloseInfoPanel()
     {
-        infoPanel.SetActive(true);
+        //infoPanel.SetActive(true);
     }
 
     public void UpdateinfoPanel(Cell _cell)

@@ -38,6 +38,18 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
+    public void ResetLobbyUI()
+    {
+        foreach (GameObject _player in players.Values)
+        {
+            Destroy(_player.gameObject, 0);
+        }
+
+        players.Clear();
+
+        StartGameButton.gameObject.SetActive(false);
+    }
+
     public void ShowPlayersCount(int _playersCount)
     {
         playersCountInLobbyText.text = "Players in lobby: " + _playersCount;
@@ -133,6 +145,12 @@ public class LobbyManager : MonoBehaviour
         SetPlayerUsername(_id, _username);
         SetPlayerReady(_id, _isReady);
         SetPlayerTeam(_id, _team);
+    }
+
+    public void RemovePlayer(int _id)
+    {
+        Destroy(players[_id].gameObject, 0);
+        players.Remove(_id);
     }
 
     public void ShowStartGameButton()

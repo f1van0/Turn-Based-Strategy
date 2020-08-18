@@ -14,18 +14,12 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
     public GameObject cellPrefab;
     public GameObject heroPrefab;
 
-    private GameObject hero;
-    public Cell[,] battlefield;
+    public Cell[,] battlefield = null;
     public Dictionary<int, Hero> heroes = new Dictionary<int, Hero>();
 
     public Vector2Int[] availableCells = null;
 
-    private const int cols = 8;
-    private const int rows = 6;
     private const float distanceBetweenCells = 1.5f;
-    private Vector2Int cameraCenter;
-
-    InputController inputController;
 
     private void Awake()
     {
@@ -55,6 +49,31 @@ public class BattleFieldManager : MonoBehaviour//, IDisposable
         }
 
         availableCells = null;
+    }
+
+    public void ResetBattlefield()
+    {
+        if (battlefield != null)
+        {
+            for (int j = 0; j < battlefield.GetLength(1); j++)
+            {
+                for (int i = 0; i < battlefield.GetLength(0); i++)
+                {
+                    Destroy(battlefield[i, j].gameObject, 0);
+                }
+            }
+
+            battlefield = null;
+        }
+
+        availableCells = null;
+
+        foreach(Hero _hero in heroes.Values)
+        {
+            Destroy(_hero.gameObject, 0);
+        }
+
+        heroes.Clear();
     }
 
     public void SpawnHero(HeroValues _heroValues)

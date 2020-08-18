@@ -20,6 +20,7 @@ public class ClientHandle : MonoBehaviour
 
         GameManager.SetLocalClientId(_myId);
         GameManager.SetGameStage(_gameStage);
+        
         //Ответ серверу
         ClientSend.WelcomeReceived();
 
@@ -169,5 +170,30 @@ public class ClientHandle : MonoBehaviour
         int _turnNumber = _packet.ReadInt();
 
         GameManager.SetTurn(_turnNumber);
+    }
+
+    public static void GetCommand(Packet _packet)
+    {
+        int _clientId = _packet.ReadInt();
+        int _messageCode = _packet.ReadInt();
+
+        if (_messageCode == 0) // server is shutdowned
+        {
+            if (!GameManager.isHost) // if you not a server owner. (this can turn into infinity recursion) + if the server stopped, then the host already knows about it, because he either left the server or left the game
+            {
+                GameManager.YouDisconnected();
+            }
+        }
+        else if (_messageCode == 1) // someone is disconnected
+        {
+            if (_clientId == GameManager.clientId) // if its you (kick or server shutdowned)
+            {
+                GameManager.YouDisconnected();
+            }
+            else
+            {
+                GameManager.PlayerDisconnected(_clientId);
+            }
+        }
     }
 }

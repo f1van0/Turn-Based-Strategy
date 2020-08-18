@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -64,10 +61,40 @@ public class UIManager : MonoBehaviour
             string _ipAddress = StringToAddress(AdressAndPortField.text).Item1;
             int _port = StringToAddress(AdressAndPortField.text).Item2;
 
+            Client.instance.UpdateAddressConnection(_ipAddress, _port);
             Client.instance.ConnectToServer();
         }
         else
             PlayerNickNameField.GetComponent<Image>().color = Color.red;
+    }
+
+    public (string, int) StringToAddress()
+    {
+        string _address = AdressAndPortField.text;
+        string _ip = "";
+        int _port = 0;
+        bool _isPortReadable = false;
+
+        for (int i = 0; i < _address.Length; i++)
+        {
+            if (_address[i] == ':')
+            {
+                _isPortReadable = true;
+            }
+            else
+            {
+                if (!_isPortReadable)
+                {
+                    _ip = _ip + _address[i];
+                }
+                else
+                {
+                    _port = _port * 10 + (_address[i] - '0');
+                }
+            }
+        }
+
+        return (_ip, _port);
     }
 
     public (string, int) StringToAddress(string _address)
@@ -96,6 +123,19 @@ public class UIManager : MonoBehaviour
         }
 
         return (_ip, _port);
+    }
+
+    public void ResetData()
+    {
+        GameManager.ResetGameManagerData();
+        LobbyManager.instance.ResetLobbyUI();
+        GameUI.instance.ResetGameUI();
+        OpenConnectionMenu();
+    }
+
+    public void ExitFromTheServer()
+    {
+        GameManager.YouDisconnected();
     }
 
     /*
@@ -128,6 +168,7 @@ public class UIManager : MonoBehaviour
             OpenLobbyMenu();
             ConnectToServer();
 
+            GameManager.isHost = true;
             LobbyManager.instance.ShowStartGameButton();
             GameUI.instance.ShowNextTurnButton();
         }

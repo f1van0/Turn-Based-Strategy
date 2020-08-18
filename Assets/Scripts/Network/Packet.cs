@@ -24,7 +24,8 @@ namespace Assets.Scripts.Network.Server
         moveHero,
         availableCells,
         attackHero,
-        heroValues
+        heroValues,
+        command
         //        playerPosition,
         //        playerReadiness,
         //        UPM

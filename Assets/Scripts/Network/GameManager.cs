@@ -15,8 +15,42 @@ public static class GameManager
     public static Dictionary<int, PlayerManager> players = new Dictionary<int, PlayerManager>();
     public static int playersCount = 0;
     public static int clientId = -1;
+    public static bool isHost = false;
 
     public static int gameStage = 0;
+
+    public static void YouDisconnected()
+    {
+        Client.instance.Disconnect();
+
+        if (isHost) // true if client hosted server
+        {
+            ServerRunner.CloseServer();
+
+            //Destroys server gameObject that contain ServerRunner.cs component
+            Object.Destroy(Object.FindObjectOfType<ServerRunner>().gameObject, 0);
+        }
+
+        UIManager.instance.ResetData();
+    }
+
+    public static void PlayerDisconnected(int _clientId)
+    {
+        Chat.instance.AddNewLocalMessage($"{players[_clientId].username}[{_clientId}] disconnected from the server", MessageType.fromClient);
+
+        //Remove player's info from GameManager, Lobby, GameUI
+        RemovePlayer(_clientId);
+    }
+
+    public static void ResetGameManagerData()
+    {
+        players.Clear();
+
+        playersCount = 0;
+        clientId = -1;
+        isHost = false;
+        gameStage = 0;
+    }
 
     public static void ShowAddressAndPort(string _ipAddress, int _port)
     {
@@ -29,6 +63,15 @@ public static class GameManager
         LobbyManager.instance.AddNewPlayer(_id, _username, _team, _isReady);
         playersCount++;
         LobbyManager.instance.ShowPlayersCount(playersCount);
+    }
+
+    public static void RemovePlayer(int _id)
+    {
+        LobbyManager.instance.RemovePlayer(_id);
+        GameUI.instance.RemovePlayer(_id);
+
+        players.Remove(_id);
+        playersCount--;
     }
 
     public static void SetGameStage(int _gameStage)

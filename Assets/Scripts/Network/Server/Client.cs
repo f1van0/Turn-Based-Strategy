@@ -87,8 +87,8 @@ namespace Assets.Scripts.Network.Server
                 }
                 catch (Exception _ex)
                 {
-                    Debug.Log($"Error receiving TCP data: {_ex}");
                     Server.clients[id].Disconnect();
+                    Debug.Log($"Error receiving TCP data: {_ex}");
                 }
             }
 
@@ -191,7 +191,7 @@ namespace Assets.Scripts.Network.Server
             }
         }
 
-        public void InitializePlayerInGameFromServer(string _playerNickName, int _team, Vector2Int _position, bool _isReady)
+        public void InitializePlayerFromServer(string _playerNickName, int _team, Vector2Int _position, bool _isReady)
         {
             //Отправляем клиенту информацию о подключенных игроках
             foreach (Client _client in Server.clients.Values)
@@ -210,16 +210,23 @@ namespace Assets.Scripts.Network.Server
 
             //Отправляем информацию о нем всем, включая его самого
             ServerSend.SendPlayerInfoToAllExistingPlayers(player);
+
+            //TODO: сделать так, чтобы когда игрок повторно подключался к серверу с тем же ником и Ip сервер сразу же определял ему его прошлую информацию, чтобы игрок в матче продолжил игру 
+            //Если игра уже началась, то отправляем ему игровое поле и героев, а его самого помещаем в спектаторы
+            if (ServerSideComputing.gameStage == 1)
+            {
+                ServerSideComputing.SendMatchInformation(id);
+            }
         }
 
-        private void Disconnect()
+        public void Disconnect()
         {
-            GameManager.AddNewLocalMessage($"{tcp.socket.Client.RemoteEndPoint} has disconnected.", MessageType.fromServer);
-            //TODO: дисконнект по нажатию кнопки и убирание игрока из игры
+            ServerSend.SendCommand(player.id, 1);
+            Debug.Log($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
             player = null;
 
             tcp.Disconnect();
             udp.Disconnect();
-        }
+            }
     }
 }

@@ -25,7 +25,7 @@ namespace Assets.Scripts.Network.Server
             }
 
             //Сообщаем всем игрокам о его появлении.
-            Server.clients[_fromClient].InitializePlayerInGameFromServer(_username, 0, new Vector2Int(-1, -1), false);
+            Server.clients[_fromClient].InitializePlayerFromServer(_username, 0, new Vector2Int(-1, -1), false);
         }
 
         public static void UDPTestReceived(int _fromClient, Packet _packet)

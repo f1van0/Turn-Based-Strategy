@@ -13,8 +13,8 @@ public class Client : MonoBehaviour
     public static Client instance;
     public static int dataBufferSize = 4096;
 
-    public string ip = "127.0.0.1";
-    public int port = 26950;
+    private string ip = "127.0.0.1";
+    private int port = 26955;
     public int myId = 0;
     public TCP tcp;
     public UDP udp;
@@ -39,6 +39,15 @@ public class Client : MonoBehaviour
 
     private void Start()
     {
+        tcp = new TCP();
+        udp = new UDP();
+    }
+
+    public void UpdateAddressConnection(string _ip, int _port)
+    {
+        ip = _ip;
+        port = _port;
+
         tcp = new TCP();
         udp = new UDP();
     }
@@ -111,8 +120,7 @@ public class Client : MonoBehaviour
             }
             catch (Exception _exception)
             {
-                Debug.Log($"Exception sending data to server via TCP: {_exception}");
-                //GameManager.AddNewLocalMessage($"Exception sending data to server via TCP: {_exception}", MessageType.fromClient);
+                GameManager.AddNewLocalMessage($"Exception sending data to server via TCP: {_exception}", MessageType.fromClient);
             }
         }
 
@@ -137,8 +145,8 @@ public class Client : MonoBehaviour
             }
             catch (Exception _exception)
             {
-                GameManager.AddNewLocalMessage($"Error receiving TCP data: {_exception}", MessageType.fromClient);
                 Disconnect();
+                GameManager.AddNewLocalMessage($"Error receiving TCP data: {_exception}", MessageType.fromClient);
             }
         }
         
@@ -207,7 +215,6 @@ public class Client : MonoBehaviour
         public UDP()
         {
             endPoint = new IPEndPoint(IPAddress.Parse(instance.ip), instance.port);
-            GameManager.ShowAddressAndPort(endPoint.Address.ToString(), endPoint.Port);
         }
 
         public void Connect(int _localPort)
@@ -309,11 +316,12 @@ public class Client : MonoBehaviour
                 { (int)ServerPackets.availableCells, ClientHandle.GetAvailableCells },
                 { (int)ServerPackets.attackHero, ClientHandle.GetAttackHero },
                 { (int)ServerPackets.heroValues, ClientHandle.GetHeroValues },
+                { (int)ServerPackets.command, ClientHandle.GetCommand },
             };
         GameManager.AddNewLocalMessage("Initialized packets.", MessageType.fromClient);
     }
 
-    private void Disconnect()
+    public void Disconnect()
     {
         if (isConnected)
         {

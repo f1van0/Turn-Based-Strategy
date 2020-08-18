@@ -35,13 +35,13 @@ namespace Assets.Scripts.Network.Server
         public static void StartLobby()
         {
             gameStage = 0;
-            ServerSend.SendGameStageToAllExistingPlayers(gameStage);
+            ServerSend.SendGameStage(gameStage);
         }
 
         public static void StartGame()
         {
             gameStage = 1;
-            ServerSend.SendGameStageToAllExistingPlayers(gameStage);
+            ServerSend.SendGameStage(gameStage);
             GenerateBattleField();
             SpawnHeroes();
             ToNextTurn();
@@ -81,6 +81,17 @@ namespace Assets.Scripts.Network.Server
             ServerSend.SendTurnNumber(turnNumber);
         }
 
+        public static void SendMatchInformation(int _toClient)
+        {
+            ServerSend.SendGameStage(_toClient, gameStage);
+            ServerSend.SendBattleField(_toClient, battlefield);
+            ServerSend.SendTurnNumber(_toClient, turnNumber);
+            foreach (HeroValues _hero in heroes.Values)
+            {
+                ServerSend.SendSpawnHero(_toClient, _hero);
+            }
+        }
+
         //TODO: part of refactoring. spawn battlefield based on cellValues presets
         public static void GenerateBattleField()
         {
@@ -93,7 +104,7 @@ namespace Assets.Scripts.Network.Server
                     battlefield[i, j] = new CellValues(new Vector2Int(i, j));
                 }
             }
-            ServerSend.SendBattleFieldToAllExistingPlayers(battlefield);
+            ServerSend.SendBattleField(battlefield);
         }
 
         //TODO: part of refactoring. make more func, based on new CellValues and HeroValues

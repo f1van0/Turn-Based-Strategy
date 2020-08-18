@@ -26,6 +26,7 @@ namespace Assets.Scripts.Network.Server
             MaxPlayers = _maxPlayers;
             Port = _port;
 
+            //Debug.Log($"Starting server.");
             GameManager.AddNewLocalMessage($"Starting server.", MessageType.fromServer);
 
             InitializeServerData();
@@ -37,25 +38,48 @@ namespace Assets.Scripts.Network.Server
             udpListener = new UdpClient(Port);
             udpListener.BeginReceive(UDPReceiveCallBack, null);
 
+            //Debug.Log($"Server start on {Port}.");
             GameManager.AddNewLocalMessage($"Server start on {Port}.", MessageType.fromServer);
         }
 
+        public static void Stop()
+        {
+            //Send to every player command (message) that the server will stop responding and just shutdown and users need to disconnect
+            foreach(Client _client in clients.Values)
+            {
+                ServerSend.SendCommand(-1, 0);
+            }
+
+            tcpListener.Stop();
+            udpListener.Close();
+
+            clients.Clear();
+            packetHandlers.Clear();
+        }
+
+        //Warning: async can lead to an error on the client side if the client does not wait for the result. For example, due to several commands that slow down the execution of the rest of the code aimed at responding to the user
+        //Error in line with "!!!!! DONT WORKING !!!!!" just led to this. And because of it output (extra commands) have been moved to line with "*New place for output"
         private static void TCPConnectCallback(IAsyncResult _result)
         {
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
             tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
-            GameManager.AddNewLocalMessage($"Incoming connection from {_client.Client.RemoteEndPoint} ...", MessageType.fromServer);
+            //Debug.Log($"Incoming connection from {_client.Client.RemoteEndPoint} ...");
+            //!!!!! DONT WORKING !!!!!
+            //GameManager.AddNewLocalMessage($"Incoming connection from {_client.Client.RemoteEndPoint} ...", MessageType.fromServer);
 
             for (int i = 1; i <= MaxPlayers; i++)
             {
                 if (clients[i].tcp.socket == null)
                 {
                     clients[i].tcp.Connect(_client);
+                    //*New place for output
+                    GameManager.AddNewLocalMessage($"Incoming connection from {_client.Client.RemoteEndPoint} ...", MessageType.fromServer);
                     return;
                 }
             }
 
+            //Debug.Log($"{_client.Client.RemoteEndPoint} failed to connect: Server is full");
             GameManager.AddNewLocalMessage($"{_client.Client.RemoteEndPoint} failed to connect: Server is full", MessageType.fromServer);
         }
 
@@ -95,6 +119,7 @@ namespace Assets.Scripts.Network.Server
             }
             catch (Exception _exception)
             {
+                //Debug.Log($"Error receiving UDP data: {_exception}");
                 GameManager.AddNewLocalMessage($"Error receiving UDP data: {_exception}", MessageType.fromServer);
             }
         }
@@ -110,6 +135,7 @@ namespace Assets.Scripts.Network.Server
             }
             catch (Exception _exception)
             {
+                //Debug.Log($"Error sending data to {_clientEndPoint} via UDP: {_exception}");
                 GameManager.AddNewLocalMessage($"Error sending data to {_clientEndPoint} via UDP: {_exception}", MessageType.fromServer);
             }
         }
@@ -120,6 +146,7 @@ namespace Assets.Scripts.Network.Server
             {
                 clients.Add(i, new Client(i));
             }
+
             packetHandlers = new Dictionary<int, PacketHandler>()
             {
                 //KeyValuePair<int, PacketHandler>
@@ -137,6 +164,8 @@ namespace Assets.Scripts.Network.Server
                 { (int)ClientPackets.availableCellsReceived, ServerHandle.GetRequestToShowAvailableCells },
                 { (int)ClientPackets.attackHeroReceived, ServerHandle.GetAttackHero }
             };
+
+            //Debug.Log("Initialized packets.");
             GameManager.AddNewLocalMessage("Initialized packets.", MessageType.fromServer);
         }
     }
