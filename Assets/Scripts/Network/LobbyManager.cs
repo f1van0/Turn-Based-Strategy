@@ -47,6 +47,7 @@ public class LobbyManager : MonoBehaviour
 
         players.Clear();
 
+        SetReadiness_ButtonState_ForLocalPlayer(false);
         StartGameButton.gameObject.SetActive(false);
     }
 
@@ -59,14 +60,26 @@ public class LobbyManager : MonoBehaviour
     {
         if (_team == 1)
         {
+            buttonJoinSpectators.enabled = true;
+            buttonJoinTeam1.enabled = false;
+            buttonJoinTeam2.enabled = true;
+
             players[_id].gameObject.transform.SetParent(team1List, false);
         }
         else if (_team == 2)
         {
+            buttonJoinSpectators.enabled = true;
+            buttonJoinTeam1.enabled = true;
+            buttonJoinTeam2.enabled = false;
+
             players[_id].gameObject.transform.SetParent(team2List, false);
         }
         else
         {
+            buttonJoinSpectators.enabled = false;
+            buttonJoinTeam1.enabled = true;
+            buttonJoinTeam2.enabled = true;
+
             players[_id].gameObject.transform.SetParent(spectatorsList, false);
         }
     }
@@ -95,25 +108,16 @@ public class LobbyManager : MonoBehaviour
 
     public void JoinSpectators()
     {
-        buttonJoinSpectators.enabled = false;
-        buttonJoinTeam1.enabled = true;
-        buttonJoinTeam2.enabled = true;
         GameManager.SendLocalPlayerTeam(0);
     }
 
     public void JoinTeam1()
     {
-        buttonJoinSpectators.enabled = true;
-        buttonJoinTeam1.enabled = false;
-        buttonJoinTeam2.enabled = true;
         GameManager.SendLocalPlayerTeam(1);
     }
 
     public void JoinTeam2()
     {
-        buttonJoinSpectators.enabled = true;
-        buttonJoinTeam1.enabled = true;
-        buttonJoinTeam2.enabled = false;
         GameManager.SendLocalPlayerTeam(2);
     }
 

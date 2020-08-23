@@ -47,6 +47,15 @@ namespace Assets.Scripts.Network.Server
             ToNextTurn();
         }
 
+        public static void ResetData()
+        {
+            battlefield = new CellValues[cols, rows];
+            heroes = new Dictionary<int, HeroValues>();
+
+            gameStage = 0;
+            turnNumber = 0;
+        }
+
         public static void SetAllPlayersReady(bool _isReady)
         {
             foreach (Client _client in Server.clients.Values)

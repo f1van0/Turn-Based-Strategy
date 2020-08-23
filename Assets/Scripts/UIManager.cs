@@ -1,11 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
     public InputField PlayerNickNameField;
-    public InputField AdressAndPortField;
+    public InputField ipAddressField;
+    public InputField portField;
     public Text AdressAndPortText;
 
     public GameObject serverPrefab;
@@ -28,9 +30,10 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ShowAddressAndPort(string _ipAdress, int _port)
+    public void ShowAddressAndPort(string _ipAddress, int _port)
     {
-        AdressAndPortText.text = "Address - " + _ipAdress + ":" + _port;
+        AdressAndPortText.gameObject.SetActive(true);
+        AdressAndPortText.text = "Address - " + _ipAddress + ":" + _port;
     }
 
     public void OpenConnectionMenu()
@@ -38,6 +41,8 @@ public class UIManager : MonoBehaviour
         ConnectionMenu.SetActive(true);
         LobbyMenu.SetActive(false);
         GameUIMenu.SetActive(false);
+
+        AdressAndPortText.gameObject.SetActive(false);
     }
 
     public void OpenLobbyMenu()
@@ -58,71 +63,109 @@ public class UIManager : MonoBehaviour
     {
         if (PlayerNickNameField.text != "")
         {
-            string _ipAddress = StringToAddress(AdressAndPortField.text).Item1;
-            int _port = StringToAddress(AdressAndPortField.text).Item2;
+            PlayerNickNameField.GetComponent<Image>().color = Color.white;
 
-            Client.instance.UpdateAddressConnection(_ipAddress, _port);
-            Client.instance.ConnectToServer();
+            string _ipAddress = ipAddressField.text;
+
+            if (isIpAddressCorrect(_ipAddress))
+            {
+                ipAddressField.GetComponent<Image>().color = Color.white;
+
+                int _port = StringToPort(portField.text);
+
+                if (_port != 0)
+                {
+                    portField.GetComponent<Image>().color = Color.white;
+
+                    Client.instance.UpdateAddressConnection(_ipAddress, _port);
+                    Client.instance.ConnectToServer();
+                }
+                else
+                {
+                    portField.GetComponent<Image>().color = Color.red;
+                }
+            }
+            else
+            {
+                ipAddressField.GetComponent<Image>().color = Color.red;
+            }
         }
         else
+        {
             PlayerNickNameField.GetComponent<Image>().color = Color.red;
+        }
     }
 
-    public (string, int) StringToAddress()
+    public bool isIpAddressCorrect(string _ipAddress)
     {
-        string _address = AdressAndPortField.text;
-        string _ip = "";
-        int _port = 0;
-        bool _isPortReadable = false;
+        int separatorsCount = 0;
+        int numeralsInSeparators = 0;
 
-        for (int i = 0; i < _address.Length; i++)
+        for (int i = 0; i < _ipAddress.Length; i++)
         {
-            if (_address[i] == ':')
+            if (_ipAddress[i] >= '0' && _ipAddress[i] <= '9')
             {
-                _isPortReadable = true;
-            }
-            else
-            {
-                if (!_isPortReadable)
+                if (numeralsInSeparators > 3)
                 {
-                    _ip = _ip + _address[i];
+                    return false;
                 }
                 else
                 {
-                    _port = _port * 10 + (_address[i] - '0');
+                    numeralsInSeparators++;
                 }
             }
-        }
-
-        return (_ip, _port);
-    }
-
-    public (string, int) StringToAddress(string _address)
-    {
-        string _ip = "";
-        int _port = 0;
-        bool _isPortReadable = false;
-
-        for (int i = 0; i < _address.Length; i++)
-        {
-            if (_address[i] == ':')
+            else if (_ipAddress[i] == '.')
             {
-                _isPortReadable = true;
-            }
-            else
-            {
-                if (!_isPortReadable)
+                if (numeralsInSeparators == 0)
                 {
-                    _ip = _ip + _address[i];
+                    return false;
                 }
                 else
                 {
-                    _port = _port * 10 + (_address[i] - '0');
+                    numeralsInSeparators = 0;
+                    separatorsCount++;
                 }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        if (separatorsCount == 3)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public int StringToPort(string _portString)
+    {
+        int _port = 0;
+
+        for (int i = 0; i < _portString.Length; i++)
+        {
+            if (_portString[i] >= '0' && _portString[i] <= '9')
+            {
+                _port = _port * 10 + _portString[i] - '0';
+            }
+            else
+            {
+                return 0;
             }
         }
 
-        return (_ip, _port);
+        if (_port >= 10000)
+        {
+            return _port;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     public void ResetData()
@@ -163,21 +206,54 @@ public class UIManager : MonoBehaviour
     {
         if (PlayerNickNameField.text != "")
         {
-            Instantiate(serverPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
+            PlayerNickNameField.GetComponent<Image>().color = Color.white;
 
-            OpenLobbyMenu();
-            ConnectToServer();
+            int _port = StringToPort(portField.text);
 
-            GameManager.isHost = true;
-            LobbyManager.instance.ShowStartGameButton();
-            GameUI.instance.ShowNextTurnButton();
+            if (_port != 0)
+            {
+                portField.GetComponent<Image>().color = Color.white;
+
+                ServerRunner _serverRunner = Instantiate(serverPrefab, new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0)).GetComponent<ServerRunner>();
+
+                _serverRunner.port = _port;
+
+                StartCoroutine(ConnectToServerAfterServerStart(_port));
+
+                GameManager.isHost = true;
+
+                AdressAndPortText.gameObject.SetActive(true);
+
+                LobbyManager.instance.ShowStartGameButton();
+                GameUI.instance.ShowNextTurnButton();
+            }
+            else
+            {
+                portField.GetComponent<Image>().color = Color.red;
+            }
         }
         else
         {
             PlayerNickNameField.GetComponent<Image>().color = Color.red;
         }
     }
-    
+
+    IEnumerator ConnectToServerAfterServerStart(int _port)
+    {
+        yield return new WaitForSeconds(0.1f);
+        if (ServerRunner.GetServerStatus())
+        {
+            Client.instance.UpdateAddressConnection("127.0.0.1", _port);
+            Client.instance.ConnectToServer();
+
+            StopCoroutine(ConnectToServerAfterServerStart(_port));
+        }
+        else
+        {
+            ConnectToServerAfterServerStart(_port);
+        }
+    }
+
     public void HideOrOpenChat()
     {
         chatScrollView.SetActive(!chatScrollView.active);

@@ -13,9 +13,13 @@ public class InputController : MonoBehaviour
     private Vector2 rayPos;
     private RaycastHit2D hit;
 
+    //Camera movement
+    private float speed = 27.5f;
+    private float zoomSpeed = 100.5f;
+
     private void Start()
     {
-        mainCamera = FindObjectOfType<Camera>();
+        mainCamera = Camera.main;
     }
 
 
@@ -102,5 +106,9 @@ public class InputController : MonoBehaviour
                 }
             }
         }
+
+        //Camera movement
+        mainCamera.transform.position += new Vector3(speed * Input.GetAxis("Horizontal") * Time.deltaTime, speed * Input.GetAxis("Vertical") * Time.deltaTime, 0);
+        mainCamera.orthographicSize += -1 * zoomSpeed * Input.mouseScrollDelta.y * Time.deltaTime;
     }
 }

@@ -39,7 +39,22 @@ namespace Assets.Scripts.Network.Server
             udpListener.BeginReceive(UDPReceiveCallBack, null);
 
             //Debug.Log($"Server start on {Port}.");
-            GameManager.AddNewLocalMessage($"Server start on {Port}.", MessageType.fromServer);
+            
+            GameManager.AddNewLocalMessage($"Server start on address {GetLocalIPAddress()}:{Port}.", MessageType.fromServer);
+            UIManager.instance.ShowAddressAndPort(GetLocalIPAddress(), Port);
+        }
+
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
         public static void Stop()
@@ -49,6 +64,9 @@ namespace Assets.Scripts.Network.Server
             {
                 ServerSend.SendCommand(-1, 0);
             }
+
+            //Reset server side game data
+            ServerSideComputing.ResetData();
 
             tcpListener.Stop();
             udpListener.Close();
@@ -62,8 +80,8 @@ namespace Assets.Scripts.Network.Server
         private static void TCPConnectCallback(IAsyncResult _result)
         {
             TcpClient _client = tcpListener.EndAcceptTcpClient(_result);
+            Debug.Log("try accept client");
             tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
-
             //Debug.Log($"Incoming connection from {_client.Client.RemoteEndPoint} ...");
             //!!!!! DONT WORKING !!!!!
             //GameManager.AddNewLocalMessage($"Incoming connection from {_client.Client.RemoteEndPoint} ...", MessageType.fromServer);

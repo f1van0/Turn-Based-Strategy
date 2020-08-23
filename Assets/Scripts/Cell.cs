@@ -124,7 +124,18 @@ public class Cell : MonoBehaviour
         }
         else if (!_isAvailable)
         {
-            if (_heroValues.team != _localPlayerTeam && _heroValues.team != -1)
+            if (GameManager.players[GameManager.clientId].team == 0) // if player is spectator
+            {
+                if (_heroValues.team == 1)
+                {
+                    Show(CellState.friend);
+                }
+                else
+                {
+                    Show(CellState.enemy);
+                }
+            }
+            else if (_heroValues.team != _localPlayerTeam && _heroValues.team != -1)
             {
                 Show(CellState.enemy);
             }

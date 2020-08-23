@@ -12,7 +12,7 @@ using UnityEngine;
 
 public class ServerRunner : MonoBehaviour
 {
-    private int port = 26955;
+    public int port = 26955;
 
     private static bool isServerRunning = false;
     private static Thread mainThread;
@@ -20,19 +20,13 @@ public class ServerRunner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        int _newPort = UIManager.instance.StringToAddress().Item2;
-
-        if (_newPort >= 10000)
-            port = _newPort;
-
-        isServerRunning = true;
-
         mainThread = new Thread(new ThreadStart(Update));
         mainThread.Start();
 
         GameManager.AddNewLocalMessage($"Main thread started. Running at {Constants.ms_per_tick} ticks per second.", MessageType.fromServer);
 
         Server.Start(4, port);
+        isServerRunning = true;
     }
 
     // Update is called once per frame
@@ -54,6 +48,11 @@ public class ServerRunner : MonoBehaviour
                 }
             }
         }
+    }
+
+    public static bool GetServerStatus()
+    {
+        return isServerRunning;
     }
 
     //if there are some problems, then they are most likely because of the static function and the thread

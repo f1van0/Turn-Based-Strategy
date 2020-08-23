@@ -52,11 +52,6 @@ public static class GameManager
         gameStage = 0;
     }
 
-    public static void ShowAddressAndPort(string _ipAddress, int _port)
-    {
-        UIManager.instance.ShowAddressAndPort(_ipAddress, _port);
-    }
-
     public static void AddNewPlayer(int _id, string _username, int _team, bool _isReady)
     {
         players.Add(_id, new PlayerManager(_username, _team, _isReady));
